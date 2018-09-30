@@ -14,3 +14,4 @@ We are team newline, a team of 5 students working together to create a scalable 
 - ### September 30, 2018
   - First deliverable submitted
   - Readme updated with team information
+  - For online accessibility, please view https://docs.google.com/document/d/10R4eUT8t7S9bMyE419sDi5Y_WpQnNaqdZXlWzeGU2yk/edit
