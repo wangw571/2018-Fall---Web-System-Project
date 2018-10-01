@@ -12,6 +12,5 @@ We are team newline, a team of 5 students working together to create a scalable 
  
 ## Updates
 - ### September 30, 2018
-  - First deliverable submitted
+  - [First deliverable](/deliverables/Deliverable%201.pdf) submitted (For Google docs version, please click [here](https://docs.google.com/document/d/10R4eUT8t7S9bMyE419sDi5Y_WpQnNaqdZXlWzeGU2yk/edit))
   - Readme updated with team information
-  - For online accessibility, please view https://docs.google.com/document/d/10R4eUT8t7S9bMyE419sDi5Y_WpQnNaqdZXlWzeGU2yk/edit
