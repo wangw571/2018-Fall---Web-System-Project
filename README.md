@@ -18,4 +18,4 @@ We are team newline, a team of 5 students working together to create a scalable 
 ## Updates
 - ### October 13, 2018
   - [Second deliverable Personas](/deliverables/Deliverable%202%20Personas.pdf) submitted (For Google docs version, please click [here](https://docs.google.com/document/d/1IPvpMrey6qEu2fw03TVhNmMvcM_TUOfNXmWQOIp1vY8/edit))
-  - [Second deliverable User Story](/deliverables/Deliverable%202%20User%20Stories.pdf) submitted (For Google docs version, please click [here](https://docs.google.com/document/d/16fhmX-chJY9m91buPyDh9L-Vk1MHAtsgmak4zgIba5E/edit))
+  - [Second deliverable User Stories](/deliverables/Deliverable%202%20User%20Stories.pdf) submitted (For Google docs version, please click [here](https://docs.google.com/document/d/16fhmX-chJY9m91buPyDh9L-Vk1MHAtsgmak4zgIba5E/edit))
