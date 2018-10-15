@@ -10,6 +10,12 @@ We are team newline, a team of 5 students working together to create a scalable 
  - Qingtian Wang
  - Chaoyue Xi
  
+## Notice
+- Our main repository is on [VSTS](https://dev.azure.com/cscc01f18), we would use this to store deliverables only. It is organized into 3 repositories
+  - [**Front-end:**](https://dev.azure.com/cscc01f18/Front-end) Contains our front-end application created using React
+  - [**Back-end:**](https://dev.azure.com/cscc01f18/Back-end) Contains our Back-end application created using Spring
+  - [**Deliverables:**](https://dev.azure.com/cscc01f18/Deliverables) Contains all our deliverables for this course
+
 ## Updates
 - ### September 30, 2018
   - [First deliverable](/deliverables/Deliverable%201.pdf) submitted (For Google docs version, please click [here](https://docs.google.com/document/d/10R4eUT8t7S9bMyE419sDi5Y_WpQnNaqdZXlWzeGU2yk/edit))
