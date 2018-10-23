@@ -1,25 +1,24 @@
 import React, { Component, Fragment } from 'react';
+import { withRouter, Switch, Route } from 'react-router-dom';
+import { Nav, List } from '../components/dashboard';
 import { DASHBOARD_NAV } from '../values';
 import '../styles/containers/dashboard.scss';
 
-export class Dashboard extends Component {
+class _Dashboard extends Component {
   render() {
     const { children } = this.props;
+    const active = window.location.pathname.replace(process.env.PUBLIC_URL, "");
     return <Fragment>
-      <nav className="dashboard__nav">
-        <ul className="dahsboard__items">
+      <Nav active={active}/>
+      <Switch>
         {
-          DASHBOARD_NAV.map(({ text, path }) =>
-            <li className="dashboard__item">
-              <a className="dashboard__item-link" href={path}>{ text }</a>
-            </li>
+          DASHBOARD_NAV.map(({ path, route }, key) =>
+            <Route exact path={path} key={key} component={route}/>
           )
         }
-        </ul>
-      </nav>
-      <main className="dashboard__content">
-        { children }
-      </main>
+      </Switch>
     </Fragment>
   }
 }
+
+export const Dashboard = withRouter(_Dashboard);
