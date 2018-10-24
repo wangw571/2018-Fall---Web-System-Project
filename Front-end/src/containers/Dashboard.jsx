@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter, Switch, Route } from 'react-router-dom';
-import { Nav, List } from '../components/dashboard';
+import { Nav } from '../components/dashboard';
 import { DASHBOARD_NAV } from '../values';
 import '../styles/containers/dashboard.scss';
 
 class _Dashboard extends Component {
   render() {
-    const { children } = this.props;
     const active = window.location.pathname.replace(process.env.PUBLIC_URL, "");
     return <Fragment>
       <Nav active={active}/>
