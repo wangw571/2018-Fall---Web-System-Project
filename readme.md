@@ -45,7 +45,7 @@
         username
         password
     ##### JsonOut
-        {"success": "account correct"}
+        {"success": "account correct", "token": sometoken}
         {"error": "Incorrect Password Or Username"}
         {"error": "Token Invalid"}
         {"error": "Method Incorrect"}
