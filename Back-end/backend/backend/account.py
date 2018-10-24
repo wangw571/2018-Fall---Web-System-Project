@@ -131,8 +131,9 @@ def login(request:HttpRequest) -> JsonResponse:
             len(existenceSelection) > 0
             and existenceSelection[0][0] == hashCodedPassword
         ):
-            TokenStorage[username] = hashCoding(username+password)
-            return JsonResponse({"success": "account correct"})
+            token = hashCoding(username+password)
+            TokenStorage[username] = token
+            return JsonResponse({"success": "account correct", "token", token})
         # failed on verifying
         return JsonResponse({"error": "Incorrect Password Or Username"})
     else:
