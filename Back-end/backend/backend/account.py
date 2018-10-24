@@ -133,8 +133,8 @@ def login(request:HttpRequest) -> JsonResponse:
         ):
             token = hashCoding(username+password)
             TokenStorage[username] = token
-            return JsonResponse({"success": "account correct", "token", token})
-        # failed on verifying
+            return JsonResponse({"success": "account correct", "token": token})
+        # failed on verifyin:
         return JsonResponse({"error": "Incorrect Password Or Username"})
     else:
         return JsonResponse({"error": "Method Incorrect"})
