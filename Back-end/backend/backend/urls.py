@@ -21,5 +21,8 @@ from . import account
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'register', account.registerAccount),
+    path(r'editAccount', account.editAccount),
+    path(r'deleteAccount', account.deleteAccount),
+    path(r'login', account.login),
     path(r'', view.newLineHuh),
 ]
