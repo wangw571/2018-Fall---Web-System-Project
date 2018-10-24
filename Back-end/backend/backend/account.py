@@ -9,6 +9,7 @@ from . import sqlite3Operations
 
 accountDatabaseName = "account.db"
 
+global TokenStorage
 TokenStorage = {}
 
 """Note that passwords will be stored by SHA256"""
@@ -90,12 +91,7 @@ def deleteAccount(request:HttpRequest) -> JsonResponse:
             # preventing exception, create the table
             createAccountsTable(accountDatabaseName)
             # user level check
-            existenceSelection = sqlite3Operations.run_query(
-                accountDatabaseName,
-                "SELECT Level FROM ACCOUNTS WHERE Username = ?",
-                (username,),
-            )
-            if existenceSelection[0][0] <= 2:
+            if getUserLevel(username) <= 2:
                 # confirmed, deletion initiated
                 sqlite3Operations.run_query(
                     accountDatabaseName,
@@ -132,7 +128,7 @@ def login(request:HttpRequest) -> JsonResponse:
             and existenceSelection[0][0] == hashCodedPassword
         ):
             token = hashCoding(username+password)
-            TokenStorage[username] = token
+            TokenStorage[token] = username
             return JsonResponse({"success": "account correct", "token": token})
         # failed on verifyin:
         return JsonResponse({"error": "Incorrect Password Or Username"})
@@ -159,4 +155,14 @@ def createAccountsTable(db:str):
 
 
 def getUserNameByToken(request:HttpRequest) -> str:
-    return TokenStorage.get(request.META.get("token"))
+    global TokenStorage
+    tokeb = str(request.META.get("HTTP_TOKEN"))
+    a = TokenStorage.get(tokeb)
+    return a
+
+def getUserLevel(username: str) -> int:
+    return sqlite3Operations.run_query(
+                accountDatabaseName,
+                "SELECT Level FROM ACCOUNTS WHERE Username = ?",
+                (username,),
+            )[0][0]
