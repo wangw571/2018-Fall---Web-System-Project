@@ -8,46 +8,48 @@
  
 ### End Points
 #### Account Management
-- register
-    ##### JsonIn
+ - register
+    ##### JsonIn - Header
         username
         password
         level // 0 for most powerful, and number increase cause power decrease
     ##### JsonOut
-        {"success": "creation successful"}
+        {"success": "Creation successful"}
         {"error": "Account Already Exist"}
         {"error": "Method Incorrect"}
 
-- editAccount
-    ##### JsonIn
-        username
-        oldPassword
+ - editAccount
+    ##### JsonIn - Header
+        token
+    ##### JsonIn - Body
         newPassword
-        newLevel
+        newLevel // Leave blank if change is not needed
     ##### JsonOut
         {"success": "edition successful"}
-        {"error": "Account Does Not Exist Or Old Password Incorrect"}
+        {"error": "Token Invalid"}
         {"error": "Method Incorrect"}
 
-- deleteAccount
-    ##### JsonIn
-        username
-        password
+ - deleteAccount
+    ##### JsonIn - Header
+        token
+    ##### JsonIn - Body
         usernameToBeDeleted
     ##### JsonOut
         {"success": "deletion successful"}
         {"error": "Account Level Oversized, deletion denied"}
-        {"error": "Incorrect Password Or Username"}
+        {"error": "Token Invalid"}
         {"error": "Method Incorrect"}
 
-- login
+ - login
     ##### JsonIn
         username
         password
     ##### JsonOut
-        {"success": "account correct"}
+        {"success": "account correct", "token": sometoken}
         {"error": "Incorrect Password Or Username"}
+        {"error": "Token Invalid"}
         {"error": "Method Incorrect"}
         
 ## Updates
-  N/A
+  2018/10/24
+  - Account management - Changed to Token verification for operations.
