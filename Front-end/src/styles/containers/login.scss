@@ -1,2 +1,69 @@
 @import '../mixins';
 @import '../variables';
+
+.login {
+    @include flex(center);
+    background-color: $logo-color;
+    width: 100%;
+    &__form {
+        @include flex(column, center, stretch);
+        box-sizing: border-box;
+        background-color: white;
+        max-width: 440px;
+        padding: 20px 60px;
+        width: 100%;
+    }
+    &__input-group {
+        @include flex(center);
+        height: 35px;
+        border-radius: 999px;
+        background: #D7F6B9;
+        overflow: hidden;
+        margin-bottom: 20px;
+        border: 2px solid $logo-color;
+        transition: transform $normal-speed $normal-ease;
+        &--invalid {
+            transform: rotate(180deg);
+        }
+        &--valid {
+            transform: translate3d(100%, 0, 0);
+        }
+    }
+    &__input {
+        width: 100%;
+        background: none;
+        border: none;
+        align-self: stretch;
+        outline: none;
+        color: $logo-color;
+        padding-right: 20px;
+        &::placeholder {
+            color: $logo-color;
+        }
+    }
+    &__icon {
+        @include flex(center);
+        color: $logo-color;
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+        margin-right: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    &__button {
+        height: 39px;
+        border-radius: 999px;
+        color: $logo-color;
+        background: #D7F6B9;
+        border: 2px solid $logo-color;
+        &:hover {
+            background-color: rgb(32, 15, 128);
+        }
+        &:active {
+            background-color: rgb(128, 92, 15);
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+    }
+}
