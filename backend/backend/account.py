@@ -53,26 +53,36 @@ def editAccount(request:HttpRequest) -> JsonResponse:
         # Token verification
         if(username != None):
             body = request.POST.dict()
-            newPassword = body["newPassword"]
+            targetUser = body["targetUser"] # leave blank when it is self edition
+            targetUser = username if targetUser == "" else targetUser
+            newPassword = body["newPassword"] # leave blank when no edition is needed
             newLevel = body["newLevel"]  # leave blank when no edition is needed
             # preventing exception, create the table
             createAccountsTable(accountDatabaseName)
-            # update
-            sqlite3Operations.run_query(
-                accountDatabaseName,
-                "UPDATE ACCOUNTS set PasswordHashCode = ? WHERE Username=?",
-                (hashCoding(newPassword), username),
-                commit=True,
-            )
-            # update account level if needed
-            if newLevel != "":
-                sqlite3Operations.run_query(
-                    accountDatabaseName,
-                    "UPDATE ACCOUNTS set Level = ? WHERE Username=?",
-                    (int(newLevel), username),
-                    commit=True,
-                )
-            return JsonResponse({"success": "edition successful"})
+            if(getUserLevel(username) <= 2 or (targetUser == "")): # either user has permission or user is editing self
+                # update account level if needed
+                if newLevel != "":
+                    if getUserLevel(username) <= 2:
+                        sqlite3Operations.run_query(
+                            accountDatabaseName,
+                            "UPDATE ACCOUNTS set Level = ? WHERE Username=?",
+                            (int(newLevel), targetUser),
+                            commit=True,
+                        )
+                    else:
+                        # Access denied
+                        return JsonResponse({"error": "level edition access denied"})
+                # update account password if needed
+                if newPassword != "":
+                    sqlite3Operations.run_query(
+                        accountDatabaseName,
+                        "UPDATE ACCOUNTS set PasswordHashCode = ? WHERE Username=?",
+                        (hashCoding(newPassword), targetUser),
+                        commit=True,
+                    )
+                return JsonResponse({"success": "edition successful"})
+            # Access denied
+            return JsonResponse({"error": "Account Level Oversized, edition denied"})
         # Token Incorrect
         return JsonResponse({"error": "Token Invalid"})
     else:
