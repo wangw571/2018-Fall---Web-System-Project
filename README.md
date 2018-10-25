@@ -13,7 +13,7 @@ We are team newline, a team of 5 students working together to create a scalable 
 ## Overview
   - ### File Stucture of Repo
     - [**Front-end:**](/Front-end) Contains our front-end application created using React
-    - [**Back-end:**](/Back-end) Contains our Back-end application created using Spring
+    - [**Back-end:**](/Back-end) Contains our Back-end application created using Django
     - [**Deliverables:**](/deliverables) Contains all our deliverables for this course
   - ### Other Content
     - [**Board**](https://dev.azure.com/cscc01f18/Deliverables/_workitems)
