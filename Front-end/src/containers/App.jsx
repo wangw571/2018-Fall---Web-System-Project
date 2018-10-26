@@ -17,7 +17,7 @@ class _App extends Component {
 
   componentDidMount() {
     const { history } = this.props;
-    const { pathname, search } = window.location;
+    const { pathname } = window.location;
     if (!this.state.isAuthenticated && pathname !== "/") {
       history.push(`/?redirect=${ pathname.replace(process.env.PUBLIC_URL, "") }`);
     }
