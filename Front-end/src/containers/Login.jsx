@@ -1,10 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import '../styles/containers/login.scss';
-import { Dashboard } from './Dashboard';
-import { withRouter, Switch, Route } from 'react-router-dom';
-import { App } from './App';
+import { withRouter } from 'react-router-dom';
 import { Authentication } from '../util';
-class Login extends Component {
+
+class _Login extends Component {
 
   constructor(props) {
     super(props);
@@ -22,9 +21,13 @@ class Login extends Component {
 
   authenticate = el => {
     el.preventDefault();
-    if (this.state.username.valid === true && this.state.password.valid === true){
+    const { username, password } = this.state; 
+    if (username.valid === true && password.valid === true){
       console.log("WEEEEEE");
-      Authentication.login(this.username.text, this.password.text);
+      const token = Authentication.login(username.text, password.text);
+      if (!token.error) {
+        this.props.history.push("/");
+      } else { console.log(token.error) }
     }
   }
 
@@ -35,13 +38,15 @@ class Login extends Component {
     switch(name) {
       case "username":
         if (text === "") { valid = null }
-        else if (text === "bob") { valid = true }
+        else if (text.length > 5) { valid = true }
         else { valid = false }
         break;
       case "password":
         if (text === "") { valid = null }
-        else if (text === "wee") { valid = true }
+        else if (text.length > 5) { valid = true }
         else { valid = false }
+        break;
+      default:
         break;
     }
     this.setState({
@@ -94,3 +99,5 @@ class Login extends Component {
     )
   }
 }
+
+export const Login = withRouter(_Login);

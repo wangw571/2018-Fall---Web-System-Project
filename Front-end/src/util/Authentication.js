@@ -11,7 +11,7 @@ class _Authentication {
     const local = localStorage.getItem("token");
     if (local) {
       _token = local;
-      this.isAuthenicated();
+      this.isAuthenticated();
     }
   }
 
@@ -24,7 +24,7 @@ class _Authentication {
     if (email === "example@example" && password === "example") {
       _token = {
         token: "sadsadsadsadsa",
-        expires: "0421421"
+        expires: new Date()
       };
       localStorage.setItem("token", JSON.stringify(_token));
       return _token

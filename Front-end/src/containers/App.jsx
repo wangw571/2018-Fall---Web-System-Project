@@ -8,7 +8,7 @@ export class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isAuthenticated: Authentication.isAuthenticated() || true
+      isAuthenticated: Authentication.isAuthenticated()
     }
   }
 

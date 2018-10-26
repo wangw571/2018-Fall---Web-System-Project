@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { DASHBOARD_NAV } from '../../values';
+import { Authentication } from '../../util';
 import '../../styles/components/dashboard/nav.scss';
 
 export class Nav extends Component {
@@ -21,7 +22,9 @@ export class Nav extends Component {
           )
         }
         <li className="nav__item nav__item--logout">
-          <Link to="/" className="nav__link"><i className="nav__icon fas fa-power-off" />Logout</Link>
+          <Link to="/" className="nav__link" onClick={Authentication.logout}>
+            <i className="nav__icon fas fa-power-off" />Logout
+          </Link>
         </li>
       </ul>
     </nav>
