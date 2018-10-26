@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Switch, Route, withRouter } from 'react-router-dom';
+import { NotFound } from '../pages';
 import { Dashboard, Login } from '.';
 import { Authentication } from '../util';
 import '../styles/containers/app.scss';
@@ -11,6 +12,7 @@ class _App extends Component {
     this.state = {
       isAuthenticated: Authentication.isAuthenticated()
     }
+    console.log(Authentication.login("test", "test"));
   }
 
   componentDidMount() {
