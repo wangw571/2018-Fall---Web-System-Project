@@ -11,7 +11,7 @@ class _Authentication {
     const local = localStorage.getItem("token");
     if (local) {
       _token = local;
-      this.isAuthenicated();
+      this.isAuthenticated();
     }
   }
 

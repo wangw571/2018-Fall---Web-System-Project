@@ -2,22 +2,54 @@
 @import '../../variables';
 
 .list {
+  $self: &;
+  list-style-type: none;
+  font-size: 0.8rem;
+  width: 320px;
   &__item {
-
+    margin-bottom: 10px;
+    border-radius: 6px;
+    padding: 20px 28px;
+    cursor: pointer;
+    color: rgba(0,0,0,0.75);
+    transition: background-color $normal-speed $normal-ease;
+    &--head {
+      color: black;
+      pointer-events: none;
+      padding: 30px 20px 10px;
+    }
+    &--active, &:hover {
+      background-color: rgba(0,0,0,0.02);
+    }
   }
-  &__item-date {
-
+  &__item-status {
+    &--missing, &--error {
+      color: #dc3545;
+    }
+    &--uploaded {
+      color: #f5b800;
+    }
+    &--submitted {
+      color: #007bff;
+    }
+  }
+  &__item-icon {
+    margin-right: 4px;
   }
   &__item-header {
-
+    @include flex(row, flex-start, center);
+    position: relative;
+    margin: 6px 0;
   }
   &__item-title {
-
+    color: black;
+    font-size: 0.86rem;
+    margin-right: auto;
   }
   &__item-label {
-
+    font-size: 0.75rem;
   }
   &__item-text {
-    
+    overflow: hidden;
   }
 }
