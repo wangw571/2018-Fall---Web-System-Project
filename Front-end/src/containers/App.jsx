@@ -16,10 +16,10 @@ class _App extends Component {
   }
 
   componentDidMount() {
-    const path = window.location.pathname;
-    console.log(path);
-    if (!this.state.isAuthenticated && path !== "/") {
-      this.props.history.push(`/?redirect=${ path.replace(process.env.PUBLIC_URL, "") }`);
+    const { history } = this.props;
+    const { pathname, search } = window.location;
+    if (!this.state.isAuthenticated && pathname !== "/") {
+      history.push(`/?redirect=${ pathname.replace(process.env.PUBLIC_URL, "") }`);
     }
   }
 
