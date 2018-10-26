@@ -1,21 +1,33 @@
 import React, { Component } from 'react';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import { Dashboard, Login } from '.';
 import { Authentication } from '../util';
 import '../styles/containers/app.scss';
 
-export class App extends Component {
+class _App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      isAuthenticated: Authentication.isAuthenticated() || true
+      isAuthenticated: Authentication.isAuthenticated()
+    }
+  }
+
+  componentDidMount() {
+    const path = window.location.pathname;
+    console.log(path);
+    if (!this.state.isAuthenticated && path !== "/") {
+      this.props.history.push(`/?redirect=${ path.replace(process.env.PUBLIC_URL, "") }`);
     }
   }
 
   render() {
-    const { isAuthenticated } = this.state;
-    return isAuthenticated?
-    <Dashboard/>:
-    <Login/>
+    return <Switch>
+      <Route exact path="/" component={Login}/>
+      <Route path="/app" component={Dashboard}/>
+      <Route path="/" component={NotFound}/>
+    </Switch>
   }
 };
+
+export const App = withRouter(_App);

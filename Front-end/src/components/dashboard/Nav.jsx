@@ -9,7 +9,7 @@ export class Nav extends Component {
     return <nav className="nav">
       <ul className="nav__body">
         <li className="nav__item nav__item--logo">
-          <Link to="/" className="nav__link"><i className="nav__icon nav__icon--logo fas fa-seedling" />GreenCare</Link>
+          <i className="nav__icon nav__icon--logo fas fa-seedling" />GreenCare
         </li>
         {
           DASHBOARD_NAV.map(({path, text, icon}, key) =>

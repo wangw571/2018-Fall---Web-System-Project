@@ -1,37 +1,66 @@
 import React, { Component } from 'react';
 import '../../styles/components/dashboard/list.scss';
 
-const items = [
-  {
-    date: new Date(),
-    title: "What is Lorem Ipsum?",
-    due: new Date(),
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque suscipit urna quis purus congue congue. Vestibulum facilisis non ante eget mollis."
-  }
-]
+const MAX_SIZE = 120;
 
 export class List extends Component {
 
-  parseLongDate = date => {
-    return "October 28, 2018"
+  constructor(props) {
+    super(props);
+    this.state = {
+      active: 0
+    }
   }
 
-  parseShortDate = date => {
-    return "10/10/18"
+  getStatus = status => {
+    switch(status) {
+      case 0:
+        return "Missing";
+      case 1:
+        return "Uploaded";
+      case 2:
+        return "Submitted";
+      default:
+        return "Error";
+    }
   }
+
+  getDiff = date => {
+    return "10 Days"
+  }
+
+  setActive = active => (
+    this.setState({ active })
+  )
 
   render() {
-    // const { items } = this.props;
+    const { items, children } = this.props;
+    const { active } = this.state;
+    console.log(active)
     return <ul className="list">
+      { children?
+        <li className="list__item list__item--head">
+          { children }
+        </li>: null
+      }
       {
-        items.map(({ date, title, description, due }, key) => {
-          return <li key={key} className="list__item">
-            <p className="list__item-date">{ this.parseLongDate(date) }</p>
+        items.map(({ status, title, description, due }, key) => {
+          const click = this.setActive.bind(this, key);
+          const statusText = this.getStatus(status);
+          const className = `list__item${key === active ? " list__item--active" : ""}`;
+
+          return <li key={key} onClick={click} className={className}>
+            <p className={`list__item-status list__item-status--${ statusText.toLowerCase() }`}>{ statusText }</p>
             <div className="list__item-header">
-              <h3 className="list__item-title">{ title }</h3>
-              <span className="list__item-label">{ this.parseShortDate(due) }</span>
+              <h4 className="list__item-title">{ title }</h4>
+              <span className="list__item-label">
+                <i className="list__item-icon far fa-clock"/>
+                { this.getDiff(due) }
+              </span>
             </div>
-            <p className="list__item-text">{ description }</p>
+            <p className="list__item-text">
+              { description.length > MAX_SIZE? description.slice(0, MAX_SIZE) + "...": description }
+            </p>
           </li>
         })
       }
