@@ -12,9 +12,9 @@ class _Dashboard extends Component {
       <Nav active={active}/>
       <Switch>
         {
-          DASHBOARD_NAV.map(({ path, route }, key) =>
-            <Route exact path={`${path}`} key={key} component={route}/>
-          )
+          DASHBOARD_NAV.map(({ path, Component }, key) => {
+            return <Route exact path={`${path}`} key={key} component={Component}/>
+          })
         }
       </Switch>
     </Fragment>

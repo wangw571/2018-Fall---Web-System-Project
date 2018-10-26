@@ -1,11 +1,13 @@
-@import '../../mixins';
-@import '../../variables';
+@import '../mixins';
+@import '../variables';
 
-.list {
+.upload {
   $self: &;
-  list-style-type: none;
-  font-size: 0.8rem;
-  width: 320px;
+  &__items {
+    list-style-type: none;
+    font-size: 0.8rem;
+    width: 320px;
+  }
   &__item {
     margin-bottom: 10px;
     border-radius: 6px;
