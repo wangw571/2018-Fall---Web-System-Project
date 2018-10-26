@@ -18,16 +18,18 @@ def AccountRequestDistribution(request : HttpRequest) -> JsonResponse:
     if request.method == "POST":
         body = request.POST.dict()
         pathh = request.path
-        if pathh == 'register':
+        elif pathh == 'register':
             return registerAccount(body["username"], body["password"], body["level"])
-        if pathh == 'editAccount':
+        elif pathh == 'editAccount':
             username = getUserNameByToken(request)
             return editAccount(username, body["targetUser"], body["newPassword"], body["newLevel"])
-        if pathh == 'deleteAccount':
+        elif pathh == 'deleteAccount':
             username = getUserNameByToken(request)
             return deleteAccount(username, body["usernameToBeDeleted"],)
-        if pathh == 'login':
+        elif pathh == 'login':
             return login(body["username"], body["password"])
+        elif pathh == 'existanceCheck':
+            return existanceCheck(body["username"])
     else:
         return JsonResponse({"error": "Method Incorrect"})
 
@@ -131,6 +133,17 @@ def login(username:str, password:str) -> JsonResponse:
     # failed on verifyin:
     return JsonResponse({"error": "Incorrect Password Or Username"})
 
+def existanceCheck(username:str) ->JsonResponse:
+    # preventing exception, create the table
+    createAccountsTable(accountDatabaseName)
+    # existence check
+    existenceSelection = sqlite3Operations.run_query(
+        accountDatabaseName,
+        "SELECT PasswordHashCode FROM ACCOUNTS WHERE Username = ?",
+        (username,),
+    )
+    # existance check
+    return JsonResponse({"existance": len(existenceSelection) != 0})
 
 def hashCoding(toBeCoded: str) -> str:
     h = hashlib.sha256()

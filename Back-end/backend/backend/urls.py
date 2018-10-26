@@ -20,9 +20,10 @@ from . import account
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(r'register', account.registerAccount),
-    path(r'editAccount', account.editAccount),
-    path(r'deleteAccount', account.deleteAccount),
-    path(r'login', account.login),
+    path(r'register', account.AccountRequestDistribution),
+    path(r'editAccount', account.AccountRequestDistribution),
+    path(r'deleteAccount', account.AccountRequestDistribution),
+    path(r'login', account.AccountRequestDistribution),
+    path(r'existanceCheck', account.AccountRequestDistribution),
     path(r'', view.newLineHuh),
 ]
