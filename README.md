@@ -1,7 +1,7 @@
 # Team Newline (Team19)
 ## Meet the Team!
 ### Team Description
-We are team newline, a team of 5 students working together to create a scalable and efficient system for Scarborough Local Immigration Partnership (LIP). Using Spring and React, we are hoping to work together with the client to create a web application that would suit the needs of our clients - In hopes not only getting a good grade, but creating something meaningful for society.
+We are team newline, a team of 5 students working together to create a scalable and efficient system for Scarborough Local Immigration Partnership (LIP). Using Django and React, we are hoping to work together with the client to create a web application that would suit the needs of our clients - In hopes not only getting a good grade, but creating something meaningful for society.
 
 ### Team Members
  - Jialiang Lin
@@ -10,11 +10,16 @@ We are team newline, a team of 5 students working together to create a scalable 
  - Qingtian Wang
  - Chaoyue Xi
  
-## Notice
-- Our main repository is on [VSTS](https://dev.azure.com/cscc01f18), we would use this to store deliverables only. It is organized into 3 repositories
-  - [**Front-end:**](https://dev.azure.com/cscc01f18/Front-end) Contains our front-end application created using React
-  - [**Back-end:**](https://dev.azure.com/cscc01f18/Back-end) Contains our Back-end application created using Spring
-  - [**Deliverables:**](https://dev.azure.com/cscc01f18/Deliverables) Contains all our deliverables for this course
+## Overview
+  - ### File Stucture of Repo
+    - [**Front-end:**](/Front-end) Contains our front-end application created using React
+    - [**Back-end:**](/Back-end) Contains our Back-end application created using Django
+    - [**Deliverables:**](/deliverables) Contains all our deliverables for this course
+  - ### Other Content
+    - [**Board**](https://dev.azure.com/cscc01f18/Deliverables/_workitems)
+      - Our board is seperated and organized into 2 boards, features and task. Our features represent the user stories that cover the features our client wants, and tasks are the tickets required to make it happen
+    - [**Google Drive**](https://drive.google.com/drive/folders/1Ioca4m9xqx3r-hxqvRLZ9zDrAW_hLFzT?usp=sharing)
+      - Contains all the assets and documents for sharing between team members and delivering to TA/Instructor/client
 
 ## Updates
 - ### September 30, 2018
