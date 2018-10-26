@@ -51,6 +51,13 @@
         {"error": "Incorrect Password Or Username"}
         {"error": "Token Invalid"}
         {"error": "Method Incorrect"}
+
+ - existanceCheck
+    ##### JsonIn - Body
+        username
+    ##### JsonOut
+        {"existance": True}
+        {"existance": False}
         
 ## Updates
   2018/10/24
