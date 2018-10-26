@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import '../styles/containers/login.scss';
 import { Dashboard } from './Dashboard';
-import { Route } from 'react-dom';
-export class Login extends Component {
+import { withRouter, Switch, Route } from 'react-router-dom';
+import { App } from './App';
+import { Authentication } from '../util';
+class Login extends Component {
 
   constructor(props) {
     super(props);
@@ -16,18 +18,13 @@ export class Login extends Component {
         valid: null
       }
     }
-    this.state = {
-      toDashboard: false,
-    }
   }
 
   authenticate = el => {
     el.preventDefault();
     if (this.state.username.valid === true && this.state.password.valid === true){
       console.log("WEEEEEE");
-      this.setState({
-        toDashboard: true
-      });
+      Authentication.login(this.username.text, this.password.text);
     }
   }
 
@@ -58,12 +55,8 @@ export class Login extends Component {
     text === ""? "": ` login__input-group--${ valid? "": "in" }valid`
   )
 
-
   render() {
     const { username, password } = this.state;
-    if (this.state.toDashboard === true) {
-      return (<Route path="/Dashboard" Component={Dashboard}/>)
-    }
     return (
       <main className="login">
         <form className="login__form" onSubmit={this.authenticate} >
