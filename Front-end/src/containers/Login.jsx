@@ -9,24 +9,46 @@ class _Login extends Component {
     super(props);
     this.state = {
       username: {
-        text: "",
+        text: '',
         valid: null
       },
       password: {
-        text: "",
+        text: '',
         valid: null
       }
     }
+  }
+
+  componentOnMount() {
+    const search = this.getQuery(window.location.search);
+    if (search.redirect) {
+      this.props.history.push(search.redirect);
+    }
+  }
+
+  getQuery = search => {
+    const res = {};
+    if (search && search !== "") {
+      search.slice(1).split("&").forEach(el => {
+        const item = el.split("=");
+        res[item[0]] = item[1];
+      });
+    }
+    return res;
   }
 
   authenticate = el => {
     el.preventDefault();
     const { username, password } = this.state; 
     if (username.valid === true && password.valid === true){
-      console.log("WEEEEEE");
       const token = Authentication.login(username.text, password.text);
-      if (!token.error) {
-        this.props.history.push("/");
+      if (token) {
+        const search = this.getQuery(window.location.search);
+        if (search.redirect) {
+          this.props.history.push(search.redirect);
+        } else {
+          this.props.history.push("/app/upload");
+        }
       } else { console.log(token.error) }
     }
   }
@@ -37,15 +59,9 @@ class _Login extends Component {
     let valid = null;
     switch(name) {
       case "username":
-        if (text === "") { valid = null }
-        else if (text.length > 5) { valid = true }
-        else { valid = false }
-        break;
+        valid = Authentication.isValidUsername(text);
       case "password":
-        if (text === "") { valid = null }
-        else if (text.length > 5) { valid = true }
-        else { valid = false }
-        break;
+        valid = Authentication.isValidPassForUser(text);
       default:
         break;
     }

@@ -1,5 +1,7 @@
 // Private variables
 let _token = null;
+let _username = null;
+let _potentialUser = null;
 
 class _Authentication {
 
@@ -21,39 +23,57 @@ class _Authentication {
     @returns the token on sucess, an error otherwise
   */
   login = (email, password) => {
-    if (email === "example@example" && password === "example") {
-      _token = {
+    if (email === "bob" && password === "bob") {
+      // TODO: Get the token ffrom backend
+      this._token = {
         token: "sadsadsadsadsa",
         expires: new Date()
       };
-      localStorage.setItem("token", JSON.stringify(_token));
-      return _token
+      localStorage.setItem("token", JSON.stringify(this._token));
+      return this._token
     }
-    return { error: "NO TOKEN 4 U" }
+    return this._token
   }
 
+  /*
+    Checks if the username that the user enters at login
+    exists in the database.
+    @params username
+    @returns True if exists, false otherwise
+  */
+  isValidUsername = (username) => {
+    // dummy username
+    if (username === "bob") {
+      _potentialUser = username;
+      return true;
+    } else {
+      _potentialUser = ""
+      return false;
+    }
+  }
+
+  isValidPassForUser = (password) => {
+    // dummy username and password
+    if (_potentialUser === "bob" && password === "bob"){
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
   /*
     Logs the user out
   */
   logout = () => {
     localStorage.removeItem("token");
-    _token = null;
+    this._token = null;
   }
 
   /*
     Checkes the Authentication of the user
-    @params optional callback functions on authentication pass or fail
     @returns true if authenticated, false otherwise
   */
-  isAuthenticated = (pass, fail) => {
-    if (_token) {
-      // TODO check auth
-      if (pass) { pass() }
-      return true
-    }
-    if (fail) { fail() }
-    return false
-  }
+  isAuthenticated = () => this._token? true: false
 
   /*
     Gets the token of the user
@@ -61,6 +81,7 @@ class _Authentication {
   */
   getToken = () => _token
 
+  getCurrentUsername = () => _username
 }
 
 /* Singleton for authentication object */
