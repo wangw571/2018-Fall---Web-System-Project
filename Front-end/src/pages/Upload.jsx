@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import { List } from '../components/dashboard';
 import { Page } from '../containers';
 
 import '../styles/pages/upload.scss';
@@ -60,36 +61,31 @@ export class Upload extends Component {
     this.setState({ items: test })
   }
 
+  itemMap = ({ status, title, description, due }) => {
+    const statusText = this.getStatus(status);
+
+    return <Fragment>
+      <p className={`upload__item-status upload__item-status--${statusText.toLowerCase()}`}>{statusText}</p>
+      <div className="upload__item-header">
+        <h4 className="upload__item-title">{title}</h4>
+        <span className="upload__item-label">
+          <i className="upload__item-icon far fa-clock" />
+          {this.getDiff(due)}
+        </span>
+      </div>
+      <p className="upload__item-text">
+        {description.length > MAX_SIZE ? description.slice(0, MAX_SIZE) + "..." : description}
+      </p>
+    </Fragment>
+  }
+
   render() {
     const { items, active } = this.state;
     return <Page className='upload'>
       <div className="upload__container">
-        <ul className="upload__items">
-          <li className="upload__item upload__item--head">
-            <h3 className="upload__upload-header">Templates</h3>
-          </li>
-          {
-            items.map(({ status, title, description, due }, key) => {
-              const click = this.setActive.bind(this, key);
-              const statusText = this.getStatus(status);
-              const className = `upload__item${key === active ? " upload__item--active" : ""}`;
-
-              return <li key={key} onClick={click} className={className}>
-                <p className={`upload__item-status upload__item-status--${statusText.toLowerCase()}`}>{statusText}</p>
-                <div className="upload__item-header">
-                  <h4 className="upload__item-title">{title}</h4>
-                  <span className="upload__item-label">
-                    <i className="upload__item-icon far fa-clock" />
-                    {this.getDiff(due)}
-                  </span>
-                </div>
-                <p className="upload__item-text">
-                  {description.length > MAX_SIZE ? description.slice(0, MAX_SIZE) + "..." : description}
-                </p>
-              </li>
-            })
-          }
-        </ul>
+        <List block="upload" active={active} items={items} map={this.itemMap}>
+          <h3 className="upload__upload-header">Templates</h3>
+        </List>
       </div>
     </Page>
   }
