@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { List } from '../components/dashboard';
+import { List, Section } from '../components/dashboard';
 import { Page } from '../containers';
 
 import '../styles/pages/upload.scss';
@@ -61,6 +61,8 @@ export class Upload extends Component {
     this.setState({ items: test })
   }
 
+  click = key => this.setState({ active: key })
+
   itemMap = ({ status, title, description, due }) => {
     const statusText = this.getStatus(status);
 
@@ -83,10 +85,14 @@ export class Upload extends Component {
     const { items, active } = this.state;
     return <Page className='upload'>
       <div className="upload__container">
-        <List block="upload" active={active} items={items} map={this.itemMap}>
+        <List block="upload" onClick={this.click} active={active} items={items} map={this.itemMap}>
           <h3 className="upload__upload-header">Templates</h3>
         </List>
       </div>
+      <Section className="upload__page">
+        <h1>Something</h1>
+        <input type="file"/>
+      </Section>
     </Page>
   }
 }

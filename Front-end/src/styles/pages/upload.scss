@@ -3,27 +3,9 @@
 
 .upload {
   $self: &;
-  &__items {
-    list-style-type: none;
-    font-size: 0.8rem;
-    width: 320px;
-  }
-  &__item {
-    margin-bottom: 10px;
-    border-radius: 6px;
-    padding: 20px 28px;
-    cursor: pointer;
-    color: rgba(0,0,0,0.75);
-    transition: background-color $normal-speed $normal-ease;
-    &--head {
-      color: black;
-      pointer-events: none;
-      padding: 30px 20px 10px;
-    }
-    &--active, &:hover {
-      background-color: rgba(0,0,0,0.02);
-    }
-  }
+  width: 100%;
+  background-color: rgba(0,0,0,0.02);
+  @include flex;
   &__item-status {
     &--missing, &--error {
       color: #dc3545;
@@ -53,5 +35,10 @@
   }
   &__item-text {
     overflow: hidden;
+  }
+  &__page {
+    padding: 20px;
+    background-color: white;
+    flex-grow: 1;
   }
 }

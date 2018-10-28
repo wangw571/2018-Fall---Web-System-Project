@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../../styles/components/dashboard/list.scss';
 
 export class List extends Component {
   render() {
@@ -10,7 +11,7 @@ export class List extends Component {
       {
         items.map((item, key) => {
           const className = `list__item${key === active ? " list__item--active" : ""}`;
-          return <li onClick={onClick} key={key} className={className}>
+          return <li onClick={onClick.bind(this, key)} key={key} className={className}>
             { map(item, key) }
           </li>
         })
