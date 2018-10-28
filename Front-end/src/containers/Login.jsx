@@ -60,8 +60,10 @@ class _Login extends Component {
     switch(name) {
       case "username":
         valid = Authentication.isValidUsername(text);
+        break;
       case "password":
         valid = Authentication.isValidPassForUser(text);
+        break;
       default:
         break;
     }
