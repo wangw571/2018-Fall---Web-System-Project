@@ -5,21 +5,18 @@ import { Dashboard, Login } from '.';
 import { Authentication } from '../util';
 import '../styles/containers/app.scss';
 
+const auth = Authentication.getInstance();
 class _App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      isAuthenticated: Authentication.isAuthenticated()
-    }
-    console.log(Authentication.login("test", "test"));
-  }
 
   componentDidMount() {
     const { history } = this.props;
     const { pathname } = window.location;
-    if (!this.state.isAuthenticated && pathname !== "/") {
+    const loggedIn = auth.isAuthenticated();
+    console.log(auth.isAuthenticated());
+    if (!loggedIn && pathname !== "/") {
       history.push(`/?redirect=${ pathname.replace(process.env.PUBLIC_URL, "") }`);
+    } else if (loggedIn && pathname === "/") {
+      history.push('/app/upload');
     }
   }
 

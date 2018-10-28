@@ -12,6 +12,15 @@ matrix:
         - npm ci
       script:
         - npm run build
+    - language: python
+      python:
+        - "3.6"
+      before_install:
+        - cd ./Back-end
+      install:
+        - pip install django --quiet
+      script:
+        - python manage.py test
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh

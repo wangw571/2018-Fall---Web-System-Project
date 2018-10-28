@@ -41,4 +41,90 @@
     background-color: white;
     flex-grow: 1;
   }
+
+  &__modal {
+    & .modal__box {
+      padding: 20px;
+    }
+  }
+
+  &__form {
+    height: 100%;
+    @include flex(column);
+  }
+
+  &__file-drop {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border: 2px dashed rgba(0,0,0,0.4);
+    @include flex(column,center);
+    transition: background-color $normal-speed $normal-ease;
+    &:hover {
+      background-color: rgba(0,0,0,0.04);
+    }
+  }
+
+  &__file {
+    @include position(absolute, 0, 0);
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    opacity: 0;
+  }
+
+  &__button-wrapper {
+    width: 100%;
+    @include flex(center);
+  }
+
+  &__button {
+    margin: 10px 5px -10px;
+    width: 100px;
+    height: 40px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    @include flex(center);
+    transition: background-color $normal-speed $normal-ease;
+    &:disabled {
+      background-color: rgba(0,0,0,0.3);
+    }
+
+    &--submit {
+      background-color: #1eca60;
+      &:hover, &:active {
+        background-color: $logo-color;
+      }
+    }
+
+    &--exit {
+      background-color: #dc3545;
+      &:hover, &:active {
+        background-color: #d43544;
+      }
+    }
+  }
+
+  &__file {
+    &-icon {
+      font-size: 2.4rem;
+      color: rgba(0,0,0,0.6);
+      margin-bottom: 6px;
+      transition: color $normal-speed $normal-ease;
+      #{ $self }__form--uploaded & {
+        color: $logo-color;
+      }
+    }
+    &-header {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    &-subheader {
+      color: rgba(0,0,0,0.6);
+    }
+  }
 }
