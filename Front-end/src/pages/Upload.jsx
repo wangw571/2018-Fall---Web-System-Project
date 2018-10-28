@@ -29,7 +29,6 @@ const test = [
 const MAX_SIZE = 120;
 export class Upload extends Component {
 
-  url = null
   state = {
     items: [],
     show: false,
@@ -60,11 +59,12 @@ export class Upload extends Component {
 
   send = el => {
     el.preventDefault();
-    if (this.url) {
-      window.URL.revokeObjectURL(this.url);
-    }
-    this.url = window.URL.createObjectURL(this.state.file);
-    console.log(this.url);
+    const body = new FormData();
+    body.append("file", this.state.file);
+    fetch("https://fpunny.com", {
+      method: "POST",
+      body
+    });
     this.close();
   }
 
@@ -73,16 +73,9 @@ export class Upload extends Component {
     this.setState({ file: null });
   }
 
-  handleFile = ({ target }) => {
-    if (target.files.length === 0) {
-      this.setState({ file: null });
-    } else {
-      const file = target.files[0];
-      this.setState({
-        file
-      })
-    }
-  }
+  handleFile = ({ target }) => (
+    this.setState({ file: target.files.length === 0? null: target.files[0] })
+  )
 
   itemMap = ({ status, title, description, due }) => {
     const statusText = this.getStatus(status);
