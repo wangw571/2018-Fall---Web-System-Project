@@ -22,11 +22,12 @@ matrix:
         - pip install django --quiet
       script:
         - python manage.py test
+      after_success:
+        - git subtree push --prefix Back-end origin server
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
   - ./send.sh success $WEBHOOK_URL
-  - git subtree push --prefix Back-end origin server
 after_failure:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
