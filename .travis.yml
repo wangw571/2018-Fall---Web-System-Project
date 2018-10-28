@@ -23,6 +23,7 @@ matrix:
       script:
         - python manage.py test
       after_success:
+        - cd ..
         - git subtree push --prefix Back-end origin server
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
