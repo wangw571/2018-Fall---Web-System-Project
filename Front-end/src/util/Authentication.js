@@ -11,9 +11,9 @@ class _Authentication {
   */
   constructor() {
     const local = localStorage.getItem("token");
+    console.log(local);
     if (local) {
       _token = local;
-      this.isAuthenticated();
     }
   }
 
@@ -25,14 +25,14 @@ class _Authentication {
   login = (email, password) => {
     if (email === "bob" && password === "bob") {
       // TODO: Get the token ffrom backend
-      this._token = {
+      const token = {
         token: "sadsadsadsadsa",
         expires: new Date()
       };
       localStorage.setItem("token", JSON.stringify(this._token));
-      return this._token
+      return token
     }
-    return this._token
+    return null
   }
 
   /*
@@ -66,14 +66,14 @@ class _Authentication {
   */
   logout = () => {
     localStorage.removeItem("token");
-    this._token = null;
+    _token = null;
   }
 
   /*
     Checkes the Authentication of the user
     @returns true if authenticated, false otherwise
   */
-  isAuthenticated = () => this._token? true: false
+  isAuthenticated = () => _token? true: false
 
   /*
     Gets the token of the user
@@ -85,5 +85,12 @@ class _Authentication {
 }
 
 /* Singleton for authentication object */
-const AuthenticationObject = new _Authentication();
-export const Authentication = AuthenticationObject;
+let instance;
+export const Authentication = {
+  getInstance: () => {
+    if (!instance) {
+      instance = new _Authentication();
+    }
+    return instance
+  }
+};

@@ -3,6 +3,7 @@ import '../styles/containers/login.scss';
 import { withRouter } from 'react-router-dom';
 import { Authentication } from '../util';
 
+const auth = Authentication.getInstance();
 class _Login extends Component {
 
   constructor(props) {
@@ -16,13 +17,6 @@ class _Login extends Component {
         text: '',
         valid: null
       }
-    }
-  }
-
-  componentOnMount() {
-    const search = this.getQuery(window.location.search);
-    if (search.redirect) {
-      this.props.history.push(search.redirect);
     }
   }
 
@@ -41,7 +35,7 @@ class _Login extends Component {
     el.preventDefault();
     const { username, password } = this.state; 
     if (username.valid === true && password.valid === true){
-      const token = Authentication.login(username.text, password.text);
+      const token = auth.login(username.text, password.text);
       if (token) {
         const search = this.getQuery(window.location.search);
         if (search.redirect) {
@@ -59,10 +53,10 @@ class _Login extends Component {
     let valid = null;
     switch(name) {
       case "username":
-        valid = Authentication.isValidUsername(text);
+        valid = auth.isValidUsername(text);
         break;
       case "password":
-        valid = Authentication.isValidPassForUser(text);
+        valid = auth.isValidPassForUser(text);
         break;
       default:
         break;

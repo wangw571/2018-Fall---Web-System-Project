@@ -4,6 +4,7 @@ import { DASHBOARD_NAV } from '../../values';
 import { Authentication } from '../../util';
 import '../../styles/components/dashboard/nav.scss';
 
+const auth = Authentication.getInstance();
 export class Nav extends Component {
   render() {
     const { active } = this.props;
@@ -22,7 +23,7 @@ export class Nav extends Component {
           )
         }
         <li className="nav__item nav__item--logout">
-          <Link to="/" className="nav__link" onClick={Authentication.logout}>
+          <Link to="/" className="nav__link" onClick={auth.logout}>
             <i className="nav__icon fas fa-power-off" />Logout
           </Link>
         </li>
