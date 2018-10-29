@@ -6,8 +6,7 @@ matrix:
       before_install:
         - cd ./Front-end
       cache:
-        directories:
-          - Front-end/node_modules
+        - npm
       install:
         - npm ci
       script:
@@ -15,12 +14,17 @@ matrix:
     - language: python
       python:
         - "3.6"
+      cache:
+        - pip
       before_install:
         - cd ./Back-end
       install:
         - pip install django --quiet
       script:
         - python manage.py test
+      after_success:
+        - cd ..
+        - git subtree push --prefix Back-end origin server
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
