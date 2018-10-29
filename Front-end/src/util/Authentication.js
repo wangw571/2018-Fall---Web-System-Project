@@ -1,7 +1,6 @@
 // Private variables
 let _token = null;
 let _username = null;
-let _potentialUser = null;
 
 class _Authentication {
 
@@ -22,13 +21,14 @@ class _Authentication {
     @params email and password of user
     @returns the token on sucess, an error otherwise
   */
-  login = (email, password) => {
-    if (email === "bob" && password === "bob") {
+  login = (username, password) => {
+    if (username === "bob" && password === "bob") {
       // TODO: Get the token ffrom backend
       const token = {
         token: "sadsadsadsadsa",
         expires: new Date()
       };
+      this._username = username;
       localStorage.setItem("token", JSON.stringify(this._token));
       return token
     }
@@ -44,17 +44,17 @@ class _Authentication {
   isValidUsername = (username) => {
     // dummy username
     if (username === "bob") {
-      _potentialUser = username;
+      this._username = username;
       return true;
     } else {
-      _potentialUser = ""
+      this.username = ""
       return false;
     }
   }
 
   isValidPassForUser = (password) => {
     // dummy username and password
-    if (_potentialUser === "bob" && password === "bob"){
+    if (username === "bob" && password === "bob"){
       return true;
     } else {
       return false;
@@ -66,6 +66,7 @@ class _Authentication {
   */
   logout = () => {
     localStorage.removeItem("token");
+    username = "";
     _token = null;
   }
 

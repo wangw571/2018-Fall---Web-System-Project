@@ -3,14 +3,44 @@
 
 .profile {
     @include flex(column, center);
-    width: 100%;
-
+        width: 100%;
+        background-color: antiquewhite;
     &__form {
-        @include flex(column, center);
+        @include flex(column, center, stretch);
         box-sizing: border-box;
-        background-color: red;
+        box-shadow: 10px 10px 5px rgb(136, 155, 120);
+        border-radius: 20px;
+        background-color: rgb(195, 216, 177);
+        max-width: 440px;
+        height: 250px;
+        padding-right: 20px;
+        padding-left: 20px;
+        width: 100%;
     }
     &__organization-info {
-
+        background-color: aqua;
+        height: 30 px;
+        width: 30px;
+        padding-bottom: 20px;
+    }
+    &__button-add-account {
+        height: 40px;
+        border-radius: 15px;
+        color: $logo-color;
+        background: rgb(182, 201, 167);
+        border: 2.5px solid $logo-color;
+        font-size: 15px;
+        font-weight: 500;
+        width: 100px;
+        align-self: flex-end;
+        
+        &:hover {
+            background-color: rgb(154, 170, 142);
+        }
+        &:active {
+            background-color: rgb(134, 148, 124);
+            box-shadow: 0 5px #666;
+            transform: translateY(2px);
+        }
     }
 }
