@@ -3,6 +3,7 @@
 
 .nav {
   width: 220px;
+  flex-shrink: 0;
   background-color: white;
 
   &__body {
@@ -48,8 +49,5 @@
   }
   &__footer {
     margin-top: auto;
-  }
-  &__logout {
-
   }
 }

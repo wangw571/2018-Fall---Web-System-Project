@@ -1,4 +1,5 @@
 # Python
 .pyc
 .json
-backend/__pycache__
+*/__pycache__/*
+*/Front-end/*
