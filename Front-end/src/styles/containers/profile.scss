@@ -4,42 +4,71 @@
 .profile {
     @include flex(column, center);
         width: 100%;
-        background-color: antiquewhite;
+        background-color: rgb(216, 216, 216);
+        padding-bottom: 20px;
     &__form {
-        @include flex(column, center, stretch);
+        @include flex(row, center, stretch);
         box-sizing: border-box;
-        box-shadow: 10px 10px 5px rgb(136, 155, 120);
-        border-radius: 20px;
-        background-color: rgb(195, 216, 177);
-        max-width: 440px;
-        height: 250px;
-        padding-right: 20px;
-        padding-left: 20px;
+        background-color: rgb(199, 113, 113);
+        max-width: 640px;
+        height: 450px;
         width: 100%;
+        padding: 20px 60px;
     }
     &__organization-info {
-        background-color: aqua;
-        height: 30 px;
-        width: 30px;
+        @include flex(center, column);
+        background-color: rgb(247, 248, 247);
+        box-shadow: 5px 5px 5px rgb(136, 155, 120);
         padding-bottom: 20px;
+        width: 100%;
+        height: 90%;
+        border-radius: 10px;
+    }
+
+    &__button-change-pass {
+        height: 40px;
+        border-radius: 999px;
+        color: $logo-color;
+        background: rgb(221, 223, 220);;
+        border: 1.5px solid $logo-color;
+        font-size: 15px;
+        font-weight: 500;
+        width: 40px;
+        
+        &:hover {
+            background-color: rgb(154, 170, 142);
+        }
+        &:active {
+            background-color: rgb(157, 158, 156);
+            box-shadow: 0 2px #666;
+            transform: translateY(2px);
+        }
+    }    
+    
+    &__icon {
+        @include flex(center);
+        color: $logo-color;
+        max-width: 50px;
+        max-height: 50px;
+        font-size: 0.9rem;
     }
     &__button-add-account {
         height: 40px;
         border-radius: 15px;
-        color: $logo-color;
-        background: rgb(182, 201, 167);
-        border: 2.5px solid $logo-color;
+        color: rgb(155, 155, 155);
+        background: rgb(221, 223, 220);
+        border: 1.5px solid rgb(127, 139, 117);
         font-size: 15px;
         font-weight: 500;
         width: 100px;
         align-self: flex-end;
         
         &:hover {
-            background-color: rgb(154, 170, 142);
+            background-color:  rgb(185, 187, 184);
         }
         &:active {
-            background-color: rgb(134, 148, 124);
-            box-shadow: 0 5px #666;
+            background-color: rgb(157, 158, 156);
+            box-shadow: 0 2spx #666;
             transform: translateY(2px);
         }
     }

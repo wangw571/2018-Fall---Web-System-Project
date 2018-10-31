@@ -54,7 +54,7 @@ class _Authentication {
 
   isValidPassForUser = (password) => {
     // dummy username and password
-    if (username === "bob" && password === "bob"){
+    if (_username === "bob" && password === "bob"){
       return true;
     } else {
       return false;
@@ -66,7 +66,7 @@ class _Authentication {
   */
   logout = () => {
     localStorage.removeItem("token");
-    username = "";
+    _username = "";
     _token = null;
   }
 
