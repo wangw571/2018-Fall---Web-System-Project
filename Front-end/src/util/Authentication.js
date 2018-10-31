@@ -10,7 +10,6 @@ class _Authentication {
   */
   constructor() {
     const local = localStorage.getItem("token");
-    console.log(local);
     if (local) {
       _token = local;
     }

@@ -1,3 +1,4 @@
+
 import { Profile, Report, Upload } from './pages';
 import { AddAccount } from './pages/AddAccount';
 
@@ -8,6 +9,3 @@ export const DASHBOARD_NAV = [
   { path: "/app/addAccount", text: "Account", icon: "user-circle", route: AddAccount }
 ]
 
-//export const TEQ_ORGANIZATION = "TEQ";
-
-//export const NORMAL_ORGANIZATION = "NORMAL_ORGANIZATION";
