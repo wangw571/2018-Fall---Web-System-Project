@@ -17,7 +17,6 @@ def run_query(db, query, args=None, commit=False):
     cur.close()
     if(commit):
         con.commit()
-        print('committrue')
     con.close()
     return data
 

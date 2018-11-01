@@ -18,20 +18,21 @@ def AccountRequestDistribution(request : HttpRequest) -> JsonResponse:
     if request.method == "POST":
         body = request.POST.dict()
         pathh = request.path
-        elif pathh == 'register':
+        print(pathh)
+        if pathh == '/register':
             return registerAccount(body["username"], body["password"], body["level"])
-        elif pathh == 'editAccount':
+        elif pathh == '/editAccount':
             username = getUserNameByToken(request)
             return editAccount(username, body["targetUser"], body["newPassword"], body["newLevel"])
-        elif pathh == 'deleteAccount':
+        elif pathh == '/deleteAccount':
             username = getUserNameByToken(request)
             return deleteAccount(username, body["usernameToBeDeleted"],)
-        elif pathh == 'login':
+        elif pathh == '/login':
             return login(body["username"], body["password"])
-        elif pathh == 'existanceCheck':
+        elif pathh == '/existanceCheck':
             return existanceCheck(body["username"])
     else:
-        return JsonResponse({"error": "Method Incorrect"})
+        return JsonResponse({"error": "Method Incorrect"}, status = 400)
 
 
 
@@ -52,9 +53,9 @@ def registerAccount(username:str, password:str, level:str) -> JsonResponse:
             (str(username), hashCoding(password), str(level)),
             commit=True,
         )
-        return JsonResponse({"success": "Creation successful"})
+        return JsonResponse({"success": "Creation successful"},status = 201)
     # Existed
-    return JsonResponse({"error": "Account Already Exist"})
+    return JsonResponse({"error": "Account Already Exist"},status = 409)
 
 
 def editAccount(username:str, targetUser:str, newPassword:str, newLevel:int) -> JsonResponse:
@@ -75,7 +76,7 @@ def editAccount(username:str, targetUser:str, newPassword:str, newLevel:int) -> 
                     )
                 else:
                     # Access denied
-                    return JsonResponse({"error": "level edition access denied"})
+                    return JsonResponse({"error": "level edition access denied"},status = 401)
             # update account password if needed
             if newPassword != "":
                 sqlite3Operations.run_query(
@@ -84,11 +85,11 @@ def editAccount(username:str, targetUser:str, newPassword:str, newLevel:int) -> 
                     (hashCoding(newPassword), targetUser),
                     commit=True,
                 )
-            return JsonResponse({"success": "edition successful"})
+            return JsonResponse({"success": "edition successful"},status = 202)
         # Access denied
-        return JsonResponse({"error": "Account Level Oversized, edition denied"})
+        return JsonResponse({"error": "Account Level Oversized, edition denied"},status = 401)
     # Token Incorrect
-    return JsonResponse({"error": "Token Invalid"})
+    return JsonResponse({"error": "Token Invalid"},status = 401)
 
 
 def deleteAccount(username:str, userToBeDeleted:str) -> JsonResponse:
@@ -105,11 +106,11 @@ def deleteAccount(username:str, userToBeDeleted:str) -> JsonResponse:
                 "DELETE FROM ACCOUNTS WHERE Username = ?",
                 (userToBeDeleted, ), commit=True,
             )
-            return JsonResponse({"success": "deletion successful"})
+            return JsonResponse({"success": "deletion successful"},status = 202)
         # Permission denied
-        return JsonResponse({"error": "Account Level Oversized, deletion denied"})
+        return JsonResponse({"error": "Account Level Oversized, deletion denied"},status = 401)
     # Token Incorrect
-    return JsonResponse({"error": "Token Invalid"})
+    return JsonResponse({"error": "Token Invalid"},status = 401)
 
 
 def login(username:str, password:str) -> JsonResponse:
@@ -129,9 +130,9 @@ def login(username:str, password:str) -> JsonResponse:
     ):
         token = hashCoding(username+password)
         TokenStorage[token] = username
-        return JsonResponse({"success": "account correct", "token": token})
+        return JsonResponse({"success": "account correct", "token": token},status = 200)
     # failed on verifyin:
-    return JsonResponse({"error": "Incorrect Password Or Username"})
+    return JsonResponse({"error": "Incorrect Password Or Username"},status = 401)
 
 def existanceCheck(username:str) ->JsonResponse:
     # preventing exception, create the table
@@ -143,7 +144,7 @@ def existanceCheck(username:str) ->JsonResponse:
         (username,),
     )
     # existance check
-    return JsonResponse({"existance": len(existenceSelection) != 0})
+    return JsonResponse({"existance": len(existenceSelection) != 0},status = 200)
 
 def hashCoding(toBeCoded: str) -> str:
     h = hashlib.sha256()
