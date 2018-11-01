@@ -15,7 +15,10 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -26,7 +29,8 @@ SECRET_KEY = '9pml%&%so0z4g9wg%(7l%&k0bp&krdc#m3)t=(y5z85(=yr3g!'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'cscc01f18.herokuapp.com'
+    'cscc01f18.herokuapp.com',
+    '127.0.0.1'
 ]
 
 
@@ -39,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'DataFetching',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -79,6 +85,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'client_data_online': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'uwgrunsx',
+        'USER': 'uwgrunsx',
+        'PASSWORD': 'pqrXrdhuKE1w2jauWX9vgli5wu2XRs73',
+        'HOST': 'pellefant.db.elephantsql.com',
+        'PORT': '5432'
     }
 }
 
