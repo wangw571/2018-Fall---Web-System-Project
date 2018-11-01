@@ -1,4 +1,6 @@
 # Python
 .pyc
 .json
-.test.py
+*.test.py
+*/__pycache__/*
+*/Front-end/*

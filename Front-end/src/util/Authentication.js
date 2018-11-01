@@ -1,5 +1,7 @@
 // Private variables
 let _token = null;
+let _username = null;
+let _potentialUser = null;
 
 class _Authentication {
 
@@ -11,7 +13,6 @@ class _Authentication {
     const local = localStorage.getItem("token");
     if (local) {
       _token = local;
-      this.isAuthenicated();
     }
   }
 
@@ -21,17 +22,44 @@ class _Authentication {
     @returns the token on sucess, an error otherwise
   */
   login = (email, password) => {
-    if (email === "example@example" && password === "example") {
-      _token = {
+    if (email === "bob" && password === "bob") {
+      // TODO: Get the token ffrom backend
+      const token = {
         token: "sadsadsadsadsa",
-        expires: "0421421"
+        expires: new Date()
       };
-      localStorage.setItem("token", JSON.stringify(_token));
-      return _token
+      localStorage.setItem("token", JSON.stringify(this._token));
+      return token
     }
-    return { error: "NO TOKEN 4 U" }
+    return null
   }
 
+  /*
+    Checks if the username that the user enters at login
+    exists in the database.
+    @params username
+    @returns True if exists, false otherwise
+  */
+  isValidUsername = (username) => {
+    // dummy username
+    if (username === "bob") {
+      _potentialUser = username;
+      return true;
+    } else {
+      _potentialUser = ""
+      return false;
+    }
+  }
+
+  isValidPassForUser = (password) => {
+    // dummy username and password
+    if (_potentialUser === "bob" && password === "bob"){
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
   /*
     Logs the user out
   */
@@ -42,18 +70,9 @@ class _Authentication {
 
   /*
     Checkes the Authentication of the user
-    @params optional callback functions on authentication pass or fail
     @returns true if authenticated, false otherwise
   */
-  isAuthenticated = (pass, fail) => {
-    if (_token) {
-      // TODO check auth
-      if (pass) { pass() }
-      return true
-    }
-    if (fail) { fail() }
-    return false
-  }
+  isAuthenticated = () => _token? true: false
 
   /*
     Gets the token of the user
@@ -61,8 +80,16 @@ class _Authentication {
   */
   getToken = () => _token
 
+  getCurrentUsername = () => _username
 }
 
 /* Singleton for authentication object */
-const AuthenticationObject = new _Authentication();
-export const Authentication = AuthenticationObject;
+let instance;
+export const Authentication = {
+  getInstance: () => {
+    if (!instance) {
+      instance = new _Authentication();
+    }
+    return instance
+  }
+};
