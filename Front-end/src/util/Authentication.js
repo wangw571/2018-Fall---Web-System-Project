@@ -46,14 +46,14 @@ class _Authentication {
       this._username = username;
       return true;
     } else {
-      this.username = ""
+      this._username = ""
       return false;
     }
   }
 
   isValidPassForUser = (password) => {
     // dummy username and password
-    if (_username === "bob" && password === "bob"){
+    if (this._username === "bob" && password === "bob"){
       return true;
     } else {
       return false;

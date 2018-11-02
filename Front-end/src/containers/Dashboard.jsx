@@ -9,6 +9,7 @@ class _Dashboard extends Component {
 
   render() {
     const active = window.location.pathname.replace(process.env.PUBLIC_URL, "");
+    console.log(DASHBOARD_NAV);
     return <Fragment>
       <Nav active={active}/>
       <Switch>
