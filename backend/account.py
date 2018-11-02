@@ -1,6 +1,5 @@
 import hashlib
 import json
-import re
 
 from django.http import JsonResponse
 from django.http import HttpRequest
@@ -9,136 +8,143 @@ from . import sqlite3Operations
 
 accountDatabaseName = "account.db"
 
+global TokenStorage
 TokenStorage = {}
 
 """Note that passwords will be stored by SHA256"""
+"""for account level, 0 for most powerful, and number increase cause power decrease"""
 
-
-def registerAccount(request : HttpRequest) -> JsonResponse:
+def AccountRequestDistribution(request : HttpRequest) -> JsonResponse:
     if request.method == "POST":
-        # get data
         body = request.POST.dict()
-        username = body["username"]
-        password = body["password"]
-        level = body["level"]
-        # 0 for most powerful, and number increase cause power decrease
-        # storage
-        createAccountsTable(accountDatabaseName)
-        # existence check
-        existenceSelection = sqlite3Operations.run_query(
+        pathh = request.path
+        print(pathh)
+        if pathh == '/register':
+            return registerAccount(body["username"], body["password"], body["level"])
+        elif pathh == '/editAccount':
+            username = getUserNameByToken(request)
+            return editAccount(username, body["targetUser"], body["newPassword"], body["newLevel"])
+        elif pathh == '/deleteAccount':
+            username = getUserNameByToken(request)
+            return deleteAccount(username, body["usernameToBeDeleted"],)
+        elif pathh == '/login':
+            return login(body["username"], body["password"])
+        elif pathh == '/existanceCheck':
+            return existanceCheck(body["username"])
+    else:
+        return JsonResponse({"error": "Method Incorrect"}, status = 400)
+
+
+
+def registerAccount(username:str, password:str, level:str) -> JsonResponse:
+    # storage
+    createAccountsTable(accountDatabaseName)
+    # existence check
+    existenceSelection = sqlite3Operations.run_query(
+        accountDatabaseName,
+        "SELECT PasswordHashCode FROM ACCOUNTS WHERE Username = ?",
+        (str(username),),
+    )
+    # Not existed? insert the new one
+    if (len(existenceSelection) == 0):
+        sqlite3Operations.run_query(
             accountDatabaseName,
-            "SELECT PasswordHashCode FROM ACCOUNTS WHERE Username = ?",
-            (str(username),),
+            "INSERT INTO ACCOUNTS (Username,PasswordHashCode,Level) VALUES (?, ?, ?)",
+            (str(username), hashCoding(password), str(level)),
+            commit=True,
         )
-        # Not existed? insert the new one
-        if (len(existenceSelection) == 0):
-            sqlite3Operations.run_query(
-                accountDatabaseName,
-                "INSERT INTO ACCOUNTS (Username,PasswordHashCode,Level) VALUES (?, ?, ?)",
-                (str(username), hashCoding(password), str(level)),
-                commit=True,
-            )
-            return JsonResponse({"success": "Creation successful"})
-        # Existed
-        return JsonResponse({"error": "Account Already Exist"})
-    else:
-        return JsonResponse({"error": "Method Incorrect"})
+        return JsonResponse({"success": "Creation successful"},status = 201)
+    # Existed
+    return JsonResponse({"error": "Account Already Exist"},status = 409)
 
 
-def editAccount(request:HttpRequest) -> JsonResponse:
-    if request.method == "POST":
-        # get data
-        username = getUserNameByToken(request)
-        # Token verification
-        if(username != None):
-            body = request.POST.dict()
-            newPassword = body["newPassword"]
-            newLevel = body["newLevel"]  # leave blank when no edition is needed
-            # preventing exception, create the table
-            createAccountsTable(accountDatabaseName)
-            # update
-            sqlite3Operations.run_query(
-                accountDatabaseName,
-                "UPDATE ACCOUNTS set PasswordHashCode = ? WHERE Username=?",
-                (hashCoding(newPassword), username),
-                commit=True,
-            )
-            # update account level if needed
-            if newLevel != "":
-                sqlite3Operations.run_query(
-                    accountDatabaseName,
-                    "UPDATE ACCOUNTS set Level = ? WHERE Username=?",
-                    (int(newLevel), username),
-                    commit=True,
-                )
-            return JsonResponse({"success": "edition successful"})
-        # Token Incorrect
-        return JsonResponse({"error": "Token Invalid"})
-    else:
-        return JsonResponse({"error": "Method Incorrect"})
-
-
-def deleteAccount(request:HttpRequest) -> JsonResponse:
-    if request.method == "POST":
-        # get data
-        username = getUserNameByToken(request)
-        # Token verification
-        if(username != None):
-            body = request.POST.dict()
-            userToBeDeleted = body["usernameToBeDeleted"]
-            # storage
-            # preventing exception, create the table
-            createAccountsTable(accountDatabaseName)
-            # user level check
-            existenceSelection = sqlite3Operations.run_query(
-                accountDatabaseName,
-                "SELECT Level FROM ACCOUNTS WHERE Username = ?",
-                (username,),
-            )
-            if existenceSelection[0][0] <= 2:
-                # confirmed, deletion initiated
-                sqlite3Operations.run_query(
-                    accountDatabaseName,
-                    "DELETE FROM ACCOUNTS WHERE Username = ?",
-                    (userToBeDeleted, ), commit=True,
-                )
-                return JsonResponse({"success": "deletion successful"})
-            # Permission denied
-            return JsonResponse({"error": "Account Level Oversized, deletion denied"})
-        # Token Incorrect
-        return JsonResponse({"error": "Token Invalid"})
-    else:
-        return JsonResponse({"error": "Method Incorrect"})
-
-
-def login(request:HttpRequest) -> JsonResponse:
-    if request.method == "POST":
-        # get data
-        body = request.POST.dict()
-        username = body["username"]
-        password = body["password"]
+def editAccount(username:str, targetUser:str, newPassword:str, newLevel:int) -> JsonResponse:
+    # Token verification
+    if(username != None):
+        targetUser = username if targetUser == "" else targetUser
         # preventing exception, create the table
         createAccountsTable(accountDatabaseName)
-        # existence check
-        existenceSelection = sqlite3Operations.run_query(
-            accountDatabaseName,
-            "SELECT PasswordHashCode FROM ACCOUNTS WHERE Username = ?",
-            (username,),
-        )
-        # verify
-        hashCodedPassword = hashCoding(password)
-        if (
-            len(existenceSelection) > 0
-            and existenceSelection[0][0] == hashCodedPassword
-        ):
-            token = hashCoding(username+password)
-            TokenStorage[username] = token
-            return JsonResponse({"success": "account correct", "token": token})
-        # failed on verifyin:
-        return JsonResponse({"error": "Incorrect Password Or Username"})
-    else:
-        return JsonResponse({"error": "Method Incorrect"})
+        if(getUserLevel(username) <= 2 or (targetUser == "")): # either user has permission or user is editing self
+            # update account level if needed
+            if newLevel != "":
+                if getUserLevel(username) <= 2:
+                    sqlite3Operations.run_query(
+                        accountDatabaseName,
+                        "UPDATE ACCOUNTS set Level = ? WHERE Username=?",
+                        (int(newLevel), targetUser),
+                        commit=True,
+                    )
+                else:
+                    # Access denied
+                    return JsonResponse({"error": "level edition access denied"},status = 401)
+            # update account password if needed
+            if newPassword != "":
+                sqlite3Operations.run_query(
+                    accountDatabaseName,
+                    "UPDATE ACCOUNTS set PasswordHashCode = ? WHERE Username=?",
+                    (hashCoding(newPassword), targetUser),
+                    commit=True,
+                )
+            return JsonResponse({"success": "edition successful"},status = 202)
+        # Access denied
+        return JsonResponse({"error": "Account Level Oversized, edition denied"},status = 401)
+    # Token Incorrect
+    return JsonResponse({"error": "Token Invalid"},status = 401)
 
+
+def deleteAccount(username:str, userToBeDeleted:str) -> JsonResponse:
+    # Token verification
+    if(username != None):
+        # storage
+        # preventing exception, create the table
+        createAccountsTable(accountDatabaseName)
+        # user level check
+        if getUserLevel(username) <= 2:
+            # confirmed, deletion initiated
+            sqlite3Operations.run_query(
+                accountDatabaseName,
+                "DELETE FROM ACCOUNTS WHERE Username = ?",
+                (userToBeDeleted, ), commit=True,
+            )
+            return JsonResponse({"success": "deletion successful"},status = 202)
+        # Permission denied
+        return JsonResponse({"error": "Account Level Oversized, deletion denied"},status = 401)
+    # Token Incorrect
+    return JsonResponse({"error": "Token Invalid"},status = 401)
+
+
+def login(username:str, password:str) -> JsonResponse:
+    # preventing exception, create the table
+    createAccountsTable(accountDatabaseName)
+    # existence check
+    existenceSelection = sqlite3Operations.run_query(
+        accountDatabaseName,
+        "SELECT PasswordHashCode FROM ACCOUNTS WHERE Username = ?",
+        (username,),
+    )
+    # verify
+    hashCodedPassword = hashCoding(password)
+    if (
+        len(existenceSelection) > 0
+        and existenceSelection[0][0] == hashCodedPassword
+    ):
+        token = hashCoding(username+password)
+        TokenStorage[token] = username
+        return JsonResponse({"success": "account correct", "token": token},status = 200)
+    # failed on verifyin:
+    return JsonResponse({"error": "Incorrect Password Or Username"},status = 401)
+
+def existanceCheck(username:str) ->JsonResponse:
+    # preventing exception, create the table
+    createAccountsTable(accountDatabaseName)
+    # existence check
+    existenceSelection = sqlite3Operations.run_query(
+        accountDatabaseName,
+        "SELECT PasswordHashCode FROM ACCOUNTS WHERE Username = ?",
+        (username,),
+    )
+    # existance check
+    return JsonResponse({"existance": len(existenceSelection) != 0},status = 200)
 
 def hashCoding(toBeCoded: str) -> str:
     h = hashlib.sha256()
@@ -159,4 +165,14 @@ def createAccountsTable(db:str):
 
 
 def getUserNameByToken(request:HttpRequest) -> str:
-    return TokenStorage.get(request.META.get("token"))
+    global TokenStorage
+    tokeb = str(request.META.get("HTTP_TOKEN"))
+    a = TokenStorage.get(tokeb)
+    return a
+
+def getUserLevel(username: str) -> int:
+    return sqlite3Operations.run_query(
+                accountDatabaseName,
+                "SELECT Level FROM ACCOUNTS WHERE Username = ?",
+                (username,),
+            )[0][0]
