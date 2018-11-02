@@ -29,8 +29,8 @@ class _OrganizationInfo {
 
   }
 
-  addOrganization = (username, email, name, password) => {
-    test.push({username: username, email: email, name: name, password: password});
+  addOrganization = (_username, _email, _name, _password) => {
+    test.push({username: _username, email: _email, name: _name, password: _password});
 
   }
   removeOrganization = (key) => {
@@ -42,6 +42,10 @@ class _OrganizationInfo {
       // TODO: get the organization name from the backend
       auth.getToken();
       return test[key].name;
+  }
+
+  getOrganizationPassword = (key) => {
+    return test[key].password;
   }
 
   getOrganizationType = () => {

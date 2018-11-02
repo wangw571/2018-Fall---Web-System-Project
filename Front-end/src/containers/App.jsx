@@ -4,7 +4,6 @@ import { NotFound } from '../pages';
 import { Dashboard, Login } from '.';
 import { Authentication } from '../util';
 import '../styles/containers/app.scss';
-import { AddAccount } from '../pages/AddAccount';
 
 const auth = Authentication.getInstance();
 class _App extends Component {
@@ -26,7 +25,6 @@ class _App extends Component {
       <Route exact path="/" component={Login}/>
       <Route path="/app" component={Dashboard}/>
       <Route path="/" component={NotFound}/>
-      <Route path="/app/addAccount" compenent={AddAccount}/>
     </Switch>
   }
 };
