@@ -22,10 +22,12 @@
     ##### JsonIn - Header
         token
     ##### JsonIn - Body
-        newPassword
+        targetUser // Leave blank if change is on self
+        newPassword // Leave blank if change is not needed
         newLevel // Leave blank if change is not needed
     ##### JsonOut
         {"success": "edition successful"}
+        {"error": "access denied"}
         {"error": "Token Invalid"}
         {"error": "Method Incorrect"}
 
@@ -41,14 +43,21 @@
         {"error": "Method Incorrect"}
 
  - login
-    ##### JsonIn
+    ##### JsonIn - Body
         username
         password
     ##### JsonOut
-        {"success": "account correct", "token": sometoken}
+        {"success": "account correct", "token": sometoken} // Token will be a hash of SHA256
         {"error": "Incorrect Password Or Username"}
         {"error": "Token Invalid"}
         {"error": "Method Incorrect"}
+
+ - existanceCheck
+    ##### JsonIn - Body
+        username
+    ##### JsonOut
+        {"existance": True}
+        {"existance": False}
         
 ## Updates
   2018/10/24
