@@ -1,7 +1,5 @@
 # Python
 .pyc
 .json
-*.test.py
 */__pycache__/*
 */Front-end/*
-.test.py
