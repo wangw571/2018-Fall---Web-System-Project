@@ -3,9 +3,6 @@
 
 .upload {
   $self: &;
-  width: 100%;
-  background-color: rgba(0,0,0,0.02);
-  @include flex;
   &__item-status {
     &--missing, &--error {
       color: #dc3545;
@@ -35,11 +32,6 @@
   }
   &__item-text {
     overflow: hidden;
-  }
-  &__page {
-    padding: 20px;
-    background-color: white;
-    flex-grow: 1;
   }
 
   &__modal {
@@ -91,13 +83,15 @@
     @include flex(center);
     transition: background-color $normal-speed $normal-ease;
     &:disabled {
-      background-color: rgba(0,0,0,0.3);
+      background-color: rgba(0,0,0,0.2);
     }
 
     &--submit {
       background-color: #1eca60;
       &:hover, &:active {
-        background-color: $logo-color;
+        &::not(:disabled) {
+          background-color: $logo-color;
+        }
       }
     }
 

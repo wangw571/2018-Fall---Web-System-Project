@@ -1,0 +1,17 @@
+@import '../mixins';
+@import '../variables';
+
+.query {
+  &__list {
+    @include flex(column);
+    & .list--query {
+      flex-grow: 1;
+      height: auto;
+    }
+    &-button {
+      border: none;
+      background: white;
+      padding: 15px;
+    }
+  }
+}

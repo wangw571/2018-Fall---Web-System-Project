@@ -61,7 +61,7 @@ export class Upload extends Component {
     el.preventDefault();
     const body = new FormData();
     body.append("file", this.state.file);
-    fetch("https://fpunny.com", {
+    fetch("http://localhost:3001/submit", {
       method: "POST",
       body
     });
@@ -102,7 +102,7 @@ export class Upload extends Component {
   render() {
     const { items, active, show, file } = this.state;
     return <Page className='upload'>
-      <div className="upload__container">
+      <div className="upload__list">
         <List block="upload" onClick={this.click} active={active} items={items} map={this.itemMap}>
           <h3 className="upload__upload-header">Templates</h3>
         </List>
