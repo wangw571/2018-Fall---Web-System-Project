@@ -1,0 +1,27 @@
+@import '../../mixins';
+@import '../../variables';
+
+.list {
+  list-style-type: none;
+  font-size: 0.8rem;
+  padding: 12px;
+  height: 100%;
+  box-sizing: border-box;
+  width: 320px;
+  &__item {
+    margin-bottom: 10px;
+    border-radius: 6px;
+    padding: 20px;
+    cursor: pointer;
+    color: rgba(0,0,0,0.75);
+    transition: background-color $slow-speed $normal-ease;
+    &--header {
+      color: black;
+      pointer-events: none;
+      padding: 16px 20px 10px;
+    }
+    &--active, &:hover {
+      background-color: white;
+    }
+  }
+}

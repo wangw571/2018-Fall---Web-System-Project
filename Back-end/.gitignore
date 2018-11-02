@@ -1,4 +1,9 @@
 # Python
 .pyc
 .json
+<<<<<<< HEAD
+*/__pycache__/*
+*/Front-end/*
+=======
 .test.py
+>>>>>>> account-management-2

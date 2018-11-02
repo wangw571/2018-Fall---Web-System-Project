@@ -1,6 +1,5 @@
 export const DASHBOARD_NAV = [
-  { path: "/", text: "Home" },
-  { path: "/upload", text: "Upload" },
-  { path: "/reports", text: "View Reports" },
-  { path: "/me", text: "Profile" }
+  { path: "/app/upload", text: "Upload", icon: "paper-plane", Component: "Upload" },
+  { path: "/app/reports", text: "Reports", icon: "newspaper", Component: "Report" },
+  { path: "/app/me", text: "Profile", icon: "user-circle", Component: "Profile" }
 ]
