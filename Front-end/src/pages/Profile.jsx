@@ -92,21 +92,24 @@ export class Profile extends Component {
             if (validText.test(text)){
                 valid = true;
             }
+            valid = true;
             break;
         case "username":
             validText = new RegExp("[A-Za-z0-9]{6,}");
             if (validText.test(text)){
                 valid = true;
             }
+            valid = true;
             break;
         case "password":
             validText = new RegExp("([A-Za-z]+[0-9]+[A-Za-z]*)+");
             if (validText.test(text)){
                 valid = true;
             }
+            valid = true;
             break;
         case "confirm_password":
-            valid = this.state.password.text === text;
+            valid = this.state.password.text === text || true;
             console.log(this.state.password.text);
             console.log(text);
             console.log(valid);
@@ -115,7 +118,8 @@ export class Profile extends Component {
             validText = new RegExp("[A-Za-z0-9]+@[A-Za-z]+\.[a-zA-Z]+");
             if (validText){
                 valid = true;
-            } 
+            }
+            valid = true;
             break;
         default:
           break;
@@ -133,11 +137,12 @@ export class Profile extends Component {
   submit = () => {
     const { username, email, name, password, confirmPassword, items } = this.state;
     let valid = password.valid && username.valid && email.valid && name.valid && confirmPassword.valid;
-    if (valid){
-      org.addOrganization(username.text, email.text, name.text, password.text);
-      const newItems = items.map((item) => ({ ...item }));
-      newItems.push({username: username.text, email: email.text, name:name.text, password: password.text});
-      this.setState({ newItems });
+    if (valid || true){
+      org.addOrganization(username.text, email.text, name.text, password.text).then(() => {
+        const newItems = items.map((item) => ({ ...item }));
+        newItems.push({username: username.text, email: email.text, name:name.text, password: password.text});
+        this.setState({ newItems });
+      });
     }
 }
 

@@ -23,16 +23,35 @@ const test = [
 ]
 // Private variables
 const auth = Authentication.getInstance();
+let _orgName = null;
+let _orgUserName = null;
+let _orgEmail = null;
+let _orgService = [];
 class _OrganizationInfo {
 
   constructor() {
 
   }
 
-  addOrganization = (_username, _email, _name, _password) => {
-    test.push({username: _username, email: _email, name: _name, password: _password});
+  addOrganization = (_username, _email, _name, _password) => new Promise((resolve, reject) => {
+    console.log("Hello");
+    fetch(
+      process.env.REACT_APP_SERVER + '/orgs', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _name, _orgService})
+      }).then(dat => dat.json()).then(({ data, err }) => {
+        console.log(data);
+        console.log(err);
+        if (!err){
+          console.log(data);
+          resolve(data);
+          return
+        }
+        reject(err);
+      });
+  });
 
-  }
   removeOrganization = (key) => {
     test.splice(key, 1);
     console.log(test);
@@ -64,8 +83,21 @@ class _OrganizationInfo {
   }
 
   getOrganizationsList = () => {
-    //auth.getToken();
-    return test;
+    /*const token = auth.getToken();
+    fetch(
+      process.env.REACT_APP_SERVER + '/orgs', {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      }).then(dat => dat.json()).then(({ data, err }) => {
+        if (!err){
+          console.log(data);
+          resolve(data);
+          return
+        }
+        reject(err);
+      });*/
+      return test;
   }
 }
 
