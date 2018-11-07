@@ -7,9 +7,7 @@ import { List, Section } from '../components/dashboard';
 import { Modal } from '../components';
 
 const org = OrganizationInfo.getInstance();
-const auth = Authentication.getInstance();
 
-const MAX_SIZE = 120;
 export class Profile extends Component {
   constructor(props) {
     super(props);
