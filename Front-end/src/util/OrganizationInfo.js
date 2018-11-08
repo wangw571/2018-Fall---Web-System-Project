@@ -21,12 +21,37 @@ const test = [
     password: "pass1"
   }
 ]
+
+const templates  = [
+  {
+    name: "temp1"
+  },
+  {
+    name: "temp2"
+  }, 
+  {
+    name: "temp3"
+  }
+]
+
+const users = [
+  {
+    name: "user1"
+  },
+  {
+    name: "user2"
+  },
+  {
+    name: "user3"
+  }
+]
+
 // Private variables
 const auth = Authentication.getInstance();
 let _orgName = null;
 let _orgUserName = null;
 let _orgEmail = null;
-let _orgService = [];
+let _orgService = ["service1", "service2"];
 class _OrganizationInfo {
 
   constructor() {
@@ -38,7 +63,7 @@ class _OrganizationInfo {
     fetch(
       process.env.REACT_APP_SERVER + '/orgs', {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.token}` },
         body: JSON.stringify({ _name, _orgService})
       }).then(dat => dat.json()).then(({ data, err }) => {
         console.log(data);
@@ -82,12 +107,12 @@ class _OrganizationInfo {
     return test[key].username;
   }
 
-  getOrganizationsList = () => {
-    /*const token = auth.getToken();
+  /*getOrganizationsList = () => new Promise((resolve, reject) => {
+    const token = auth.getToken();
     fetch(
       process.env.REACT_APP_SERVER + '/orgs', {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.token}`},
         body: JSON.stringify({ token })
       }).then(dat => dat.json()).then(({ data, err }) => {
         if (!err){
@@ -96,8 +121,21 @@ class _OrganizationInfo {
           return
         }
         reject(err);
-      });*/
+      });
       return test;
+  });*/
+
+  getOrganizationsList = () => {
+    return test;
+  }
+
+  getTemplates = () => {
+    return templates;
+  }
+
+  getUsers = () => {
+    
+    return users;
   }
 }
 

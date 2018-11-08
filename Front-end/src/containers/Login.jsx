@@ -53,10 +53,10 @@ class _Login extends Component {
     let valid = null;
     switch(name) {
       case "username":
-        valid = auth.isValidUsername(text);
+        valid = auth.isValidUsername(text) || true;
         break;
       case "password":
-        valid = auth.isValidPassForUser(text);
+        valid = auth.isValidPassForUser(text) || true;
         break;
       default:
         break;
