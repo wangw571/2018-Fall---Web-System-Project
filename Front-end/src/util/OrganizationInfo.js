@@ -48,23 +48,19 @@ const users = [
 
 // Private variables
 const auth = Authentication.getInstance();
-let _orgName = null;
-let _orgUserName = null;
-let _orgEmail = null;
-let _orgService = ["service1", "service2"];
 class _OrganizationInfo {
 
   constructor() {
 
   }
 
-  addOrganization = (_username, _email, _name, _password) => new Promise((resolve, reject) => {
+  addOrganization = (_firstname, _lastname, _email, _name, _password) => new Promise((resolve, reject) => {
     console.log("Hello");
     fetch(
-      process.env.REACT_APP_SERVER + '/orgs', {
+      process.env.REACT_APP_SERVER + '/users', {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.token}` },
-        body: JSON.stringify({ _name, _orgService})
+        body: JSON.stringify({ _firstname, _lastname, _name, _email, _password})
       }).then(dat => dat.json()).then(({ data, err }) => {
         console.log(data);
         console.log(err);
@@ -118,7 +114,7 @@ class _OrganizationInfo {
         if (!err){
           console.log(data);
           resolve(data);
-          return
+          return data
         }
         reject(err);
       });

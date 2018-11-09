@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Page, App } from '../containers';
-import '../styles/containers/profile.scss';
+import '../styles/containers/addAccount.scss';
 import { Authentication} from '../util';
 import { OrganizationInfo } from '../util/OrganizationInfo';
 import { List, Section } from '../components/dashboard';
@@ -10,34 +10,35 @@ const org = OrganizationInfo.getInstance();
 const auth = Authentication.getInstance();
 
 const MAX_SIZE = 120;
-export class Profile extends Component {
+export class AddAccount extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: {
+      firstName: {
         text: '',
-        valid: true
+        valid: false
+      },
+      lastName: {
+        text: '',
+        valid: false
       },
       password: {
         text: '',
-        valid: true
+        valid: false
       },
-      hidden: org.getOrganizationType() === "TEQ1"? false: true,
-      items: org.getOrganizationsList(),
-      active: 0,
-      show: false,
       confirmPassword: {
         text: '',
-        valid: true
+        valid: false
       },
       email: {
           text: '',
-          valid: true
+          valid: false
       },
       name: {
           text: '',
-          valid: true
+          valid: false
       },
+      tempForm: 0,
       templates: org.getTemplates(),
       users: org.getUsers()
 
@@ -45,27 +46,6 @@ export class Profile extends Component {
   }
 
   componentDidMount() {
-    if (this.state.hidden == false){
-        this.setState({
-            items: org.getOrganizationsList(),
-        });
-    } else {
-        this.setState({
-            items: org.getUsers(),
-        });
-    }
-  }
-  setActive = active => this.setState({ active })
-  click = key => this.setState({ active: key })
-
-  itemMap = ({ username, email, name }) => {
-    return <Fragment>
-      <p className="profile__item-status">{name}</p>
-      <button className="profile__delete-org"
-      onClick={this.toggleModal}>
-        Remove
-      </button>
-    </Fragment>
   }
 
   toggleModal = state => this.setState(({show}) => ({
@@ -74,12 +54,6 @@ export class Profile extends Component {
 
   close = () => {
     this.toggleModal(false);
-  }
-
-  removeOrg = () => {
-    const active = this.state.active;
-    org.removeOrganization(active);
-    this.close();
   }
 
   validClass = ({ text, valid }) => (
@@ -134,19 +108,16 @@ export class Profile extends Component {
         text, valid
         }
     });
-    console.log(this.state.confirmPassword.text);
-    console.log(this.state.password.text);
-    console.log(this.state.username.text);
     }
 
   submit = el => {
     el.preventDefault();
-    const { username, email, name, password, confirmPassword, items } = this.state;
-    let valid = password.valid && username.valid && email.valid && name.valid && confirmPassword.valid;
+    const { firstName, lastName, email, name, password, confirmPassword, items } = this.state;
+    let valid = password.valid && firstName.valid && lastName.valid && email.valid && name.valid && confirmPassword.valid;
     if (valid || true){
-      org.addOrganization(username.text, email.text, name.text, password.text).then(() => {
+      org.addOrganization(firstName.text, lastName.text, email.text, name.text, password.text).then(() => {
         const newItems = items.map((item) => ({ ...item }));
-        newItems.push({username: username.text, email: email.text, name:name.text, password: password.text});
+        newItems.push({firstName: firstName.text, lastName: lastName.text, email: email.text, name:name.text, password: password.text});
         this.setState({ newItems });
       }).catch(err => {
         console.log(err);
@@ -155,41 +126,46 @@ export class Profile extends Component {
 }
 
   render() {
-    const { items, active, show } = this.state;
-    const { username, password, confirmPassword, email, name } = this.state;
+    const { firstName, lastName, password, confirmPassword, email, name } = this.state;
       return (
         <Page className='profile'>
-          <div className="profile__container">
-            <List block="profile" onClick={this.click} active={active} items={items} map={this.itemMap}>
-                <div className="profile__list-header">
-                Organizations
-                </div>
-            </List>
-          </div>
           <div className="profile__page">
             <form className="profile__form" onSubmit={this.submit}>
               <div className="profile__input-title">
-                  Name for the organization
+                  Organization
               </div>
               <div className={`profile__input-group${this.validClass(name)}`}>
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
                   name="name"
-                  placeholder={org.getOrganizationName(this.state.active)}
+                  placeholder="Name"
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
               <div className="profile__input-title">
-                  Username for the organization
+                  First Name
               </div>
-              <div className={`profile__input-group${this.validClass(username)}`}>
+              <div className={`profile__input-group${this.validClass(firstName)}`}>
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
-                  name="username"
-                  placeholder={org.getOrganizationUsername(this.state.active)}
+                  name="firstName"
+                  placeholder="first name"
+                  onChange={this.update}
+                  className="profile__input"
+                  />
+              </div>
+              <div className="profile__input-title">
+                  Last Name
+              </div>
+              <div className={`profile__input-group${this.validClass(lastName)}`}>
+                  <i className="fas fa-user profile__icon"></i>
+                  <input
+                  type="text"
+                  name="lastName"
+                  placeholder="last name"
                   onChange={this.update}
                   className="profile__input"
                   />
@@ -202,21 +178,11 @@ export class Profile extends Component {
                   <input
                   type="text"
                   name="email"
-                  placeholder={org.getOrganizationEmail(this.state.active)}
+                  placeholder="Email"
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
-              <select itemMap={this.state.templates} onChange={this.options}>
-                {this.state.templates.map((e, key) => {
-                return <option key={key}>{e.name}</option>
-                 })}
-              </select>
-              <select itemMap={this.state.users} onChange={this.options}>
-                {this.state.users.map((e, key) => {
-                return <option key={key}>{e.name}</option>
-                 })}
-              </select>
               <div className="profile__input-title">
                   Password
               </div>
@@ -249,17 +215,6 @@ export class Profile extends Component {
               </button>
             </form>
           </div>
-          <Modal show={show} className="upload__modal" close={this.close}>
-            <div>
-              Are you sure you want to delete the organization?
-              <button onClick={this.removeOrg} className="upload__button upload__button--submit">
-                Delete
-              </button>
-              <button onClick={this.close} className="upload__button upload__button--exit">
-                Exit
-              </button>
-            </div>
-          </Modal>
         </Page>)
     }
   }

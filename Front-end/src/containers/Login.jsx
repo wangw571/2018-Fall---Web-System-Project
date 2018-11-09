@@ -6,18 +6,17 @@ import { Authentication } from '../util';
 const auth = Authentication.getInstance();
 class _Login extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: {
-        text: '',
-        valid: null
-      },
-      password: {
-        text: '',
-        valid: null
-      }
-    }
+  checkEmail = text => (
+    text.match(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/)
+  )
+
+  checkPassword = text => (
+    text.length >= 4
+  )
+
+  state = {
+    username: { text: '', valid: null, check: this.checkEmail },
+    password: { text: '', valid: null, check: this.checkPassword }
   }
 
   getQuery = search => {
@@ -31,22 +30,22 @@ class _Login extends Component {
     return res;
   }
 
-  authenticate = el => {
+  authenticate = async el => {
     el.preventDefault();
     const { username, password } = this.state; 
-    if (username.valid === true && password.valid === true){
-      const token = auth.login(username.text, password.text);
-      if (token) {
-        const search = this.getQuery(window.location.search);
-        if (search.redirect) {
-          this.props.history.push(search.redirect);
-        } else {
-          this.props.history.push("/app/upload");
-        }
-      } else { console.log(token.error) }
-    }
+    if (username.valid && password.valid){
+      const { err } = await auth.login(username.text, password.text);
+      if (err) {
+        console.log(err);
+        return
+      }
+
+      const { redirect } = this.getQuery(window.location.search);
+      this.props.history.push(redirect? redirect: '/app/upload');
+    } 
   }
 
+<<<<<<< HEAD
   update = ({ target }) => {
     const name = target.name;
     const text = target.value;
@@ -62,14 +61,20 @@ class _Login extends Component {
         break;
     }
     this.setState({
+=======
+  update = async ({ currentTarget: { name, value } }) => {
+    this.setState(state => ({
+>>>>>>> 5f5cb4f85e6dbe3b5cccca40d86a3dabd30cb4d7
       [name]: {
-        text, valid
-      }
-    });
+        ...state[name],
+        valid: value === ''? null: state[name].check(value),
+        text: value
+      },
+    }))
   }
 
   validClass = ({ text, valid }) => (
-    text === ""? "": ` login__input-group--${ valid? "": "in" }valid`
+    text === ''? '': ` login__input-group--${ valid? "": "in" }valid`
   )
 
   render() {
@@ -77,13 +82,13 @@ class _Login extends Component {
     return (
       <main className="login">
         <form className="login__form" onSubmit={this.authenticate} >
-          <div className="login__app-name">
+          <h1 className="login__app-name">
               GreenCare
-          </div>
+          </h1>
           <div className={`login__input-group${this.validClass(username)}`}>
             <i className="fas fa-user login__icon"></i>
             <input
-              type="text"
+              type="email"
               name="username"
               placeholder="Username"
               onChange={this.update}

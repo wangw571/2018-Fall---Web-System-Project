@@ -1,6 +1,12 @@
+import { request } from '.';
+
 // Private variables
 let _token = null;
+<<<<<<< HEAD
 let _username = null;
+=======
+let _user = null;
+>>>>>>> 5f5cb4f85e6dbe3b5cccca40d86a3dabd30cb4d7
 
 class _Authentication {
 
@@ -12,6 +18,7 @@ class _Authentication {
     const local = localStorage.getItem("token");
     if (local) {
       _token = local;
+      _user = JSON.parse(localStorage.getItem("user"));
     }
   }
 
@@ -20,6 +27,7 @@ class _Authentication {
     @params email and password of user
     @returns the token on sucess, an error otherwise
   */
+<<<<<<< HEAD
   login = (username, password) => {
     if (username === "bob" && password === "bob") {
       // TODO: Get the token ffrom backend
@@ -30,10 +38,22 @@ class _Authentication {
       this._username = username;
       localStorage.setItem("token", JSON.stringify(this._token));
       return token
+=======
+  login = async (email, password) => {
+    let res;
+    try {
+      res = await request(
+        '/login',
+        'POST',
+        null,
+        JSON.stringify({ email, password })
+      );
+    } catch (err) {
+      return err;
+>>>>>>> 5f5cb4f85e6dbe3b5cccca40d86a3dabd30cb4d7
     }
-    return null
-  }
 
+<<<<<<< HEAD
   /*
     Checks if the username that the user enters at login
     exists in the database.
@@ -58,15 +78,41 @@ class _Authentication {
     } else {
       return false;
     }
+=======
+    const { data } = res;
+    _user = data;
+    _token = data.token;
+    localStorage.setItem('token', _token);
+    localStorage.setItem('user', JSON.stringify(_user));
+    return data;
+>>>>>>> 5f5cb4f85e6dbe3b5cccca40d86a3dabd30cb4d7
   }
   
   /*
     Logs the user out
   */
+<<<<<<< HEAD
   logout = () => {
     localStorage.removeItem("token");
     _username = "";
+=======
+  logout = async () => {
+    let data;
+    try {
+      data = await request(
+        '/logout',
+        'POST'
+      );
+    } catch (err) {
+      return err;
+    }
+
+>>>>>>> 5f5cb4f85e6dbe3b5cccca40d86a3dabd30cb4d7
     _token = null;
+    _user = null;
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return data;
   }
 
   /*
@@ -80,8 +126,7 @@ class _Authentication {
     @return The token if authenicated, null otherwise
   */
   getToken = () => _token
-
-  getCurrentUsername = () => _username
+  getUser = () => _user
 }
 
 /* Singleton for authentication object */
