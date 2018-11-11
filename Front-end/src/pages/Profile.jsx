@@ -1,64 +1,66 @@
 import React, { Component, Fragment } from 'react';
-import { Page, App } from '../containers';
+import { Page } from '../containers';
 import '../styles/containers/profile.scss';
-import { Authentication} from '../util';
 import { OrganizationInfo } from '../util/OrganizationInfo';
-import { List, Section } from '../components/dashboard';
+import { List } from '../components/dashboard';
 import { Modal } from '../components';
 
 const org = OrganizationInfo.getInstance();
-const auth = Authentication.getInstance();
 
-const MAX_SIZE = 120;
 export class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: {
-        text: '',
-        valid: true
+      first_name: {
+        text: ''
+      },
+      last_name: {
+        text: ''
       },
       password: {
-        text: '',
-        valid: true
+        text: ''
       },
-      hidden: org.getOrganizationType() === "TEQ1"? false: true,
+      confirm_password: {
+        text: ''
+      },
+      email: {
+        text: ''
+      },
+      id: {
+        text: ''
+      },
+      admin: {
+        text: ''
+      },
+      hidden: org.getOrganizationType() === "TEQ"? false: true,
       items: org.getOrganizationsList(),
       active: 0,
       show: false,
-      confirmPassword: {
-        text: '',
-        valid: true
-      },
-      email: {
-          text: '',
-          valid: true
-      },
-      name: {
-          text: '',
-          valid: true
-      },
       templates: org.getTemplates(),
       users: org.getUsers()
-
     }
   }
 
-  componentDidMount() {
+  componentDidMount = async el => {
     if (this.state.hidden == false){
-        this.setState({
-            items: org.getOrganizationsList(),
-        });
+      let orgs = org.getOrganizationsList();
+      console.log(orgs);
+      this.setState({
+        items: orgs
+      });
     } else {
+      let users = org.getUsers();
+      console.log(users);
         this.setState({
-            items: org.getUsers(),
+          items: users
         });
     }
   }
   setActive = active => this.setState({ active })
   click = key => this.setState({ active: key })
 
-  itemMap = ({ username, email, name }) => {
+  itemMap = ({ name }) => {
+
     return <Fragment>
       <p className="profile__item-status">{name}</p>
       <button className="profile__delete-org"
@@ -76,87 +78,51 @@ export class Profile extends Component {
     this.toggleModal(false);
   }
 
-  removeOrg = () => {
+  removeOrg = async () => {
     const active = this.state.active;
-    org.removeOrganization(active);
+    let value = this.state.items[active];
+    let err;
+    if (this.state.hidden === false){
+      err = await org.removeOrganization(value.name, value.id);
+    } else {
+      err = await org.removeUser(value.first_name, value.last_name, value.email, value.id);
+    }
+    if (err) {
+      console.log(err);
+      return
+    }
     this.close();
   }
 
-  validClass = ({ text, valid }) => (
-    text === ""? "": ` profile__input-group--${ valid? "": "in" }valid`
-  )
-  
   update = ({ target }) => {
     const name = target.name;
     const text = target.value;
-    let valid = false;
-    let validText = null;
-    switch(name) {
-        case "name":
-            validText = new RegExp("[A-Za-z0-9]{6,}");
-            if (validText.test(text)){
-                valid = true;
-            }
-            valid = true;
-            break;
-        case "username":
-            validText = new RegExp("[A-Za-z0-9]{6,}");
-            if (validText.test(text)){
-                valid = true;
-            }
-            valid = true;
-            break;
-        case "password":
-            validText = new RegExp("([A-Za-z]+[0-9]+[A-Za-z]*)+");
-            if (validText.test(text)){
-                valid = true;
-            }
-            valid = true;
-            break;
-        case "confirm_password":
-            valid = this.state.password.text === text || true;
-            console.log(this.state.password.text);
-            console.log(text);
-            console.log(valid);
-            break;
-        case "email":
-            validText = new RegExp("[A-Za-z0-9]+@[A-Za-z]+\.[a-zA-Z]+");
-            if (validText){
-                valid = true;
-            }
-            valid = true;
-            break;
-        default:
-          break;
-    }
     this.setState({
         [name]: {
-        text, valid
+        text
         }
     });
-    console.log(this.state.confirmPassword.text);
-    console.log(this.state.password.text);
-    console.log(this.state.username.text);
     }
 
-  submit = el => {
+  submit = async el => {
     el.preventDefault();
-    const { username, email, name, password, confirmPassword, items } = this.state;
-    let valid = password.valid && username.valid && email.valid && name.valid && confirmPassword.valid;
-    if (valid || true){
-      org.addOrganization(username.text, email.text, name.text, password.text).then(() => {
-        const newItems = items.map((item) => ({ ...item }));
-        newItems.push({username: username.text, email: email.text, name:name.text, password: password.text});
-        this.setState({ newItems });
-      }).catch(err => {
+    const { first_name, last_name, email, id, password, confirm_password, items } = this.state;
+    let valid = password.text === confirm_password.text;
+    if (valid){
+      const { err } = await org.addUser(first_name.text, last_name.text, email.text, id.text, password.text);
+      // adding the organization in the list. However, if the component mount is called when we submit, we dont have to do this
+      const newItems = items.map((item) => ({ ...item }));
+      newItems.push({first_name: first_name.text, last_name: last_name.text, email: email.text, id:id.text, password: password.text});
+      this.setState({ newItems });
+      if (err) {
         console.log(err);
-      });
+        return
+      }
     }
 }
 
   render() {
     const { items, active, show } = this.state;
-    const { username, password, confirmPassword, email, name } = this.state;
       return (
         <Page className='profile'>
           <div className="profile__container">
@@ -168,23 +134,23 @@ export class Profile extends Component {
           </div>
           <div className="profile__page">
             <form className="profile__form" onSubmit={this.submit}>
-              <div className="profile__input-title">
-                  Name for the organization
-              </div>
-              <div className={`profile__input-group${this.validClass(name)}`}>
+              <h1 className="profile__input-title">
+                  Organization ID
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
-                  name="name"
-                  placeholder={org.getOrganizationName(this.state.active)}
+                  name="id"
+                  placeholder={org.getOrganizationID(this.state.active)}
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
-                  Username for the organization
-              </div>
-              <div className={`profile__input-group${this.validClass(username)}`}>
+              <h1 className="profile__input-title">
+                  First Name
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
@@ -194,33 +160,65 @@ export class Profile extends Component {
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
-                  Email of the organization
-              </div>
-              <div className={`profile__input-group${this.validClass(email)}`}>
-                  <i className="fas fa-envelope-square profile__icon"></i>
+              <h1 className="profile__input-title">
+                  Last Name
+              </h1>
+              <div className={`profile__input-group`}>
+                  <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
+                  name="username"
+                  placeholder={org.getOrganizationUsername(this.state.active)}
+                  onChange={this.update}
+                  className="profile__input"
+                  />
+              </div>
+              <h1 className="profile__input-title">
+                  Email of the organization
+              </h1>
+              <div className={`profile__input-group`}>
+                  <i className="fas fa-envelope-square profile__icon"></i>
+                  <input
+                  type="email"
                   name="email"
                   placeholder={org.getOrganizationEmail(this.state.active)}
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
-              <select itemMap={this.state.templates} onChange={this.options}>
+              <h1 className="profile__input-title">
+                  Admin User? Enter True or False
+              </h1>
+              <div className={`profile__input-group`}>
+                  <i className="fas fa-envelope-square profile__icon"></i>
+                  <input
+                  type="text"
+                  name="admin"
+                  placeholder="Admin"
+                  onChange={this.update}
+                  className="profile__input"
+                  />
+              </div>
+              <h1 className="profile__input-title">
+                Templates
+              </h1>
+              <select className="profile__input-group" itemMap={this.state.templates} onChange={this.options}>
                 {this.state.templates.map((e, key) => {
                 return <option key={key}>{e.name}</option>
                  })}
               </select>
-              <select itemMap={this.state.users} onChange={this.options}>
+              <h1 className="profile__input-title">
+                Users
+              </h1>
+              <select className="profile__input-group" itemMap={this.state.users} onChange={this.options}>
                 {this.state.users.map((e, key) => {
                 return <option key={key}>{e.name}</option>
                  })}
               </select>
-              <div className="profile__input-title">
+              <h1 className="profile__input-title">
                   Password
-              </div>
-              <div className={`profile__input-group${this.validClass(password)}`}>
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-key profile__icon"></i>
                   <input
                   type="password"
@@ -230,10 +228,10 @@ export class Profile extends Component {
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
+              <h1 className="profile__input-title">
                   Confirm Password
-              </div>
-              <div className={`profile__input-group${this.validClass(confirmPassword)}`}>
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-key profile__icon"></i>
                   <input
                   type="password"

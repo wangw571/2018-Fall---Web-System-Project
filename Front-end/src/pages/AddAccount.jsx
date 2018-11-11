@@ -1,45 +1,35 @@
-import React, { Component, Fragment } from 'react';
-import { Page, App } from '../containers';
-import '../styles/containers/addAccount.scss';
-import { Authentication} from '../util';
+import React, { Component } from 'react';
+import { Page } from '../containers';
+import '../styles/containers/profile.scss';
 import { OrganizationInfo } from '../util/OrganizationInfo';
-import { List, Section } from '../components/dashboard';
-import { Modal } from '../components';
 
 const org = OrganizationInfo.getInstance();
-const auth = Authentication.getInstance();
-
-const MAX_SIZE = 120;
 export class AddAccount extends Component {
   constructor(props) {
     super(props);
     this.state = {
       firstName: {
-        text: '',
-        valid: false
+        text: ''
       },
       lastName: {
-        text: '',
-        valid: false
+        text: ''
       },
       password: {
-        text: '',
-        valid: false
+        text: ''
       },
-      confirmPassword: {
-        text: '',
-        valid: false
+      confirm_password: {
+        text: ''
       },
       email: {
-          text: '',
-          valid: false
+          text: ''
       },
       name: {
-          text: '',
-          valid: false
+          text: ''
+      },
+      admin: {
+          text: ''
       },
       tempForm: 0,
-      templates: org.getTemplates(),
       users: org.getUsers()
 
     }
@@ -55,138 +45,116 @@ export class AddAccount extends Component {
   close = () => {
     this.toggleModal(false);
   }
-
-  validClass = ({ text, valid }) => (
-    text === ""? "": ` profile__input-group--${ valid? "": "in" }valid`
-  )
   
-  update = ({ target }) => {
-    const name = target.name;
-    const text = target.value;
-    let valid = false;
-    let validText = null;
-    switch(name) {
-        case "name":
-            validText = new RegExp("[A-Za-z0-9]{6,}");
-            if (validText.test(text)){
-                valid = true;
-            }
-            valid = true;
-            break;
-        case "username":
-            validText = new RegExp("[A-Za-z0-9]{6,}");
-            if (validText.test(text)){
-                valid = true;
-            }
-            valid = true;
-            break;
-        case "password":
-            validText = new RegExp("([A-Za-z]+[0-9]+[A-Za-z]*)+");
-            if (validText.test(text)){
-                valid = true;
-            }
-            valid = true;
-            break;
-        case "confirm_password":
-            valid = this.state.password.text === text || true;
-            console.log(this.state.password.text);
-            console.log(text);
-            console.log(valid);
-            break;
-        case "email":
-            validText = new RegExp("[A-Za-z0-9]+@[A-Za-z]+\.[a-zA-Z]+");
-            if (validText){
-                valid = true;
-            }
-            valid = true;
-            break;
-        default:
-          break;
-    }
+  update = ({ currentTarget }) => {
+    const name = currentTarget.name;
+    const text = currentTarget.value;
+    console.log(text);
     this.setState({
         [name]: {
-        text, valid
+        text
         }
     });
+    console.log(name);
+    console.log(this.state.name);
+    console.log(this.state.firstName);
+    console.log(this.state.lastName);
+    console.log(this.state.email);
+    console.log(this.state.password);
+    console.log(this.state.confirm_password);
     }
 
-  submit = el => {
+  submit = async el => {
     el.preventDefault();
-    const { firstName, lastName, email, name, password, confirmPassword, items } = this.state;
-    let valid = password.valid && firstName.valid && lastName.valid && email.valid && name.valid && confirmPassword.valid;
-    if (valid || true){
-      org.addOrganization(firstName.text, lastName.text, email.text, name.text, password.text).then(() => {
+    const { firstName, lastName, email, name, password, confirm_password, items, admin } = this.state;
+    let valid = password.text === confirm_password.text;
+    if (valid){
+        const { err } = await org.addUser(firstName.text, lastName.text, email.text, admin.text, name.text, password.text);
+        if (err) {
+            console.log(err);
+            return
+        }
         const newItems = items.map((item) => ({ ...item }));
-        newItems.push({firstName: firstName.text, lastName: lastName.text, email: email.text, name:name.text, password: password.text});
+        newItems.push({firstName: firstName.text, lastName:lastName.text, email: email.text, admin: admin.text, name:name.text, password: password.text});
         this.setState({ newItems });
-      }).catch(err => {
-        console.log(err);
-      });
     }
+    
 }
 
   render() {
-    const { firstName, lastName, password, confirmPassword, email, name } = this.state;
       return (
         <Page className='profile'>
           <div className="profile__page">
             <form className="profile__form" onSubmit={this.submit}>
-              <div className="profile__input-title">
-                  Organization
-              </div>
-              <div className={`profile__input-group${this.validClass(name)}`}>
+              <h1 className="profile__input-title">
+                  Organization ID
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
                   name="name"
-                  placeholder="Name"
+                  placeholder="Organization ID"
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
+              <h1 className="profile__input-title">
                   First Name
-              </div>
-              <div className={`profile__input-group${this.validClass(firstName)}`}>
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
                   name="firstName"
-                  placeholder="first name"
+                  placeholder="First Name"
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
+              <h1 className="profile__input-title">
                   Last Name
-              </div>
-              <div className={`profile__input-group${this.validClass(lastName)}`}>
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
                   name="lastName"
-                  placeholder="last name"
+                  placeholder="Last Name"
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
+              <h1 className="profile__input-title">
                   Email of the organization
-              </div>
-              <div className={`profile__input-group${this.validClass(email)}`}>
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-envelope-square profile__icon"></i>
                   <input
-                  type="text"
+                  type="email"
                   name="email"
                   placeholder="Email"
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
-                  Password
+              <h1 className="profile__input-title">
+                Admin user? Enter True or False
+              </h1>
+              <div className={`profile__input-group`}>
+                  <i className="fas fa-envelope-square profile__icon"></i>
+                  <input
+                  type="text"
+                  name="admin"
+                  placeholder="Admin"
+                  onChange={this.update}
+                  className="profile__input"
+                  />
               </div>
-              <div className={`profile__input-group${this.validClass(password)}`}>
+              <h1 className="profile__input-title">
+                  Password
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-key profile__icon"></i>
                   <input
                   type="password"
@@ -196,10 +164,10 @@ export class AddAccount extends Component {
                   className="profile__input"
                   />
               </div>
-              <div className="profile__input-title">
+              <h1 className="profile__input-title">
                   Confirm Password
-              </div>
-              <div className={`profile__input-group${this.validClass(confirmPassword)}`}>
+              </h1>
+              <div className={`profile__input-group`}>
                   <i className="fas fa-key profile__icon"></i>
                   <input
                   type="password"

@@ -45,26 +45,8 @@ class _Login extends Component {
     } 
   }
 
-<<<<<<< HEAD
-  update = ({ target }) => {
-    const name = target.name;
-    const text = target.value;
-    let valid = null;
-    switch(name) {
-      case "username":
-        valid = auth.isValidUsername(text) || true;
-        break;
-      case "password":
-        valid = auth.isValidPassForUser(text) || true;
-        break;
-      default:
-        break;
-    }
-    this.setState({
-=======
   update = async ({ currentTarget: { name, value } }) => {
     this.setState(state => ({
->>>>>>> 5f5cb4f85e6dbe3b5cccca40d86a3dabd30cb4d7
       [name]: {
         ...state[name],
         valid: value === ''? null: state[name].check(value),

@@ -8,7 +8,8 @@ if (org.getOrganizationType() === "TEQ"){
     { path: "/app/upload", text: "Upload", icon: "paper-plane", Component: "Upload" },
     { path: "/app/reports", text: "Reports", icon: "newspaper", Component: "Report" },
     { path: "/app/me", text: "Profile", icon: "user-circle", Component: "Profile" },
-    { path: "/app/addAccount", text: "AddAccount", icon: "user-circle", Component: "AddAccount"}
+    { path: "/app/addAccount", text: "Add Account", icon: "user-circle", Component: "AddAccount"},
+    { path: "/app/addOrganization", text: "Add Organization", icon: "user-circle", Component: "AddOrganization"}
   ]
 } else {
   _DASHBOARD_NAV = [
