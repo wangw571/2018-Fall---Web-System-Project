@@ -3,28 +3,23 @@ matrix:
     - language: node_js
       node_js:
         - "stable"
-      before_install:
-        - cd ./Front-end
       cache:
         - npm
-      install:
-        - npm ci
+      before_install:
+        - cd ./Front-end
       script:
         - npm run build
-    - language: python
-      python:
-        - "3.6"
+    - language: node_js
+      node_js:
+        - "stable"
       cache:
-        - pip
+        - npm
       before_install:
         - cd ./Back-end
-      install:
-        - pip install django --quiet
-      script:
-        - python manage.py test
       after_success:
         - cd ..
         - git subtree push --prefix Back-end origin server
+
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
