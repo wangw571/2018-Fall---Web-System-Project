@@ -17,8 +17,6 @@ matrix:
       before_install:
         - cd ./Back-end
       after_success:
-        - rm -Rf ./src/test
-        - npm run build
         - cd ..
         - git subtree push --prefix Back-end origin server
 
