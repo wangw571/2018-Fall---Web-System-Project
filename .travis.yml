@@ -17,9 +17,8 @@ matrix:
         - npm
       before_install:
         - cd ./Back-end
-      script:
-        - npm run build
       after_success:
+        - npm run build
         - cd ..
         - git subtree push --prefix Back-end origin server
       deploy:
