@@ -1,7 +1,8 @@
+import { request } from '.';
+
 // Private variables
 let _token = null;
-let _username = null;
-let _potentialUser = null;
+let _user = null;
 
 class _Authentication {
 
@@ -13,6 +14,7 @@ class _Authentication {
     const local = localStorage.getItem("token");
     if (local) {
       _token = local;
+      _user = JSON.parse(localStorage.getItem("user"));
     }
   }
 
@@ -21,51 +23,46 @@ class _Authentication {
     @params email and password of user
     @returns the token on sucess, an error otherwise
   */
-  login = (email, password) => {
-    if (email === "bob" && password === "bob") {
-      // TODO: Get the token ffrom backend
-      const token = {
-        token: "sadsadsadsadsa",
-        expires: new Date()
-      };
-      localStorage.setItem("token", JSON.stringify(this._token));
-      return token
+  login = async (email, password) => {
+    let res;
+    try {
+      res = await request(
+        '/login',
+        'POST',
+        null,
+        JSON.stringify({ email, password })
+      );
+    } catch (err) {
+      return err;
     }
-    return null
-  }
 
-  /*
-    Checks if the username that the user enters at login
-    exists in the database.
-    @params username
-    @returns True if exists, false otherwise
-  */
-  isValidUsername = (username) => {
-    // dummy username
-    if (username === "bob") {
-      _potentialUser = username;
-      return true;
-    } else {
-      _potentialUser = ""
-      return false;
-    }
-  }
-
-  isValidPassForUser = (password) => {
-    // dummy username and password
-    if (_potentialUser === "bob" && password === "bob"){
-      return true;
-    } else {
-      return false;
-    }
+    const { data } = res;
+    _user = data;
+    _token = data.token;
+    localStorage.setItem('token', _token);
+    localStorage.setItem('user', JSON.stringify(_user));
+    return data;
   }
   
   /*
     Logs the user out
   */
-  logout = () => {
-    localStorage.removeItem("token");
+  logout = async () => {
+    let data;
+    try {
+      data = await request(
+        '/logout',
+        'POST'
+      );
+    } catch (err) {
+      return err;
+    }
+
     _token = null;
+    _user = null;
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return data;
   }
 
   /*
@@ -79,8 +76,7 @@ class _Authentication {
     @return The token if authenicated, null otherwise
   */
   getToken = () => _token
-
-  getCurrentUsername = () => _username
+  getUser = () => _user
 }
 
 /* Singleton for authentication object */
