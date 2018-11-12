@@ -7,7 +7,7 @@
     "build:test": "rm -Rf dist && babel src -d dist",
     "build": "rm -Rf dist && babel src -d dist --ignore \"./**/test/*\"",
     "start": "nodemon --exec babel-node src/server.js",
-    "serve": "node dist/server.js",
+    "serve": "npm run build && node dist/server.js",
     "test": "npm run build:test && mocha dist/test --exit --recursive --timeout 40000"
   },
   "author": "",
