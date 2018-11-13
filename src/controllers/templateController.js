@@ -26,7 +26,7 @@ export const templateController = {
 
     // Get all or subset of templates depending on permissions
     if (sudo) {
-      data = await getAllTemplates(db, { _id: 1, name: 1 });
+      data = await getAllTemplates(db, { _id: 1, name: 1, description: 1 });
     } else {
       data = await getFilterTemplates(db, _org, { 'data._id': 1, 'data.name': 1 });
     }

@@ -15,7 +15,7 @@ export const submitController = {
     const { user: { _org } } = req;
     const db = await database.connect();
     const data = await db.collection('submissions').find(
-      { _org }, { _id: 1, _temp: 1, _org: 1, time: 1 }
+      { _org }, { _id: 1, _temp: 1, date: 1, submitted: 1 }
     ).toArray();
 
     if (data) {
