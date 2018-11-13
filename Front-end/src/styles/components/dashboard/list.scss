@@ -7,8 +7,12 @@
   padding: 12px;
   height: 100%;
   flex-shrink: 0;
+  position: relative;
   box-sizing: border-box;
   width: 320px;
+  &__loader {
+    font-size: 1.2rem;
+  }
   &__item {
     margin-bottom: 10px;
     border-radius: 6px;
@@ -20,6 +24,13 @@
       color: black;
       pointer-events: none;
       padding: 16px 20px 10px;
+    }
+    &--loader {
+      @include flex(flex-start, center);
+      color: 1.1rem;
+      letter-spacing: 0.02rem;
+      color: rgba(0, 0, 0, 0.4);
+      font-weight: bolder;
     }
     &--active, &:hover {
       background-color: white;

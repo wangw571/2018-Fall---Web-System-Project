@@ -1,16 +1,15 @@
 import { Authentication } from '.';
 
 const auth = Authentication.getInstance();
-export const request = (path, method, headers, body) => new Promise((resolve, reject) => {
-  const head = { 'Content-Type': 'application/json' };
+export const request = (path, method, body, headers = {}) => new Promise((resolve, reject) => {
   if (auth.isAuthenticated()) {
-    head.Authorization = `Bearer ${auth.getToken()}`;
+    headers.Authorization = `Bearer ${auth.getToken()}`;
   }
   fetch(
     process.env.REACT_APP_SERVER + path,
     {
       method: method? method: 'GET',
-      headers: { ...head, ...headers },
+      headers,
       body
     }
   ).then(
@@ -19,3 +18,10 @@ export const request = (path, method, headers, body) => new Promise((resolve, re
     res => res.err? reject(res): resolve(res.data)
   );
 });
+
+export const reduce = async (arr, key) => (
+  arr.reduce((obj, item) => {
+    obj[item[key]] = item;
+    return obj
+  }, {})
+)

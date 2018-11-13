@@ -4,6 +4,7 @@
 .upload {
   $self: &;
   &__item-status {
+    margin-right: auto;
     &--missing, &--error {
       color: #dc3545;
     }
@@ -20,12 +21,12 @@
   &__item-header {
     @include flex(row, flex-start, center);
     position: relative;
-    margin: 6px 0;
+    margin: 0 0 8px;
   }
   &__item-title {
     color: black;
     font-size: 0.86rem;
-    margin-right: auto;
+    margin-bottom: 4px;
   }
   &__item-label {
     font-size: 0.75rem;
@@ -115,10 +116,26 @@
     }
     &-header {
       font-size: 1.1rem;
-      font-weight: bold;
+      font-weight: 500;
     }
     &-subheader {
       color: rgba(0,0,0,0.6);
+    }
+  }
+
+  &__page {
+    &-button {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 0;
+      font-weight: 500;
+      margin: 4px 0 0;
+      background-color :rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: background-color $fast-speed $normal-ease;
+      &:hover, &:active {
+        background-color: rgba(0,0,0,0.09);
+      }
     }
   }
 }
