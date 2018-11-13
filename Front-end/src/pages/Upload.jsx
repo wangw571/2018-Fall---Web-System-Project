@@ -4,6 +4,7 @@ import { Page } from '../containers';
 
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
+import { request } from '../util';
 
 const test = [
   {
@@ -31,13 +32,21 @@ export class Upload extends Component {
 
   state = {
     items: [],
+    submissions: [],
     show: false,
     active: 0,
     file: null
   }
 
-  componentDidMount() {
-    this.setState({ items: test })
+  async componentDidMount() {
+    try {
+      const items = await request('/temp');
+      const submissions = await request('/submit');
+      console.log(items, submissions);
+      // this.setState({ items: data });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   getStatus = status => {

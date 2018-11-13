@@ -16,6 +16,6 @@ export const request = (path, method, headers, body) => new Promise((resolve, re
   ).then(
     dat => dat.json()
   ).then(
-    res => res.err? reject(res): resolve(res)
+    res => res.err? reject(res): resolve(res.data)
   );
 });
