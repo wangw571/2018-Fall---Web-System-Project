@@ -14,5 +14,18 @@ h1, h2, h3, h4, h5, h6 {
 
 #root {
   display: flex;
+  overflow-x: auto;
   min-height: 100vh;
+}
+
+.green {
+  &__loader {
+    animation: g__loader 1s linear infinite;
+    margin-right: 10px;
+    transform-origin: center;
+    will-change: transform;
+    @keyframes g__loader {
+      from { transform: rotate(0deg) } to { transform: rotate(360deg) }
+    }
+  }
 }
