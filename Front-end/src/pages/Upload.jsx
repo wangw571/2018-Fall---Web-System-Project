@@ -4,17 +4,17 @@ import { Page } from '../containers';
 
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
-import { request, reduce } from '../util';
+import { request, upload, reduce, Authentication } from '../util';
 
-const MAX_SIZE = 120;
+const user = Authentication.getInstance().getUser();
 export class Upload extends Component {
 
   state = {
     items: null,
-    submits: null,
     show: false,
     active: -1,
-    file: null
+    file: null,
+    newTemplate: false
   }
 
   async componentDidMount() {
@@ -38,37 +38,58 @@ export class Upload extends Component {
         item.date = sub.date;
       }
     });
-    this.setState({ items, submits, active: items.length - 1 });
+
+    if (!this.unmounted) {
+      this.setState({ items, active: items.length - 1 });
+    }
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true;
   }
 
   getStatus = status => {
     if (status === undefined) {
-      return "Missing";
+      return 'Missing';
     } else if (status) {
-      return "Submitted";
+      return 'Submitted';
     } else {
-      return "Uploaded";
+      return 'Uploaded';
     }
   }
 
-  getDiff = date => "10 Days"
+  getDiff = date => {
+    const now = new Date();
+    const diff = now - new Date(date);
+    const days = Math.floor(diff / 86400000); // milliseconds -> days
+
+    switch (days) {
+      case 0:
+        return 'Today'
+      case 1:
+        return 'Yesterday'
+      default:
+        return `${days} Days ago`
+    }
+  }
+
   setActive = active => this.setState({ active })
 
   send = async el => {
     el.preventDefault();
-    const { file, items, active, submits } = this.state;
+    const { file, items, active } = this.state;
+    const item = items[active];
     const body = new FormData();
     body.append("file", file);
+
     try {
-      const item = items[active];
-      const res = await request(
+      const res = await upload(
         `/submit/${item._id}`,
-        'POST',
         body
       );
       item.submitted = res.submitted;
       item.date = res.date;
-      this.setState({ items, submits: (submits.push(res), submits) });
+      this.setState({ items });
     } catch (err) {
       console.log(err);
     }
@@ -80,11 +101,12 @@ export class Upload extends Component {
     this.setState({ file: null });
   }
 
-  handleFile = ({ target }) => (
-    this.setState({ file: target.files.length === 0? null: target.files[0] })
-  )
+  handleFile = ({ currentTarget }) => {
+    this.setState({ file: currentTarget.files.length === 0? null: currentTarget.files[0] })
+    currentTarget.value = '';
+  }
 
-  itemMap = ({ name, description, date, submitted }) => {
+  itemMap = ({ name, date, submitted }) => {
     const statusText = this.getStatus(submitted);
 
     return <Fragment>
@@ -98,24 +120,55 @@ export class Upload extends Component {
         </p>
       </div>
       <h4 className="upload__item-title">{ name }</h4>
-      <p className="upload__item-text">
-        { description.length > MAX_SIZE ? description.slice(0, MAX_SIZE) + "..." : description }
-      </p>
     </Fragment>
   }
 
-  toggleModal = state => this.setState(({show}) => ({
-    show: state? state: !show
-  }))
+  toggleModal = state => (
+    this.setState(({show}) => ({
+      show: state? state: !show
+    }))
+  )
+
+  add = async el => {
+    el.preventDefault();
+
+    const { file } = this.state;
+    const body = new FormData();
+    body.append("file", file);
+
+    try {
+      const id = await upload(
+        '/temp',
+        body
+      );
+      
+      const item = await request(`/temp/${id}`);
+      delete item.filename;
+      this.setState(({ items }) => ({
+        items: (items.push(item), items),
+        active: (items.length - 1),
+        newTemplate: false
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+    this.close();
+  }
 
   render() {
-    const { items, active, show, file, submits } = this.state;
+    const { items, active, show, file, newTemplate } = this.state;
     const item = active > -1? items[active]: null;
-    const submit = active > -1? submits[active]: null;
     return <Page className='upload'>
       <div className="upload__list">
         <List block="upload" onClick={this.setActive} active={active} items={items} map={this.itemMap}>
           <h3 className="upload__upload-header">Templates</h3>
+          {
+            user._sys? <button className="upload__add-btn" type="button" onClick={
+              el => { this.setState({ newTemplate: true }); this.toggleModal(el) }
+            }>
+              <i className="upload__add-btn-icon fas fa-plus"/> Add Template
+            </button>: null
+          }
         </List>
       </div>
       <Section className="upload__page">
@@ -131,7 +184,7 @@ export class Upload extends Component {
         }
       </Section>
       <Modal show={show} className="upload__modal" close={this.close}>
-        <form onSubmit={this.send} className={`upload__form${file ? " upload__form--uploaded" : ""}`}>
+        <form onSubmit={newTemplate? this.add: this.send} className={`upload__form${file ? " upload__form--uploaded" : ""}`}>
           <div className="upload__file-drop">
             <input onChange={this.handleFile} className="upload__file" type="file"/>
             <i className="upload__file-icon fas fa-cloud-upload-alt" />

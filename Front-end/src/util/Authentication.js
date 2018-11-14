@@ -29,7 +29,6 @@ class _Authentication {
       res = await request(
         '/login',
         'POST',
-        null,
         JSON.stringify({ email, password })
       );
     } catch (err) {
@@ -39,6 +38,7 @@ class _Authentication {
     _user = res;
     _token = res.token;
     localStorage.setItem('token', _token);
+    localStorage.setItem('user', JSON.stringify(_user));
     return res;
   }
   
@@ -49,7 +49,7 @@ class _Authentication {
     let data;
     _token = null;
     _user = null;
-    localStorage.removeItem('token');
+    localStorage.clear();
     try {
       data = await request(
         '/logout',
