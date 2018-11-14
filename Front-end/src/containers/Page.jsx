@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../styles/containers/page.scss';
 
 export class Page extends Component {
   render() {

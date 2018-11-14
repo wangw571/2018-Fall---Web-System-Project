@@ -20,5 +20,3 @@ if (org.getOrganizationType() === "TEQ"){
 }
 
 export const DASHBOARD_NAV = _DASHBOARD_NAV;
-
-

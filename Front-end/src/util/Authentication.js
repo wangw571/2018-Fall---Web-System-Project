@@ -29,19 +29,17 @@ class _Authentication {
       res = await request(
         '/login',
         'POST',
-        null,
         JSON.stringify({ email, password })
       );
     } catch (err) {
       return err;
     }
 
-    const { data } = res;
-    _user = data;
-    _token = data.token;
+    _user = res;
+    _token = res.token;
     localStorage.setItem('token', _token);
     localStorage.setItem('user', JSON.stringify(_user));
-    return data;
+    return res;
   }
   
   /*
@@ -49,6 +47,9 @@ class _Authentication {
   */
   logout = async () => {
     let data;
+    _token = null;
+    _user = null;
+    localStorage.clear();
     try {
       data = await request(
         '/logout',
@@ -57,11 +58,6 @@ class _Authentication {
     } catch (err) {
       return err;
     }
-
-    _token = null;
-    _user = null;
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
     return data;
   }
 

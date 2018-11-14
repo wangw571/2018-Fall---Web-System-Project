@@ -1,5 +1,5 @@
-# Python
-.pyc
-.json
-*/__pycache__/*
-*/Front-end/*
+/dist
+/node_modules
+.env*
+.vs/*
+.vscode/*
