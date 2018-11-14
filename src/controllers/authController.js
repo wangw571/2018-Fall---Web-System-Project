@@ -20,13 +20,12 @@ export const AuthController = {
         { projection: { password: 0 } }
       );
 
-      const { _sys } = await dbo.collection('organizations').findOne(
-        { _id: value._org },
-        { _sys: 1 }
-      );
-
       // Return OK and has value
       if (ok && value) {
+        const { _sys } = await dbo.collection('organizations').findOne(
+          { _id: value._org },
+          { _sys: 1 }
+        );
         res.json({ status: 'success', data: { ...value, _sys, token } });
         dbo.close();
         return;

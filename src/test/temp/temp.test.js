@@ -112,7 +112,6 @@ describe('temp.js', () => {
           res.body.data.should.be.a('object');
           res.body.data.should.have.property('_id', file);
           res.body.data.should.have.property('filename');
-          res.body.data.should.have.property('description');
           res.body.data.should.have.property('name', 'testing');
           res.body.data.should.have.property('columns');
           res.body.data.columns.should.be.a('array');
