@@ -58,6 +58,22 @@ export class Upload extends Component {
     }
   }
 
+  toggleModal = state => (
+    this.setState(({show}) => ({
+      show: state? state: !show
+    }))
+  )
+
+  close = () => {
+    this.toggleModal(false);
+    this.setState({ file: null });
+  }
+
+  handleFile = ({ currentTarget }) => {
+    this.setState({ file: currentTarget.files.length === 0? null: currentTarget.files[0] })
+    currentTarget.value = '';
+  }
+
   getDiff = date => {
     const now = new Date();
     const diff = now - new Date(date);
@@ -96,39 +112,6 @@ export class Upload extends Component {
     this.close();
   }
 
-  close = () => {
-    this.toggleModal(false);
-    this.setState({ file: null });
-  }
-
-  handleFile = ({ currentTarget }) => {
-    this.setState({ file: currentTarget.files.length === 0? null: currentTarget.files[0] })
-    currentTarget.value = '';
-  }
-
-  itemMap = ({ name, date, submitted }) => {
-    const statusText = this.getStatus(submitted);
-
-    return <Fragment>
-      <div className="upload__item-header">
-        <p className={`upload__item-status upload__item-status--${ statusText.toLowerCase() }`}>
-          { statusText }
-        </p>
-        <p className="upload__item-label">
-          <i className="upload__item-icon far fa-clock" />
-          { this.getDiff(date) }
-        </p>
-      </div>
-      <h4 className="upload__item-title">{ name }</h4>
-    </Fragment>
-  }
-
-  toggleModal = state => (
-    this.setState(({show}) => ({
-      show: state? state: !show
-    }))
-  )
-
   add = async el => {
     el.preventDefault();
 
@@ -153,6 +136,23 @@ export class Upload extends Component {
       console.log(err);
     }
     this.close();
+  }
+
+  itemMap = ({ name, date, submitted }) => {
+    const statusText = this.getStatus(submitted);
+
+    return <Fragment>
+      <div className="upload__item-header">
+        <p className={`upload__item-status upload__item-status--${ statusText.toLowerCase() }`}>
+          { statusText }
+        </p>
+        <p className="upload__item-label">
+          <i className="upload__item-icon far fa-clock" />
+          { this.getDiff(date) }
+        </p>
+      </div>
+      <h4 className="upload__item-title">{ name }</h4>
+    </Fragment>
   }
 
   render() {
