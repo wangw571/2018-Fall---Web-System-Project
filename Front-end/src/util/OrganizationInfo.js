@@ -1,4 +1,4 @@
-import { request } from "./server";
+import { request } from ".";
 
 //import { TEQ_ORGANIZATION, NORMAL_ORGANIZATION } from '../values';
 const test = [

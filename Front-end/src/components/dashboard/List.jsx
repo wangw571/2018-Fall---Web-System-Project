@@ -12,7 +12,7 @@ export class List extends PureComponent {
         items?
         items.map((item, key) => {
           const className = `list__item${key === active ? " list__item--active" : ""}`;
-          return <li onClick={key !== active? onClick.bind(this, key): null} key={key} className={className}>
+          return <li tabIndex={0} onClick={key !== active? onClick.bind(this, key): null} key={key} className={className}>
             { map(item, key) }
           </li>
         }):
