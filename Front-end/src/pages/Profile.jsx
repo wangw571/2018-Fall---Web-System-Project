@@ -42,7 +42,7 @@ export class Profile extends Component {
   }
 
   componentDidMount = async el => {
-    if (this.state.hidden == false){
+    if (this.state.hidden === false){
       let orgs = org.getOrganizationsList();
       console.log(orgs);
       this.setState({

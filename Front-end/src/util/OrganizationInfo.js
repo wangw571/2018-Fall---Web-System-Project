@@ -53,14 +53,9 @@ const users = [
 // Private variables
 class _OrganizationInfo {
 
-  constructor() {
-
-  }
-
   addUser = async (_firstname, _lastname, _email, _admin, _id, _password) => {
-    let res;
     try{
-      res = await request(
+      await request(
         '/users',
         '/POST',
         null,
@@ -77,9 +72,8 @@ class _OrganizationInfo {
   }
 
   addOrganization = async (_id, _name, _services) => {
-    let res;
     try{
-      res = await request(
+      await request(
         '/orgs',
         '/POST',
         null,
@@ -91,9 +85,8 @@ class _OrganizationInfo {
   }
 
   deleteOrganization = async (_name, _id) => {
-    let res;
     try {
-      res = await request(
+      await request(
         '/orgs',
         '/POST',
         null,
