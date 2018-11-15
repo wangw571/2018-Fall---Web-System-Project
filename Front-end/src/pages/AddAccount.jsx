@@ -1,20 +1,17 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Page } from '../containers';
 import '../styles/containers/profile.scss';
 import { OrganizationInfo } from '../util/OrganizationInfo';
-import { List } from '../components/dashboard';
-import { Modal } from '../components';
 
 const org = OrganizationInfo.getInstance();
-
-export class Profile extends Component {
+export class AddAccount extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      first_name: {
+      firstName: {
         text: ''
       },
-      last_name: {
+      lastName: {
         text: ''
       },
       password: {
@@ -24,50 +21,21 @@ export class Profile extends Component {
         text: ''
       },
       email: {
-        text: ''
+          text: ''
       },
-      id: {
-        text: ''
+      name: {
+          text: ''
       },
       admin: {
-        text: ''
+          text: ''
       },
-      hidden: org.getOrganizationType() === "TEQ"? false: true,
-      items: org.getOrganizationsList(),
-      active: 0,
-      show: false,
-      templates: org.getTemplates(),
+      tempForm: 0,
       users: org.getUsers()
+
     }
   }
 
-  componentDidMount = async el => {
-    if (this.state.hidden === false){
-      let orgs = org.getOrganizationsList();
-      console.log(orgs);
-      this.setState({
-        items: orgs
-      });
-    } else {
-      let users = org.getUsers();
-      console.log(users);
-        this.setState({
-          items: users
-        });
-    }
-  }
-  setActive = active => this.setState({ active })
-  click = key => this.setState({ active: key })
-
-  itemMap = ({ name }) => {
-
-    return <Fragment>
-      <p className="profile__item-status">{name}</p>
-      <button className="profile__delete-org"
-      onClick={this.toggleModal}>
-        Remove
-      </button>
-    </Fragment>
+  componentDidMount() {
   }
 
   toggleModal = state => this.setState(({show}) => ({
@@ -77,61 +45,45 @@ export class Profile extends Component {
   close = () => {
     this.toggleModal(false);
   }
-
-  removeOrg = async () => {
-    const active = this.state.active;
-    let value = this.state.items[active];
-    let err;
-    if (this.state.hidden === false){
-      err = await org.removeOrganization(value.name, value.id);
-    } else {
-      err = await org.removeUser(value.first_name, value.last_name, value.email, value.id);
-    }
-    if (err) {
-      console.log(err);
-      return
-    }
-    this.close();
-  }
-
-  update = ({ target }) => {
-    const name = target.name;
-    const text = target.value;
+  
+  update = ({ currentTarget }) => {
+    const name = currentTarget.name;
+    const text = currentTarget.value;
+    console.log(text);
     this.setState({
         [name]: {
         text
         }
     });
+    console.log(name);
+    console.log(this.state.name);
+    console.log(this.state.firstName);
+    console.log(this.state.lastName);
+    console.log(this.state.email);
+    console.log(this.state.password);
+    console.log(this.state.confirm_password);
     }
 
   submit = async el => {
     el.preventDefault();
-    const { first_name, last_name, email, id, password, confirm_password, items } = this.state;
+    const { firstName, lastName, email, name, password, confirm_password, items, admin } = this.state;
     let valid = password.text === confirm_password.text;
     if (valid){
-      const { err } = await org.addUser(first_name.text, last_name.text, email.text, id.text, password.text);
-      // adding the organization in the list. However, if the component mount is called when we submit, we dont have to do this
-      const newItems = items.map((item) => ({ ...item }));
-      newItems.push({first_name: first_name.text, last_name: last_name.text, email: email.text, id:id.text, password: password.text});
-      this.setState({ newItems });
-      if (err) {
-        console.log(err);
-        return
-      }
+        const { err } = await org.addUser(firstName.text, lastName.text, email.text, admin.text, name.text, password.text);
+        if (err) {
+            console.log(err);
+            return
+        }
+        const newItems = items.map((item) => ({ ...item }));
+        newItems.push({firstName: firstName.text, lastName:lastName.text, email: email.text, admin: admin.text, name:name.text, password: password.text});
+        this.setState({ newItems });
     }
+    
 }
 
   render() {
-    const { items, active, show } = this.state;
       return (
         <Page className='profile'>
-          <div className="profile__container">
-            <List block="profile" onClick={this.click} active={active} items={items} map={this.itemMap}>
-                <div className="profile__list-header">
-                Organizations
-                </div>
-            </List>
-          </div>
           <div className="profile__page">
             <form className="profile__form" onSubmit={this.submit}>
               <h1 className="profile__input-title">
@@ -141,8 +93,8 @@ export class Profile extends Component {
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
-                  name="id"
-                  placeholder={org.getOrganizationID(this.state.active)}
+                  name="name"
+                  placeholder="Organization ID"
                   onChange={this.update}
                   className="profile__input"
                   />
@@ -154,8 +106,8 @@ export class Profile extends Component {
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
-                  name="username"
-                  placeholder={org.getOrganizationUsername(this.state.active)}
+                  name="firstName"
+                  placeholder="First Name"
                   onChange={this.update}
                   className="profile__input"
                   />
@@ -167,8 +119,8 @@ export class Profile extends Component {
                   <i className="fas fa-user profile__icon"></i>
                   <input
                   type="text"
-                  name="username"
-                  placeholder={org.getOrganizationUsername(this.state.active)}
+                  name="lastName"
+                  placeholder="Last Name"
                   onChange={this.update}
                   className="profile__input"
                   />
@@ -181,13 +133,13 @@ export class Profile extends Component {
                   <input
                   type="email"
                   name="email"
-                  placeholder={org.getOrganizationEmail(this.state.active)}
+                  placeholder="Email"
                   onChange={this.update}
                   className="profile__input"
                   />
               </div>
               <h1 className="profile__input-title">
-                  Admin User? Enter True or False
+                Admin user? Enter True or False
               </h1>
               <div className={`profile__input-group`}>
                   <i className="fas fa-envelope-square profile__icon"></i>
@@ -199,22 +151,6 @@ export class Profile extends Component {
                   className="profile__input"
                   />
               </div>
-              <h1 className="profile__input-title">
-                Templates
-              </h1>
-              <select className="profile__input-group" itemMap={this.state.templates} onChange={this.options}>
-                {this.state.templates.map((e, key) => {
-                return <option key={key}>{e.name}</option>
-                 })}
-              </select>
-              <h1 className="profile__input-title">
-                Users
-              </h1>
-              <select className="profile__input-group" itemMap={this.state.users} onChange={this.options}>
-                {this.state.users.map((e, key) => {
-                return <option key={key}>{e.name}</option>
-                 })}
-              </select>
               <h1 className="profile__input-title">
                   Password
               </h1>
@@ -247,17 +183,6 @@ export class Profile extends Component {
               </button>
             </form>
           </div>
-          <Modal show={show} className="upload__modal" close={this.close}>
-            <div>
-              Are you sure you want to delete the organization?
-              <button onClick={this.removeOrg} className="upload__button upload__button--submit">
-                Delete
-              </button>
-              <button onClick={this.close} className="upload__button upload__button--exit">
-                Exit
-              </button>
-            </div>
-          </Modal>
         </Page>)
     }
   }

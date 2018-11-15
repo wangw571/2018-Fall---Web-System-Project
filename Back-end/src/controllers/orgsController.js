@@ -2,7 +2,7 @@ import { database, getObjectId } from "../util";
 
 const clean = ({ name, _sys, permissions }, noDefault) => {
   const def = noDefault? {}: {
-    name: null,
+    name: `org-${Math.random()}`,
     _sys: false,
     permissions: []
   };
@@ -16,14 +16,16 @@ const clean = ({ name, _sys, permissions }, noDefault) => {
   }
 
   if (permissions && typeof(permissions) === 'object') {
+    const p = [];
     permissions.forEach(perm => {
       try {
         const id = getObjectId(perm);
-        def.permissions.push(id);
+        p.push(id);
       } catch (err) {
         console.log(err); // Skip that id
       }
     });
+    def.permissions = p;
   }
 
   return def;
@@ -34,9 +36,7 @@ export const orgsController = {
   getOrganizations: async ({ user: { sudo } }, res) => {
     if (sudo) {
       const db = await database.connect();
-      const data = await db.collection('organizations').find(
-        {}, { _id: 1, _sys: 1, name: 1 }
-      ).toArray();
+      const data = await db.collection('organizations').find({}).toArray();
       res.json({ status: 'success', data });
       db.close();
     } else {

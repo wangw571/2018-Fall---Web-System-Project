@@ -22,7 +22,6 @@
     transition: background-color $slow-speed $normal-ease;
     &--loader {
       @include flex(flex-start, center);
-      color: 1.1rem;
       letter-spacing: 0.02rem;
       color: rgba(0, 0, 0, 0.4);
       font-weight: bolder;

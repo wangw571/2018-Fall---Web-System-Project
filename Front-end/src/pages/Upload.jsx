@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { List, Section } from '../components/dashboard';
 import { Page } from '../containers';
-
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
 import { request, upload, reduce, Authentication } from '../util';
