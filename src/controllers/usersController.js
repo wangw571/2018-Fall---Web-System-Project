@@ -223,29 +223,24 @@ export const UsersController = {
       return
     }
 
-    // Check if data is valid
-    const { isValid, err } = validUser(body);
-    if (isValid) {
-
-      // Find user and update token
-      const db = await database.connect();
-      const { value, ok } = await db.collection('users').findOneAndReplace(
-        { _id, _org },
-        { $set: { ...body, password: getHash(body.password) } },
-        { projection: { password: 0, token: 0 }, returnOriginal: false }
-      );
-
-      // Return OK and has value
-      if (ok && value) {
-        res.json({ status: 'success', data: { ...value } });
-      } else {
-        res.json({ status: 'error', data: "No such user exist in database" });
-      }
-      db.close();
-    } else {
-      // If data is invalid
-      res.status(403).json({ status: "error", err });
+    if (body.password) {
+      body.password = getHash(body.password);
     }
+    // Find user and update token
+    const db = await database.connect();
+    const { value, ok } = await db.collection('users').findOneAndReplace(
+      { _id, _org },
+      { $set: body },
+      { projection: { password: 0, token: 0 }, returnOriginal: false }
+    );
+
+    // Return OK and has value
+    if (ok && value) {
+      res.json({ status: 'success', data: value });
+    } else {
+      res.json({ status: 'error', data: "No such user exist in database" });
+    }
+    db.close();
   },
 
   deleteUser: async (req, res) => {
