@@ -3,10 +3,8 @@
 
 .upload {
   $self: &;
-  width: 100%;
-  background-color: rgba(0,0,0,0.02);
-  @include flex;
   &__item-status {
+    margin-right: auto;
     &--missing, &--error {
       color: #dc3545;
     }
@@ -23,23 +21,15 @@
   &__item-header {
     @include flex(row, flex-start, center);
     position: relative;
-    margin: 6px 0;
+    margin: 0 0 8px;
   }
   &__item-title {
     color: black;
     font-size: 0.86rem;
-    margin-right: auto;
+    margin-bottom: 4px;
   }
   &__item-label {
     font-size: 0.75rem;
-  }
-  &__item-text {
-    overflow: hidden;
-  }
-  &__page {
-    padding: 20px;
-    background-color: white;
-    flex-grow: 1;
   }
 
   &__modal {
@@ -58,7 +48,7 @@
     width: 100%;
     flex-grow: 1;
     box-sizing: border-box;
-    border-radius: 12px;
+    border-radius: 6px;
     border: 2px dashed rgba(0,0,0,0.4);
     @include flex(column,center);
     transition: background-color $normal-speed $normal-ease;
@@ -91,13 +81,15 @@
     @include flex(center);
     transition: background-color $normal-speed $normal-ease;
     &:disabled {
-      background-color: rgba(0,0,0,0.3);
+      background-color: rgba(0,0,0,0.2);
     }
 
     &--submit {
       background-color: #1eca60;
       &:hover, &:active {
-        background-color: $logo-color;
+        &::not(:disabled) {
+          background-color: $logo-color;
+        }
       }
     }
 
@@ -121,10 +113,49 @@
     }
     &-header {
       font-size: 1.1rem;
-      font-weight: bold;
+      font-weight: 500;
     }
     &-subheader {
       color: rgba(0,0,0,0.6);
+    }
+  }
+
+  &__add-btn {
+    padding: 9px 14px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.04);
+    margin: 20px 0 -10px -5px;
+    border-radius: 99px;
+    transition: background-color $normal-speed $normal-ease;
+    &-icon {
+      margin-right: 6px;
+      transition: transform $normal-speed $normal-ease;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.08);
+      & #{ $self }__add-btn-icon {
+        transform: transition3d(0, 0, 0) rotate(90deg);
+      }
+    }
+  }
+
+  &__page {
+    &-title {
+      max-width: 500px;
+    }
+    &-button {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 0;
+      font-weight: 500;
+      margin: 4px 0 0;
+      background-color :rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: background-color $normal-speed $normal-ease;
+      &:hover, &:active {
+        background-color: rgba(0,0,0,0.08);
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import '../styles/components/modal.scss';
 
-export class Modal extends Component {
+export class Modal extends PureComponent {
 
   close = () => this.props.close();
 

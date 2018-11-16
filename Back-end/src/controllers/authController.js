@@ -22,7 +22,11 @@ export const AuthController = {
 
       // Return OK and has value
       if (ok && value) {
-        res.json({ status: 'success', data: { ...value, token } });
+        const { _sys } = await dbo.collection('organizations').findOne(
+          { _id: value._org },
+          { _sys: 1 }
+        );
+        res.json({ status: 'success', data: { ...value, _sys, token } });
         dbo.close();
         return;
       }

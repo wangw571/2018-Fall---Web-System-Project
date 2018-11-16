@@ -5,13 +5,12 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import * as Routes from './routes';
-import { getHash } from "./util";
 const app = express();
 dotenv.load();
 
 // Setup CORS and parsing for handlers
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 
 // Initialize all the routes dynamically

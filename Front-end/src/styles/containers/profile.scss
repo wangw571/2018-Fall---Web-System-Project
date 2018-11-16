@@ -1,0 +1,144 @@
+@import '../mixins';
+@import '../variables';
+
+.profile {
+    @include flex;
+    $self: &;
+    width: 100%;
+    background-color: rgb(238, 237, 237);
+    padding-bottom: 20px;
+    align-content: flex-start;
+
+    &__item-status {
+        color: #007bff;
+        padding-bottom: 15px;
+        font-size: 14px;
+    }
+
+    &__delete-org {
+        width: 100%;
+        height:25px;
+        background-color: rgb(226, 5, 5);
+        border-radius: 5px;
+        font-size: 13px;
+    }
+
+    &__list-header {
+        font-size: 15px;
+        font-weight: 500;
+    }
+    &__info-text {
+        font-size: 15px;
+        padding: 20px;
+        padding-right: 20px;
+        line-height: 2.6;
+        font-weight: 900
+    }
+    &__page {
+        @include flex(center);
+        padding: 20px;
+        background-color: white;
+        flex-grow: 1;
+      }
+
+    &__form {
+        @include flex(column, center);
+        box-sizing: border-box;
+        border-radius: 10px;
+        background-color: white;
+        height: 100%;
+        width: 100%;
+    }
+
+    &__input-group {
+        @include flex(center);
+        height: 35px;
+        width: 270px;
+        border-radius: 10px;
+        background: rgb(221, 223, 220);
+        overflow: hidden;
+        margin-bottom: 20px;
+        border: 1.5px solid;
+        border-color: rgb(127, 139, 117);
+        &--invalid {
+            border-color: red;
+        }
+        &--valid {
+            border-color: $logo-color;
+        }
+    }
+
+    &__input {
+        width: 100%;
+        background: none;
+        font-size: 15px;
+        border: none;
+        align-self: stretch;
+        outline: none;
+        color: rgb(151, 151, 150);
+        padding-right: 20px;
+        &::placeholder {
+            color: rgb(127, 139, 117);
+        }
+    }
+
+    &__input-title {
+        color: #8ec200;
+       font-size: 13px;
+       padding-bottom: 10px;
+     }
+
+    &__button-change-pass {
+        height: 40px;
+        border-radius: 999px;
+        color: $logo-color;
+        background: rgb(221, 223, 220);;
+        border: 1.5px solid $logo-color;
+        font-size: 15px;
+        font-weight: 500;
+        width: 40px;
+        align-self: flex-start;
+        
+        &:hover {
+            background-color: rgb(154, 170, 142);
+        }
+        &:active {
+            background-color: rgb(157, 158, 156);
+            box-shadow: 0 2px #666;
+            transform: translateY(2px);
+        }
+    }    
+    
+    &__icon {
+        @include flex(center);
+        color: rgb(100, 100, 100);
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+        margin-right: 10px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    &__button {
+        height: 35px;
+        width: 370px;
+        border-radius: 10px;
+        color: rgb(155, 155, 155);
+        background: rgb(221, 223, 220);
+        border: 1.5px solid rgb(127, 139, 117);
+        font-size: 15px;
+        font-weight: 500;
+        align-self: center;
+        
+        &:hover {
+            background-color: rgb(185, 187, 184);
+        }
+    }
+
+    &__addAccount-button {
+        background-color: green;
+        width: 50px;
+        height: 30px;
+    }
+}
