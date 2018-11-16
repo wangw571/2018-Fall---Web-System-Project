@@ -25,13 +25,20 @@ export class OrganizationForm extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { items, active } = this.props;
+    const { items, active, clean } = this.props;
     if (active !== undefined && prevProps.active !== active) {
       const item = items.orgs[active];
       this.setState({
         name: item.name,
         type: item._sys,
         perms: this.getPerms(item.permissions),
+        dirty: false
+      });
+    } else if (prevProps.clean !== clean) {
+      this.setState({
+        name: '',
+        type: false,
+        perms: [],
         dirty: false
       });
     }
@@ -64,7 +71,6 @@ export class OrganizationForm extends Component {
       default:
         const i = currentTarget.getAttribute('data-key');
         const j = perms.indexOf(parseInt(i));
-        console.log(perms, i, j);
         if (j > -1) { perms.splice(j, 1) }
         else { perms.push(parseInt(i)) }
         break;
@@ -78,6 +84,7 @@ export class OrganizationForm extends Component {
     const { name, type, perms } = this.state;
     try {
       const org = active !== undefined ? items.orgs[active]._id: '';
+      console.log(type);
       const res = await request(
         `/orgs/${org}`,
         'POST',

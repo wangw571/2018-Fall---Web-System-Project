@@ -1,0 +1,64 @@
+@import '../mixins';
+@import '../variables';
+
+.users {
+  $self: &;
+  &__list {
+    &-item {
+      &-sh {
+        color: rgba(0,0,0,0.6);
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+    }
+
+    &-btn {
+      padding: 9px 14px;
+      border: none;
+      background-color: rgba(0, 0, 0, 0.04);
+      margin: 20px 0 -10px -5px;
+      border-radius: 99px;
+      transition: background-color $normal-speed $normal-ease;
+      &-icon {
+        margin-right: 6px;
+        transition: transform $normal-speed $normal-ease;
+      }
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.08);
+        & #{ $self }__btn-icon {
+          transform: transition3d(0, 0, 0) rotate(90deg);
+        }
+      }
+    }
+  }
+
+  &__buttons.green__input-group {
+    @include flex(row);
+  }
+
+  &__modal {
+    padding: 20px 30px 0;
+    @include flex(column, center, flex-start);
+  }
+
+  &__submit {
+    width: 100px;
+    background-color: $logo-color;
+  }
+
+  &__exit {
+    width: 100px;
+    margin-left: 10px;
+    background-color: #dc3545;
+  }
+
+  &__page {
+    &-title {
+      padding-bottom: 14px;
+    }
+    &-form {
+      padding-bottom: 20px;
+    }
+  }
+}

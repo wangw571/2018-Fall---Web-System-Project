@@ -11,7 +11,7 @@ const clean = ({ name, _sys, permissions }, noDefault) => {
     def.name = name;
   }
 
-  if (_sys && typeof(_sys) === 'boolean') {
+  if (_sys !== null && typeof(_sys) === 'boolean') {
     def._sys = _sys;
   }
 
