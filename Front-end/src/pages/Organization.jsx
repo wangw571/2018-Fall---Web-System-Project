@@ -5,16 +5,19 @@ import '../styles/pages/organization.scss';
 import { Modal, Collection } from '../components';
 import { Authentication, request } from '../util';
 import { OrganizationForm } from '../components/organization';
+import { UserForm } from '../components/user';
 
-const user = Authentication.getInstance().getUser();
+const currentUser = Authentication.getInstance().getUser();
 export class Organization extends Component {
 
   state = {
     items: {
       orgs: null, temps: null, users: null
     },
+    modal: null,
     show: false,
-    active: -1
+    active: -1,
+    user: undefined,
   }
 
   async componentDidMount() {
@@ -23,7 +26,7 @@ export class Organization extends Component {
       items = {
         orgs: await request('/orgs'),
         temps: await request('/temp'),
-        users: await request(`/users/${user._org}`)
+        users: await request(`/users/${currentUser._org}`)
       }
     } catch (err) {
       console.log(err);
@@ -37,6 +40,19 @@ export class Organization extends Component {
 
   componentWillUnmount() { this.unmounted = true }
   close = () => this.toggleModal(false)
+  typedModal = modal => this.setState(
+    ({show}) => ({ show: !show, modal })
+  );
+  userModal = ({ currentTarget }) => {
+    const user = currentTarget.getAttribute('data-key');
+    this.setState(
+      ({show}) => ({
+        show: !show,
+        modal: 'user',
+        user: user === null? undefined: user
+      })
+    );
+  }
   
   setActive = async active => {
     const { items } = this.state;
@@ -56,14 +72,26 @@ export class Organization extends Component {
       const org = items.orgs[active];
       await request(`/orgs/${org._id}`, 'DELETE');
       items.orgs.splice(active, 1);
-      this.setState({ items, active: 0 });
+      this.setState({ show: false, items, active: -1 });
     } catch (err) {
       console.log(err);
     }
   }
 
-  post = async (item, active) => {
-    const { items } = this.state;
+  dropUser = async () => {
+    const { items, user } = this.state;
+    const victim = items.users[user];
+    try {
+      await request(`/users/${victim._org}/${victim._id}`, 'DELETE');
+      items.users.splice(user, 1);
+    } catch (err) {
+      console.log(err);
+    }
+    this.setState({ show: false, items, user: undefined });
+  }
+
+  post = async item => {
+    const { items, active } = this.state;
     items.orgs[active] = item;
     this.setState({ items });
   }
@@ -72,6 +100,16 @@ export class Organization extends Component {
     const { items } = this.state;
     items.orgs.push(item);
     this.setState({ show: false, items, active: items.length - 1 });
+  }
+
+  updateUser = async item => {
+    const { items, user } = this.state;
+    if (user === undefined) {
+      items.users.push(item);
+    } else {
+      items.users[user] = item;
+    }
+    this.setState({ show: false, items, user: undefined });
   }
 
   toggleModal = state => (
@@ -95,13 +133,13 @@ export class Organization extends Component {
   )
 
   render() {
-    const { items, active, show } = this.state;
+    const { items, active, show, modal, user } = this.state;
     return <Page className='orgs'>
       <div className="orgs__list">
         <List block="orgs" onClick={this.setActive} active={active} items={items.orgs} map={this.itemMap}>
           <h3 className="orgs__list-header">Organizations</h3>
           {
-            user.admin? <button className="orgs__list-btn" type="button" onClick={this.toggleModal}>
+            currentUser.admin? <button className="orgs__list-btn" type="button" onClick={this.typedModal.bind(this, 'org')}>
               <i className="orgs__list-btn-icon fas fa-plus"/> Add Organization
             </button>: null
           }
@@ -115,14 +153,30 @@ export class Organization extends Component {
               () => <button className="orgs__exit green__button" type="button" onClick={this.delete}>Delete</button>
             }/>
             <h2 className="orgs__page-subtitle">Users</h2>
-            <Collection block="orgs" items={items.users} layout={this.users}/>
+            <Collection block="orgs" items={items.users} layout={this.users} click={this.userModal}/>
+            <div className="green__input-group orgs__buttons">
+              <button className="orgs__submit green__button" type="submit" onClick={this.userModal}>Add User</button>
+            </div>
           </Fragment>: null
         }
       </Section>
-      <Modal show={show} className="orgs__modal" close={this.close}>
-        <OrganizationForm items={items} update={this.addOrg} buttons={
-          () => <button className="orgs__exit green__button" type="button" onClick={this.close}>Exit</button>
-        }/>
+      <Modal show={show} close={this.close}>
+        <div className="orgs__modal">
+          {
+            modal === 'org'?
+            <OrganizationForm items={items} clean={show} update={this.addOrg} buttons={
+              () => <button className="orgs__exit green__button" type="button" onClick={this.close}>Exit</button>
+            }/>:
+            modal === 'user'?
+            <UserForm items={items.users} clean={show} active={user} update={this.updateUser} buttons={
+              () => <Fragment>
+                <button className="orgs__drop green__button" type="button" onClick={this.dropUser}>Remove</button>
+                <button className="orgs__exit green__button" type="button" onClick={this.close}>Exit</button>
+              </Fragment>
+            }/>:
+            null
+          }
+        </div>
       </Modal>
     </Page>
   }

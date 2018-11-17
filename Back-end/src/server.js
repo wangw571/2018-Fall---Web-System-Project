@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import * as Routes from './routes';
+import { getHash } from "./util";
 const app = express();
 dotenv.load();
 
