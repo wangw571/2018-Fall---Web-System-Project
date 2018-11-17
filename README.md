@@ -1,7 +1,7 @@
 # Team Newline (Team19)
 ## Meet the Team!
 ### Team Description
-We are team newline, a team of 5 students working together to create a scalable and efficient system for Scarborough Local Immigration Partnership (LIP). Using Django and React, we are hoping to work together with the client to create a web application that would suit the needs of our clients - In hopes not only getting a good grade, but creating something meaningful for society.
+We are team newline, a team of 5 students working together to create a scalable and efficient system for Scarborough Local Immigration Partnership (LIP). Using NodeJS/Express and React, we are hoping to work together with the client to create a web application that would suit the needs of our clients - In hopes not only getting a good grade, but creating something meaningful for society.
 
 ### Team Members
  - Jialiang Lin
@@ -13,7 +13,7 @@ We are team newline, a team of 5 students working together to create a scalable 
 ## Overview
   - ### File Stucture of Repo
     - [**Front-end:**](/Front-end) Contains our front-end application created using React
-    - [**Back-end:**](/Back-end) Contains our Back-end application created using Django
+    - [**Back-end:**](/Back-end) Contains our Back-end application created using NodeJS/Express
     - [**Deliverables:**](/deliverables) Contains all our deliverables for this course
   - ### Other Content
     - [**Board**](https://dev.azure.com/cscc01f18/Deliverables/_workitems)
@@ -30,3 +30,5 @@ We are team newline, a team of 5 students working together to create a scalable 
   - [Second deliverable User Stories](/deliverables/Deliverable%202%20User%20Stories.pdf) submitted (For Google docs version, please click [here](https://docs.google.com/document/d/16fhmX-chJY9m91buPyDh9L-Vk1MHAtsgmak4zgIba5E/edit))
 - ### October 29, 2018
   - [Third Deliverable](https://github.com/CSCC01/Team19/blob/Deliverable3/deliverables/Deliverable3.pdf) submitted. For Google docs version, please click [here](https://docs.google.com/document/d/1WPr1R9UMBfo-UJYLyxxwtn1QvSqb8PV7Wed1dC05bIc/edit#)
+- ### November 12, 2018
+  - [Fourth Deliverable](https://github.com/CSCC01/Team19/blob/Deliverable4/deliverables/Deliverable4.pdf) submitted. For Google docs version, please click [here](https://docs.google.com/document/d/1dAsrpfoaGt0bT7GDHlxUQHn4kV4g-Zy_hsOKmO-EcSk/edit#)
