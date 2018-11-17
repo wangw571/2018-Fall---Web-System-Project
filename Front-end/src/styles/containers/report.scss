@@ -1,0 +1,43 @@
+@import '../mixins';
+@import '../variables';
+
+.report{
+    @include flex;
+    $self: &;
+    width: 100%;
+    background-color: gray;
+    padding-bottom: 20px;
+
+    &__title{
+        font-size: 15px;
+    }
+
+    &__page {
+        padding: 20px;
+        background-color: lightgray;
+        flex-grow: 1;
+        display: -webkit-flex; /* Safari */
+        -webkit-flex-wrap: wrap; /* Safari 6.1+ */
+        display: flex;   
+        flex-wrap: wrap;
+    }
+
+    &__list-header {
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    &__box {
+        width: 250px;
+        height: 200px;
+        padding-left: 10px;
+    }
+
+    &__modal {
+        & .modal__box {
+          padding: 20px;
+        }
+      }
+
+
+}
