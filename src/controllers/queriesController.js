@@ -1,43 +1,29 @@
 import { database, getHash, getObjectId } from '../util';
 
-
-const getQueryDB = async (db, org, project) => {
-  const { permissions } = await db.collection('organizations')
-    .findOne({ _id: org }, { permissions: 1 })
-  ;
-  const data = await db.collection('queries')
-    .find(
-      { _id: { $in: permissions } },
-      project
-    ).toArray()
-  ;
-  return data;
+const incll = (query, inc) => {
+  return query.includes(inc) ||
+   query.includes(inc.toLocaleLowerCase()) ||
+    query.includes(inc.toLocaleUpperCase())||
+     query.includes(inc.slice(0, 0).toLocaleUpperCase() + inc.slice(1));
 }
 
-const validQuery = ({ id, name, created_by, query }) => {
+const validQuery = ({ query }) => {
 
   const res = { isValid: true };
-
-  if (!id || typeof(id) !== 'string') {
-    res.err = `${!id? 'Missing': 'Invalid'} id`;
+  // res.isValid = !incll(";") && !incll("replace") && !incll("write") && !incll("delete")
+  // && !incll("create")&& !incll("drop")&& !incll("update")&& !incll("insert")
+  // && !incll("remove")&& !incll("rename")&& !incll("execute")&& !incll("upsert")
+  // && !incll("add")&& !incll("clone")&& !incll("command")&& !incll("close");
+  // Try translate the sql query to dictionary of options
+  try{
+    JSON.parse(query.toString());
+  }
+  catch(err){
     res.isValid = false;
   }
-
-  else if (!name || typeof(name) !== 'string') {
-    res.err = `${!name? 'Missing': 'Invalid'} name`;
-    res.isValid = false;
+  if(!res.isValid){
+    res.err = `Query invalid`;
   }
-
-  else if (!created_by || typeof(created_by) !== 'string') {
-    res.err = `${!created_by? 'Missing': 'Invalid'} created_by`;
-    res.isValid = false;
-  }
-
-  else if (!query || typeof(query) !== 'string') {
-    res.err = `${!query? 'Missing': 'Invalid'} query`;
-    res.isValid = false;
-  }
-
   return res
 }
 
@@ -83,22 +69,27 @@ export const queriesController = {
       res.status(401).json({ status: 'err', err });
       return
     }
+    const { isValid, err } = validQuery(body);
+    if (isValid) {
+      // Modify query
+      const db = await database.connect();
+      const { value, ok } = await db.collection('queries').findOneAndReplace(
+        { _id },
+        { $set: body },
+        { returnOriginal: false }
+      );
 
-    // Modify template
-    const db = await database.connect();
-    const { value, ok } = await db.collection('queries').findOneAndReplace(
-      { _id },
-      { $set: body },
-      { returnOriginal: false }
-    );
-
-    // Return result
-    if (ok && value) {
-      res.json({ status: 'success', data: { ...value } });
+      // Return result
+      if (ok && value) {
+        res.json({ status: 'success', data: { ...value } });
+      } else {
+        res.status(401).json({ status: 'error', err: 'Invalid query id' });
+      }
+      db.close();
     } else {
-      res.status(401).json({ status: 'error', err: 'Invalid query id' });
+      // If data is invalid
+      res.status(403).json({ status: "error", err });
     }
-    db.close();
   },
 
   getQuery: async (res, req) => {
@@ -116,7 +107,7 @@ export const queriesController = {
     }
 
     // Find template and return it
-    const data = queries.filter(({ _id }) => _id.equals(id) );
+    const data = queries.filter(({ _id }) => _id.equals(id));
     if (data.length > 0) {
       res.json({ status: 'success', data: data[0] });
     } else {
@@ -128,7 +119,8 @@ export const queriesController = {
   postQuery: async (res, req) => {
     const { user: { sudo }, params, body } = req;
     let _id = params.qid;
-
+    const { isValid, err } = validQuery(body);
+    if (isValid) {
     // Check if super admin
     if (!sudo) {
       res.status(403).json({ status: 'error', err: 'Insufficient permission' });
@@ -150,6 +142,11 @@ export const queriesController = {
       res.status(401).json({ status: 'error', err: 'Invalid query id' });
     }
     db.close();
+  }
+  else {
+    // If data is invalid
+    res.status(403).json({ status: "error", err });
+  }
   },
 
   runQuery: async (res, req) => {
@@ -167,23 +164,24 @@ export const queriesController = {
     }
 
     // Find the required template
-    const data = queries.filter(({ _id }) => _id.equals(id) );  
+    const data = queries.filter(({ _id }) => _id.equals(id));
     if (data.length > 0) {
-      let TheQuery = data[0][3].toString();
-      const parser = require('js-sql-parser');
-      let parsedQuery;
+      let TheQuery = JSON.parse(data[0][3].toString());
       // Try translate the sql query to dictionary of options
       try {
-        parsedQuery = parser.parse(TheQuery);
+        let { value, ok } = await db.collection('submissions').aggregate(TheQuery);
+        if(ok) {
+        res.json({ status: 'success', data: {...value} });
+        }
+        else{
+          res.status(401).json({ status: 'error', err: 'Query Operation Failed' });
+        }
       } catch (err) {
-        res.status(401).json({ status: 'err', err});
-        return
+        res.status(401).json({ status: 'err', err });
       }
-        // TODO: query job
-      res.json({ status: 'success', data: data[0] });
+      return
     } else {
       res.status(403).json({ status: 'error', err: "Query does not exist" });
     }
-    db.close();
   }
 }
