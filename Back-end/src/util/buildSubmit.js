@@ -14,6 +14,12 @@ const extractRows = async sheet => {
 }
 
 export const buildSubmit = async (req, res, next) => {
+  const { file } = req;
+  if (!file) { 
+    res.status(401).json({ status: 'error', err: 'Missing file' });
+    return
+  }
+
   const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
   const sheet = workbook.SheetNames[0];
 
