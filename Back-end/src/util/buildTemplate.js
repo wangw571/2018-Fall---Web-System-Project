@@ -46,6 +46,5 @@ export const buildTemplate = async (req, res, next) => {
   await getMetadata(data, workbook.Sheets[META]);
   
   req.file = { filename: file.originalname, ...data };
-  res.json(req.file);
-  // next();
+  next();
 }

@@ -63,8 +63,9 @@ export const templateController = {
 
     // Get templates
     let temps = null;
+    let id = null;
     try {
-      const id = getObjectId(temp);
+      id = getObjectId(temp);
     } catch (err) {
       res.status(401).json({ status: 'error', err });
       return
