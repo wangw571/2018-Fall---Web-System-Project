@@ -10,10 +10,14 @@ matrix:
       script:
         - npm run build
     - language: node_js
+      services:
+        - mongodb
       node_js:
         - "stable"
       cache:
         - npm
+      before_script:
+        - mongorestore --port 27017 -d test ./src/test/db
       before_install:
         - cd ./Back-end
       after_success:

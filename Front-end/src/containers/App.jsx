@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Switch, Route, withRouter } from 'react-router-dom';
-import { NotFound } from '../pages';
-import { Dashboard, Login } from '.';
+import { NotFound, Login } from '../pages';
+import { Dashboard } from '.';
 import { Authentication } from '../util';
 import '../styles/containers/app.scss';
 
@@ -12,7 +12,6 @@ class _App extends Component {
     const { history } = this.props;
     const { pathname } = window.location;
     const loggedIn = auth.isAuthenticated();
-    console.log(auth.isAuthenticated());
     if (!loggedIn && pathname !== "/") {
       history.push(`/?redirect=${ pathname.replace(process.env.PUBLIC_URL, "") }`);
     } else if (loggedIn && pathname === "/") {

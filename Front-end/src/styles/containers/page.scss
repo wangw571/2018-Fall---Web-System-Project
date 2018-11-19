@@ -5,4 +5,13 @@
   display: flex;
   background-color: rgba(0, 0, 0, 0.02);
   width: 100%;
+  padding-left: 220px;
+  box-sizing: border-box;
+  transition: padding-left $page-speed $normal-ease;
+}
+
+@include tablet {
+  .page {
+    padding-left: 68px;
+  }
 }

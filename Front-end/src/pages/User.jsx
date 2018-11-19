@@ -86,7 +86,9 @@ export class User extends Component {
         <UserForm items={users} active={active} update={this.userSubmit} buttons={
           () => <button className="users__exit green__button" type="button" onClick={this.delete}>Delete</button>
         }/>:
-        null
+        <div className="green__loader-wrap">
+          <i className="green__loader fas fa-circle-notch"/>Loading...
+        </div>
       }
       </Section>
       <Modal show={show} close={this.close}>
