@@ -2,26 +2,20 @@ import xlsx from 'xlsx';
 const META = 'LOV';
 
 const getMetadata = async ({ columns }, sheet) => {
-  const metadata = xlsx.utils.sheet_to_json(sheet);
-  const meta = Object.keys(metadata[0]);
+  const metadata = xlsx.utils.sheet_to_json(sheet, { header: 1 });
 
-  meta.forEach(col => {
-    if (col.startsWith("__EMPTY")) {
-      const index = parseInt(col.slice(8) || "0");
-      const value = metadata[0][col].slice(10,-1);
-      columns[index].required = (value === 'true');
-    }
+  metadata[1].forEach((col, index) => {
+    const value = col.slice(10,-1);
+    columns[index].required = (value === 'true');
   });
+  
+  metadata.slice(2).forEach(row => {
+    row.forEach((col, index) => {
 
-
-  metadata.slice(1).forEach(row => {
-    const keys = Object.keys(row);
-    keys.forEach(col => {
-      const index = meta.indexOf(col);
       if (!columns[index].options) {
         columns[index].options = [];
       }
-      columns[index].options.push(row[col]);
+      columns[index].options.push(col);
     })
   });
 };
@@ -40,11 +34,18 @@ const getColumns = async sheet => {
 };
 
 export const buildTemplate = async (req, res, next) => {
-  const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+  const { file } = req;
+  if (!file) {
+    res.status(401).json({ status: 'error', err: 'Missing file' });
+    return
+  }
+
+  const workbook = xlsx.read(file.buffer, { type: 'buffer' });
   const sheet = workbook.SheetNames[0];
   const data = await getColumns(workbook.Sheets[sheet]);
   await getMetadata(data, workbook.Sheets[META]);
   
-  req.file = { filename: req.file.originalname, ...data };
-  next();
+  req.file = { filename: file.originalname, ...data };
+  res.json(req.file);
+  // next();
 }
