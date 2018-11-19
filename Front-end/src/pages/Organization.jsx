@@ -157,7 +157,10 @@ export class Organization extends Component {
             <div className="green__input-group orgs__buttons">
               <button className="orgs__submit green__button" type="submit" onClick={this.userModal}>Add User</button>
             </div>
-          </Fragment>: null
+          </Fragment>:
+          <div className="green__loader-wrap">
+            <i className="green__loader fas fa-circle-notch"/>Loading...
+          </div>
         }
       </Section>
       <Modal show={show} close={this.close}>

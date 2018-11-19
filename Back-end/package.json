@@ -5,10 +5,10 @@
   "main": "server.js",
   "scripts": {
     "build:test": "rm -Rf dist && babel src -d dist",
-    "build": "rm -Rf dist && babel src -d dist --ignore \"./**/test/*\"",
+    "build": "rm -Rf dist && babel src -d dist --ignore \"./**/test\",\"**/*.test.js\"",
     "start": "nodemon --exec babel-node src/server.js",
     "serve": "npm run build && node dist/server.js",
-    "test": "npm run build:test && mocha dist/test --exit --recursive --timeout 40000"
+    "test": "npm run build:test && mocha dist/server.test.js dist/test --exit --recursive --timeout 40000"
   },
   "author": "",
   "license": "ISC",
