@@ -47,7 +47,9 @@ export class OrganizationForm extends Component {
   getPerms = ids => {
     const perms = [];
     const { temps } = this.props.items;
-    temps.forEach(({ _id }, key) => ids.indexOf(_id) > -1? perms.push(key): null);
+    if (temps) {
+      temps.forEach(({ _id }, key) => ids.indexOf(_id) > -1? perms.push(key): null);
+    }
     return perms;
   }
 
@@ -84,7 +86,6 @@ export class OrganizationForm extends Component {
     const { name, type, perms } = this.state;
     try {
       const org = active !== undefined ? items.orgs[active]._id: '';
-      console.log(type);
       const res = await request(
         `/orgs/${org}`,
         'POST',
