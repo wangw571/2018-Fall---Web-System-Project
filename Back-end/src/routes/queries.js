@@ -13,6 +13,7 @@ router.route('/:qid')
   .get(queriesController.getQuery)
   .post(queriesController.postQuery)
   .move(queriesController.runQuery)
+  .delete(queriesController.deleteQuery)
 ;
 
 export const Queries = { router, path: '/queries' };

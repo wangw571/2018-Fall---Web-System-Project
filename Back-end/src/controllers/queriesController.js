@@ -7,16 +7,11 @@ const incll = (query, inc) => {
      query.includes(inc.slice(0, 0).toLocaleUpperCase() + inc.slice(1));
 }
 
-const validQuery = ({ query }) => {
+const validQuery = (body) => {
 
   const res = { isValid: true };
-  // res.isValid = !incll(";") && !incll("replace") && !incll("write") && !incll("delete")
-  // && !incll("create")&& !incll("drop")&& !incll("update")&& !incll("insert")
-  // && !incll("remove")&& !incll("rename")&& !incll("execute")&& !incll("upsert")
-  // && !incll("add")&& !incll("clone")&& !incll("command")&& !incll("close");
-  // Try translate the sql query to dictionary of options
   try{
-    JSON.parse(query.toString());
+    JSON.parse(body.query.toString());
   }
   catch(err){
     res.isValid = false;
@@ -54,7 +49,7 @@ export const queriesController = {
   },
 
   postQueries: async (res, req) => {
-    const { user: { sudo }, body } = req;
+    const { user: {sudo, id}, body } = req;
     let _id;
 
     // Check if super admin
@@ -75,7 +70,7 @@ export const queriesController = {
       const db = await database.connect();
       const { value, ok } = await db.collection('queries').findOneAndReplace(
         { _id },
-        { $set: body },
+        { $set: { name: body.name, query: body.query, created_by: id} },
         { returnOriginal: false }
       );
 
@@ -138,6 +133,35 @@ export const queriesController = {
     // Return result
     if (ok && value) {
       res.json({ status: 'success', data: { ...value } });
+    } else {
+      res.status(401).json({ status: 'error', err: 'Invalid query id' });
+    }
+    db.close();
+  }
+  else {
+    // If data is invalid
+    res.status(403).json({ status: "error", err });
+  }
+  },
+
+  deleteQuery: async (res, req) => {
+    const { user: { sudo }, params, body } = req;
+    let _id = params.qid;
+    const { isValid, err } = validQuery(body);
+    if (isValid) {
+    // Check if super admin
+    if (!sudo) {
+      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      return
+    }
+
+    // Modify query
+    const db = await database.connect();
+    const { value, ok } = await db.collection('queries').findOneAndDelete({ _id });
+
+    // Return result
+    if (ok && value) {
+      res.json({ status: 'success', data: value._id });
     } else {
       res.status(401).json({ status: 'error', err: 'Invalid query id' });
     }
