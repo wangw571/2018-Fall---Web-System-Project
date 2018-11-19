@@ -4,7 +4,7 @@ matrix:
       node_js:
         - stable
       cache:
-        - npm
+        - ./Front-end/node_modules
       before_install:
         - cd ./Front-end
       script:
@@ -15,7 +15,7 @@ matrix:
       node_js:
         - stable
       cache:
-        - npm
+        - ./Back-end/node_modules
       before_script:
         - mongorestore --port 27017 -d test ./src/test/db
       before_install:
