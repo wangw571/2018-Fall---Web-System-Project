@@ -53,8 +53,14 @@
     background-color: #dc3545;
   }
 
-  &__modal .modal__box {
-    padding: 20px 30px 0;
+  &__drop {
+    width: 100px;
+    margin-left: 10px;
+    background-color: #dcb635;
+  }
+
+  &__modal {
+    padding: 20px 30px 0px;
     @include flex(column, center, flex-start);
   }
 
@@ -92,6 +98,7 @@
 
   & .collect--orgs {
     max-width: 327px;
+    margin-bottom: 15px;
     & .collect__item--active {
       & #{ $self }__temp-icon {
         color: white;
