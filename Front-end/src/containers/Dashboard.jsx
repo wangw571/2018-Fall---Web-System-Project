@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { withRouter, Switch, Route } from 'react-router-dom';
 import { Nav } from '../components/dashboard';
 import { DASHBOARD_NAV } from '../values';

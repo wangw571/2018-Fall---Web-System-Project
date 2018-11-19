@@ -184,68 +184,27 @@ export class Report extends Component {
   }
 
   generateReport = () => {
-    const {userQueries, userTitles, userTemplates, userColumns, activeModal, queries, columns, templates} = this.state;
-    if (userQueries[activeModal] === 0){
-      var update = userQueries;
-      update[activeModal] = queries[0];
+    const {userQueries, userTitles, userTemplates, userColumns, activeModal, queries, columns} = this.state;
+    if (userQueries[activeModal] === 0) {
       this.setState({
-        userQueries: update
+        userQueries: (userQueries[activeModal] = queries[0], userQueries)
       });
     }
-    if (userColumns[activeModal] === 0){
-      var update = userColumns;
-      update[activeModal] = columns[0];
+    if (userColumns[activeModal] === 0) {
       this.setState({
-        userColumns: update
+        userColumns: (userColumns[activeModal] = columns[0], userColumns)
       });
     }
-    if (userTemplates[activeModal] === 0){
-      var update = userQueries;
-      update[activeModal] = templates[0];
+    if (userTemplates[activeModal] === 0) {
       this.setState({
-        userTemplates: update
+        userTemplates: (userTemplates[activeModal] = columns[0], userTemplates)
       });
     }
-    console.log(userQueries[activeModal]);
-    console.log(userColumns[activeModal]);
-    console.log(userTemplates[activeModal]);
-    console.log(userTitles[activeModal]);
-    console.log(activeModal);
     let data = reportInfo.getData(userQueries[activeModal].name, userTemplates[activeModal].name, userColumns[activeModal].name, userQueries[activeModal].id, userTitles[activeModal]);
-    switch(activeModal){
-      case 0:
-        this.setState({
-          chart1Data: data
-        })
-        break;
-      case 1:
-        this.setState({
-          chart2Data: data
-        })
-        break;
-      case 2:
-        this.setState({
-          chart3Data: data
-        })
-        break;
-      case 3:
-        this.setState({
-          chart4Data: data
-        })
-        break;
-      case 4:
-        this.setState({
-          chart5Data: data
-        })
-        break;
-      case 5:
-        this.setState({
-          chart6Data: data
-        })
-        break;
-      default:
-        break;
-    }
+    this.setState(state => {
+      state[`chart${activeModal + 1}Data`] = data;
+      return state;
+    });
   }
 
   render() {

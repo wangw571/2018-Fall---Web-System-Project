@@ -163,12 +163,6 @@ const data2 = {
 };
 
 class _ReportsInfo {
-  /*
-    Checks to see if the user is logged in. If so, get the token from localstorage
-    and check if valid.
-  */
-  constructor() {
-  }
   
   getReports = () => {
     return reports;
