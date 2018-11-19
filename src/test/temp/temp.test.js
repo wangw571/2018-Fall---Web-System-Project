@@ -22,6 +22,7 @@ describe('temp.js', () => {
 
           // Store _id for cleanup
           id = res.body.data;
+          console.log(id);
           done();
         });
       });
