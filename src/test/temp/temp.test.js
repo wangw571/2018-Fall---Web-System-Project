@@ -2,7 +2,7 @@ import chai from 'chai';
 import fs from 'fs';
 import { request } from '../util';
 const should = chai.should();
-let file;
+let id;
 
 describe('temp.js', () => {
 
@@ -21,7 +21,7 @@ describe('temp.js', () => {
           res.body.data.should.be.a('string');
 
           // Store _id for cleanup
-          file = res.body.data;
+          id = res.body.data;
           done();
         });
       });
@@ -60,7 +60,7 @@ describe('temp.js', () => {
       });
 
       describe('As super user', () => {
-        it('it should give a list with 1 item', done => {
+        it('it should give a list with 2 items', done => {
           request('/temp').asSystemUser().end((err, res) => {
 
             // Check returns an empty list successfully
@@ -70,8 +70,7 @@ describe('temp.js', () => {
             res.body.should.have.property('data');
 
             // Check data integrity
-            res.body.data.should.be.a('array').length(1);
-            res.body.data[0].should.be.have.property('_id', file);
+            res.body.data.should.be.a('array').length(2);
             done();
           });
         });
@@ -84,14 +83,20 @@ describe('temp.js', () => {
 
     describe('GET', () => {
       it('it should give the template', done => {
-        request('/temp').asSystemAdmin().end((err, res) => {
+        request(`/temp/${id}`).asSystemAdmin().end((err, res) => {
 
           // Check returns an empty list successfully
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('status', 'success');
-          res.body.should.have.property('data');
-          res.body.data.should.be.a('array').length(1);
+
+          // Check if returned data is correct format
+          res.body.data.should.be.a('object');
+          res.body.data.should.have.property('_id', id);
+          res.body.data.should.have.property('filename');
+          res.body.data.should.have.property('name');
+          res.body.data.should.have.property('columns');
+          res.body.data.columns.should.be.a('array');
           done();
         });
       });
@@ -99,7 +104,7 @@ describe('temp.js', () => {
 
     describe('POST', () => {
       it('it should update the template', done => {
-        request(`/temp/${file}`, 'POST').asSystemAdmin()
+        request(`/temp/${id}`, 'POST').asSystemAdmin()
         .send({ name: 'testing' })
         .end((err, res) => {
 
@@ -110,7 +115,7 @@ describe('temp.js', () => {
 
           // Check if returned data is correct format and updated
           res.body.data.should.be.a('object');
-          res.body.data.should.have.property('_id', file);
+          res.body.data.should.have.property('_id', id);
           res.body.data.should.have.property('filename');
           res.body.data.should.have.property('name', 'testing');
           res.body.data.should.have.property('columns');
@@ -123,14 +128,14 @@ describe('temp.js', () => {
 
     describe('DELETE', () => {
       it('it should remove the template', done => {
-        request(`/temp/${file}`, 'DELETE').asSystemAdmin()
+        request(`/temp/${id}`, 'DELETE').asSystemAdmin()
         .end((err, res) => {
 
           // Check returns an success object
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('status', 'success');
-          res.body.should.have.property('data', file);
+          res.body.should.have.property('data', id);
           done();
         });
       });
@@ -145,7 +150,7 @@ describe('temp.js', () => {
           res.body.should.have.property('data');
 
           // Check data integrity
-          res.body.data.should.be.a('array').length(0);
+          res.body.data.should.be.a('array').length(1);
           done();
         });
       });
