@@ -3,6 +3,18 @@
 
 .section {
   background-color: white;
-  padding: 20px 30px;
+  height: 100vh;
+  overflow: auto;
   flex-grow: 1;
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    background-color: rgba(0,0,0,0.1);
+    &-thumb {
+      background-color: rgba(0,0,0,0.1);
+    }
+  }
+  &__wrapper {
+    padding: 20px 30px;
+  }
 }

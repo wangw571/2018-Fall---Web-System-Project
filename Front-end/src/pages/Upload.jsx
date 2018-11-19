@@ -179,7 +179,9 @@ export class Upload extends Component {
               Upload File
             </button>
           </Fragment>:
-          null
+          <div className="green__loader-wrap">
+            <i className="green__loader fas fa-circle-notch"/>Loading...
+          </div>
         }
       </Section>
       <Modal show={show} className="upload__modal" close={this.close}>

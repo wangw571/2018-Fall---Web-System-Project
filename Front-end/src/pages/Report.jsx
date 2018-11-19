@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { Page } from '../containers';
-import { List } from '../components/dashboard';
-import '../styles/containers/report.scss';
-import { Chart } from 'react-google-charts';
+import { List, Section } from '../components/dashboard';
+import '../styles/pages/report.scss';
+import { Line, Pie, HorizontalBar } from 'react-chartjs-2';
 import { Modal } from '../components';
 import { ReportsInfo } from '../util/ReportsInfo';
 
@@ -50,7 +50,6 @@ export class Report extends Component {
   }
 
   itemMap = ({ title }) => {
-    console.log(title);
     return <Fragment>
       <p className="report_title">{title}</p>
       <button onClick={this.delete}>
@@ -250,36 +249,33 @@ export class Report extends Component {
   }
 
   render() {
-    const {reportsActive, items, showModal, chart1Data, chart2Data, chart3Data, chart4Data, chart5Data, chart6Data} = this.state;
+    const {reportsActive, items, showModal, chart1Data, chart2Data, chart3Data} = this.state;
     return <Page className="report">
       <div className="report__container">
         <List block="report" onClick={this.click} active={reportsActive} items={items} map={this.itemMap}>
           <h3 className="report__list-header">Reports</h3>
         </List>
       </div>
-      <div className="report__page">
+      <Section className="report__section">
         <div className="report__box" onClick={this.toggleModal.bind(this, 0)}>
-          <Chart chartType="BarChart" width="100%" height="200px" data={chart1Data} />
+          <HorizontalBar data={chart1Data} />
         </div>
         <div className="report__box" onClick={this.toggleModal.bind(this, 1)}>
-        <Chart chartType="LineChart" width="100%" height="200px" data={chart2Data} />
+          <Line data={chart2Data} />
         </div>
         <div className="report__box" onClick={this.toggleModal.bind(this, 2)}>
-          <Chart chartType="PieChart" width="100%" height="200px" data={chart3Data} />
+          <Pie data={chart3Data} />
         </div>
-        <div className="report__box" onClick={this.toggleModal.bind(this, 3)}>
-          <Chart chartType="AreaChart" width="100%" height="200px" data={chart4Data} />
+        <div className="report__box" onClick={this.toggleModal.bind(this, 0)}>
+          <HorizontalBar data={chart1Data} />
         </div>
-        <div className="report__box" onClick={this.toggleModal.bind(this, 4)}>
-          <Chart chartType="ScatterChart" width="100%" height="200px" data={chart5Data} />
+        <div className="report__box" onClick={this.toggleModal.bind(this, 1)}>
+          <Line data={chart2Data} />
         </div>
-        <div className="report__box" onClick={this.toggleModal.bind(this, 5)}>
-          <Chart chartType="PieChart" width="100%" height="200px" data={chart6Data} />
+        <div className="report__box" onClick={this.toggleModal.bind(this, 2)}>
+          <Pie data={chart3Data} />
         </div>
-        <button onClick={this.addReport}>
-          Add Report
-        </button>
-      </div>
+      </Section>
       <Modal show={showModal} className="report__modal" close={this.close}>
         <form>
           <select itemMap={this.state.queries} onChange={this.queryOptions}>

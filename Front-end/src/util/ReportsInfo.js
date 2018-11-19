@@ -19,7 +19,7 @@ const reports = [
     },
     chart3: {
       title: "Report1",
-      query: "data1",
+      query: "data2",
       column: "1",
       id: "id",
       template: "template"
@@ -64,7 +64,7 @@ const reports = [
     },
     chart3: {
       title: "Report1",
-      query: "data1",
+      query: "data2",
       column: "1",
       id: "id",
       template: "template"
@@ -141,31 +141,26 @@ const columns = [
   }
 ]
 
-const data1 = [
-    ["Year", "Visitations", { role: "style" }],
-    ["2010", 10, "color: gray"],
-    ["2020", 14, "color: #76A7FA"],
-    ["2030", 16, "color: blue"],
-    ["2040", 22, "stroke-color: #703593; stroke-width: 4; fill-color: #C5A5CF"],
-    [
-      "2050",
-      28,
-      "stroke-color: #871B47; stroke-opacity: 0.6; stroke-width: 8; fill-color: #BC5679; fill-opacity: 0.2"
+const data1 = {
+    labels: ["January", "February", "March", "April", "May"],
+    datasets: [
+      {
+        label: 'Canada',
+        data: [10, 24, 31, 13, 24]
+      },
+      {
+        label: 'USA',
+        data: [21, 23, 12, 21, 1]
+      }
     ]
-];
+  };
   
-const data2 = [
-    ["Year", "Visitations", { role: "style" }],
-    ["2010", 202, "color: gray"],
-    ["2020", 242, "color: #76A7FA"],
-    ["2030", 262, "color: blue"],
-    ["2040", 222, "stroke-color: #703593; stroke-width: 4; fill-color: #C5A5CF"],
-    [
-      "2050",
-      282,
-      "stroke-color: #871B47; stroke-opacity: 0.6; stroke-width: 8; fill-color: #BC5679; fill-opacity: 0.2"
-    ]
-];
+const data2 = {
+  labels: ["USA", "France", "Tokyo", "China"],
+  datasets: [{
+    data: [10, 24, 31, 13]
+  }]
+};
 
 class _ReportsInfo {
   /*
