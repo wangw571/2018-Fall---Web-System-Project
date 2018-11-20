@@ -48,6 +48,7 @@ export class OrganizationForm extends Component {
     const perms = [];
     const { temps } = this.props.items;
     if (temps) {
+      ids = ids || [];
       temps.forEach(({ _id }, key) => ids.indexOf(_id) > -1? perms.push(key): null);
     }
     return perms;
