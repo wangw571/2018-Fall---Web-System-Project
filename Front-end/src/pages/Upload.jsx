@@ -13,7 +13,8 @@ export class Upload extends Component {
     show: false,
     active: -1,
     file: null,
-    newTemplate: false
+    newTemplate: false,
+    currentData: []
   }
 
   async componentDidMount() {
@@ -39,12 +40,13 @@ export class Upload extends Component {
     });
 
     if (!this.unmounted) {
-      this.setState({ items, active: items.length - 1 });
+      this.setState({ items, active: 0 });
     }
   }
 
   componentWillUnmount() {
     this.unmounted = true;
+    console.log("test");
   }
 
   getStatus = status => {
@@ -88,7 +90,54 @@ export class Upload extends Component {
     }
   }
 
-  setActive = active => this.setState({ active })
+  setActive = async active => {
+    const {items} = this.state;
+    let data = null;
+    let temp = null;
+    try {
+      data = await request(`/submit/${items[active]._id}`);
+      temp = await request(`/temp/${items[active]._id}`);
+      console.log(items[active]._id);
+      console.log(data.data[0]);
+      let updateData = data.data;
+      console.log(updateData.length);
+      console.log(Math.max(...Object.keys(temp.columns)));
+      let maxCols = Math.max(...Object.keys(temp.columns));
+
+      let i=0;
+      let j=0;
+      let columns = {};
+      columns['id'] = 0;
+      for (i=0; i<=maxCols; i++){
+        columns[i] = temp.columns[i].name;
+      }
+      console.log(updateData);
+      for (j=0; j<updateData.length; j++){
+        updateData[j]['id'] = j+1;
+        for (i=0; i<=maxCols; i++){
+          if (!updateData[j].hasOwnProperty(i)){
+              updateData[j][i] = "Empty";
+          }
+        }
+      }
+      console.log(columns);
+      console.log(updateData);
+      let finalData = new Array(columns);
+      finalData = finalData.concat(updateData);
+      console.log(finalData);
+      this.setState({
+        currentData: finalData
+      });
+    } catch (err){
+      console.log(err);
+      this.setState({
+        currentData: []
+      });
+    }
+    this.setState({
+      active
+    });
+  }
 
   send = async el => {
     el.preventDefault();
@@ -154,9 +203,62 @@ export class Upload extends Component {
     </Fragment>
   }
 
+  editValue = (row,cols,e) => {
+    let inputValue = e.target.innerText;
+    let newRow = row.row;
+    let newRowNum = newRow.id;
+    let position = cols.cols;
+    newRow[position] = inputValue;
+    let copy = this.state.currentData;
+    copy[newRowNum] = newRow;
+    console.log(row.id);
+  
+    console.log(inputValue);
+    console.log(newRow);
+    console.log(newRowNum);
+    console.log(position);
+    console.log(copy);
+    this.setState({
+        currentData: copy
+    });
+  }
+
+  editSubmission = async el => {
+    el.preventDefault();
+    console.log("hello");
+    const {active, currentData, items} = this.state;
+    console.log(currentData.slice(1));
+    try {
+      await request(`/submit/${items[active]._id}`, 'POST', currentData.slice(1));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   render() {
     const { items, active, show, file, newTemplate } = this.state;
+    console.log(items);
     const item = active > -1? items[active]: null;
+    let data = null;
+    if (this.state.currentData.length > 0){
+      data = this.state.currentData.map(row =>{
+        return (
+            <tr key={row.id}>
+                {Object.keys(row).filter(cols => cols !== 'id').map(cols => {
+                    return (
+                      <td key={row.id+''+ cols}>
+                        <div contentEditable="true"
+                        value={cols} 
+                        onInput={this.editValue.bind(this,{row},{cols})}
+                        >
+                          {row[cols]}
+                        </div>
+                    </td>);
+                })}
+            </tr>
+        );
+      });
+    }
     return <Page className='upload'>
       <div className="upload__list">
         <List block="upload" onClick={this.setActive} active={active} items={items} map={this.itemMap}>
@@ -178,7 +280,19 @@ export class Upload extends Component {
             <button className="upload__page-button" type="button" onClick={this.toggleModal}>
               Upload File
             </button>
+              <form onSubmit={this.editSubmission}>
+                <div>
+                  <table cellSpacing="50" id="mytable">
+                    <tbody>{data}</tbody>
+                  </table>
+                </div>
+                <button>
+                 Edit Submission
+                </button>
+              </form>
+            
           </Fragment>:
+ 
           null
         }
       </Section>
