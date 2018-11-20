@@ -1,56 +1,45 @@
 import { database, getHash, getObjectId } from '../util';
 
-const incll = (query, inc) => {
-  return query.includes(inc) ||
-   query.includes(inc.toLocaleLowerCase()) ||
-    query.includes(inc.toLocaleUpperCase())||
-     query.includes(inc.slice(0, 0).toLocaleUpperCase() + inc.slice(1));
+const validate = ({ name, query }) => {
+  const data = {};
+
+  // Check if has a name
+  if (!name || typeof(name) !== 'string') {
+    return { err: `${!name? "Missing": "Invalid"} query name` }
+  } else { data.name = name }
+
+  // Check if array of objects
+  if (!query) {
+    return { err: 'Missing query' }
+  } else if (!Array.isArray(query)) {
+    return { err: 'Invalid query' };
+  } else {
+    const err = query.filter(item => typeof(item) !== 'object');
+    if (err.length !== 0) { return { err: 'Invalid query' } }
+    // Stringify to prevent BSON detection
+    else { data.query = JSON.stringify(query) }
+  }
+
+  return data;
 }
-
-const validQuery = (body) => {
-
-  const res = { isValid: true };
-  try{
-    JSON.parse(body.query.toString());
-  }
-  catch(err){
-    res.isValid = false;
-  }
-  if(!res.isValid){
-    res.err = `Query invalid`;
-  }
-  return res
-}
-
-
-const getAllQueries = async (db, project) => (
-  db.collection('queries').find({}, project).toArray()
-)
-
 
 export const queriesController = {
-  getQueries: async (res, req) => {
+  getQueries: async (req, res) => {
     const { user: { sudo } } = req;
-    const db = await database.connect();
-    let data = null;
 
-    // Get all or subset of templates depending on permissions
-    if (sudo) {
-      data = await getAllQueries(db, { _id: 1, name: 1, date: 1 });
-    } else {
+    if (!sudo) {
       res.status(403).json({ status: 'error', err: 'Insufficient permission' });
-      db.close();
       return
     }
 
+    const db = await database.connect();
+    const data = await db.collection('queries').find({}, { _id: 1, name: 1, date: 1 }).toArray();
     res.json({ status: 'success', data });
     db.close();
-    return
   },
 
-  postQueries: async (res, req) => {
-    const { user: {sudo, id}, body } = req;
-    let _id;
+  postQueries: async (req, res) => {
+    const { user: { sudo, _id }, body } = req;
 
     // Check if super admin
     if (!sudo) {
@@ -58,19 +47,69 @@ export const queriesController = {
       return
     }
 
-    try {
-      _id = getObjectId(body.query);
-    } catch (err) {
-      res.status(401).json({ status: 'err', err });
+    let data = validate(body);
+    if (!data.err) {
+      const db = await database.connect();
+      data = { ...data, created_by: _id, date: new Date() }
+      const { insertedId } = await db.collection('queries').insertOne(data);
+
+      res.json({ status: "success", data: { _id: insertedId, ...data } });
+      db.close();
+
+    } else {
+      res.status(403).json({ status: "error", err: data.err });
+    }
+  },
+
+  getQuery: async (req, res) => {
+    const { user: { sudo }, params } = req;
+
+    if (!sudo) {
+      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
       return
     }
-    const { isValid, err } = validQuery(body);
-    if (isValid) {
-      // Modify query
+
+    let _id;
+    try {
+      _id = getObjectId(params.qid);
+    } catch (err) {
+      res.status(401).json({ status: 'error', err });
+    }
+
+    // Get query
+    const db = await database.connect();
+    const data = await db.collection('queries').findOne({ _id });
+    if (data) {
+      res.json({ status: 'success', data });
+    } else {
+      res.status(401).json({ status: 'error', err: 'No such query' });
+    }
+    db.close();
+  },
+
+  postQuery: async (req, res) => {
+    const { user: { sudo }, params, body } = req;
+
+    if (!sudo) {
+      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      return
+    }
+
+    let _id;
+    try {
+      _id = getObjectId(params.qid);
+    } catch (err) {
+      res.status(401).json({ status: 'error', err });
+      return
+    }
+
+    let data = validate(body);
+    if (!data.err) {
       const db = await database.connect();
+      data = { ...data, created_by: _id, date: new Date() };
       const { value, ok } = await db.collection('queries').findOneAndReplace(
         { _id },
-        { $set: { name: body.name, query: body.query, created_by: id} },
+        { $set: data },
         { returnOriginal: false }
       );
 
@@ -81,77 +120,25 @@ export const queriesController = {
         res.status(401).json({ status: 'error', err: 'Invalid query id' });
       }
       db.close();
+
     } else {
-      // If data is invalid
-      res.status(403).json({ status: "error", err });
+      res.status(403).json({ status: "error", err: data.err });
     }
   },
 
-  getQuery: async (res, req) => {
+  deleteQuery: async (req, res) => {
     const { user: { sudo }, params } = req;
 
-    // Get templates
-    let queries = null;
-    const id = getObjectId(params.qid);
-    const db = await database.connect();
-    if (sudo) {
-      queries = await getAllQueries(db);
-    } else {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
-      return
-    }
-
-    // Find template and return it
-    const data = queries.filter(({ _id }) => _id.equals(id));
-    if (data.length > 0) {
-      res.json({ status: 'success', data: data[0] });
-    } else {
-      res.status(403).json({ status: 'error', err: "Query does not exist" });
-    }
-    db.close();
-  },
-
-  postQuery: async (res, req) => {
-    const { user: { sudo }, params, body } = req;
-    let _id = params.qid;
-    const { isValid, err } = validQuery(body);
-    if (isValid) {
-    // Check if super admin
     if (!sudo) {
       res.status(403).json({ status: 'error', err: 'Insufficient permission' });
       return
     }
 
-    // Modify query
-    const db = await database.connect();
-    const { value, ok } = await db.collection('queries').findOneAndReplace(
-      { _id },
-      { $set: body },
-      { returnOriginal: false }
-    );
-
-    // Return result
-    if (ok && value) {
-      res.json({ status: 'success', data: { ...value } });
-    } else {
-      res.status(401).json({ status: 'error', err: 'Invalid query id' });
-    }
-    db.close();
-  }
-  else {
-    // If data is invalid
-    res.status(403).json({ status: "error", err });
-  }
-  },
-
-  deleteQuery: async (res, req) => {
-    const { user: { sudo }, params, body } = req;
-    let _id = params.qid;
-    const { isValid, err } = validQuery(body);
-    if (isValid) {
-    // Check if super admin
-    if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+    let _id;
+    try {
+      _id = getObjectId(params.qid);
+    } catch (err) {
+      res.status(401).json({ status: 'error', err });
       return
     }
 
@@ -166,46 +153,36 @@ export const queriesController = {
       res.status(401).json({ status: 'error', err: 'Invalid query id' });
     }
     db.close();
-  }
-  else {
-    // If data is invalid
-    res.status(403).json({ status: "error", err });
-  }
   },
 
-  runQuery: async (res, req) => {
+  runQuery: async (req, res) => {
     const { user: { sudo }, params } = req;
 
-    // Get queries
-    let queries = null;
-    const id = getObjectId(params.qid);
-    const db = await database.connect();
-    if (sudo) {
-      queries = await getAllQueries(db);
-    } else {
+    if (!sudo) {
       res.status(403).json({ status: 'error', err: 'Insufficient permission' });
       return
     }
 
-    // Find the required template
-    const data = queries.filter(({ _id }) => _id.equals(id));
-    if (data.length > 0) {
-      let TheQuery = JSON.parse(data[0][3].toString());
-      // Try translate the sql query to dictionary of options
-      try {
-        let { value, ok } = await db.collection('submissions').aggregate(TheQuery);
-        if(ok) {
-        res.json({ status: 'success', data: {...value} });
-        }
-        else{
-          res.status(401).json({ status: 'error', err: 'Query Operation Failed' });
-        }
-      } catch (err) {
-        res.status(401).json({ status: 'err', err });
-      }
+    let _id;
+    try {
+      _id = getObjectId(params.qid);
+    } catch (err) {
+      res.status(401).json({ status: 'error', err });
       return
+    }
+
+    const db = await database.connect();
+    const data = await db.collection('queries').findOne({ _id }, { query: 1 });
+
+    if (data) {
+      const result = await db.collection('submissions').aggregate(JSON.parse(data.query)).toArray();
+      if (result) {
+        res.json({ status: 'success', data: result });
+      } else {
+        res.status(401).json({ status: 'error', err: 'Query operation failed' });
+      }
     } else {
-      res.status(403).json({ status: 'error', err: "Query does not exist" });
+      res.status(401).json({ status: 'error', err: 'No such query' });
     }
   }
 }
