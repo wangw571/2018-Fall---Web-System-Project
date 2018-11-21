@@ -9,15 +9,19 @@ const validate = ({ name, query }) => {
   } else { data.name = name }
 
   // Check if array of objects
-  if (!query) {
-    return { err: 'Missing query' }
-  } else if (!Array.isArray(query)) {
-    return { err: 'Invalid query' };
-  } else {
-    const err = query.filter(item => typeof(item) !== 'object');
-    if (err.length !== 0) { return { err: 'Invalid query' } }
-    // Stringify to prevent BSON detection
-    else { data.query = JSON.stringify(query) }
+  try {
+    if (!query) {
+      return { err: 'Missing query' }
+    } else if (!Array.isArray(query)) {
+      return { err: 'Invalid query' };
+    } else {
+      const err = query.filter(item => typeof(item) !== 'object');
+      if (err.length !== 0) { return { err: 'Invalid query' } }
+      // Stringify to prevent BSON detection
+      else { data.query = JSON.stringify(query) }
+    }
+  } catch (err) {
+    return { err }
   }
 
   return data;
@@ -45,6 +49,15 @@ export const queriesController = {
     if (!sudo) {
       res.status(403).json({ status: 'error', err: 'Insufficient permission' });
       return
+    }
+
+    if (typeof(body.query) === 'string') {
+      try {
+          body.query = JSON.parse(body.query);
+      } catch (err) {
+        res.status(401).json({ status: 'error', err });
+        return
+      }
     }
 
     let data = validate(body);
@@ -101,6 +114,15 @@ export const queriesController = {
     } catch (err) {
       res.status(401).json({ status: 'error', err });
       return
+    }
+
+    if (typeof(body.query) === 'string') {
+      try {
+          body.query = JSON.parse(body.query);
+      } catch (err) {
+        res.status(401).json({ status: 'error', err });
+        return
+      }
     }
 
     let data = validate(body);

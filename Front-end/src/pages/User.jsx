@@ -6,7 +6,6 @@ import { Modal } from '../components';
 import { Page } from '../containers';
 import '../styles/pages/users.scss';
 
-const user = Authentication.getInstance().getUser();
 export class User extends Component {
 
   state = {
@@ -15,9 +14,14 @@ export class User extends Component {
     active: -1
   }
 
+  constructor(props) {
+    super(props);
+    this.user = Authentication.getInstance().getUser();
+  }
+
   async componentDidMount() {
     try {
-      const users = await request(`/users/${user._org}`);
+      const users = await request(`/users/${this.user._org}`);
       if (!this.unmounted) {
         this.setState({ users, active: 0 });
       }

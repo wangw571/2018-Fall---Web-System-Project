@@ -8,7 +8,9 @@ import '../styles/containers/app.scss';
 const auth = Authentication.getInstance();
 class _App extends Component {
 
-  componentDidMount() {
+  state = { loaded: false }
+
+  async componentDidMount() {
     const { history } = this.props;
     const { pathname } = window.location;
     const loggedIn = auth.isAuthenticated();
