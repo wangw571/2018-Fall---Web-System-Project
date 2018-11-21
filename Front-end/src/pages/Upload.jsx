@@ -4,6 +4,7 @@ import { Page } from '../containers';
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
 import { request, upload, reduce, Authentication } from '../util';
+import { commaListsOr } from 'common-tags';
 
 const user = Authentication.getInstance().getUser();
 export class Upload extends Component {
@@ -20,6 +21,7 @@ export class Upload extends Component {
   async componentDidMount() {
     let items;
     let submits;
+    const {active} = this.state;
     try {
       // Get templates and submissions
       items = await request('/temp');
@@ -42,6 +44,33 @@ export class Upload extends Component {
     if (!this.unmounted) {
       this.setState({ items, active: 0 });
     }
+    let data = null;
+    let temp = null;
+    try {
+      data = await request(`/submit/${items[0]._id}`);
+      temp = await request(`/temp/${items[0]._id}`);
+      this.modifyDataForm(data, temp);
+    } catch (err){
+      console.log(err);
+    }
+  }
+
+  modifyDataForm = (data, temp) => {
+    let updateData = data.data;
+    let maxCols = Math.max(...Object.keys(temp.columns));
+
+    let i=0;
+    let j=0;
+    let columns = new Array(maxCols);
+    for (i=0; i<=maxCols; i++){
+      columns[i] = temp.columns[i].name;
+    }
+    let finalData = new Array(columns);
+    finalData = finalData.concat(updateData);
+    this.setState({
+      currentData: finalData
+    });
+    console.log(finalData);
   }
 
   componentWillUnmount() {
@@ -97,37 +126,7 @@ export class Upload extends Component {
     try {
       data = await request(`/submit/${items[active]._id}`);
       temp = await request(`/temp/${items[active]._id}`);
-      console.log(items[active]._id);
-      console.log(data.data[0]);
-      let updateData = data.data;
-      console.log(updateData.length);
-      console.log(Math.max(...Object.keys(temp.columns)));
-      let maxCols = Math.max(...Object.keys(temp.columns));
-
-      let i=0;
-      let j=0;
-      let columns = {};
-      columns['id'] = 0;
-      for (i=0; i<=maxCols; i++){
-        columns[i] = temp.columns[i].name;
-      }
-      console.log(updateData);
-      for (j=0; j<updateData.length; j++){
-        updateData[j]['id'] = j+1;
-        for (i=0; i<=maxCols; i++){
-          if (!updateData[j].hasOwnProperty(i)){
-              updateData[j][i] = "Empty";
-          }
-        }
-      }
-      console.log(columns);
-      console.log(updateData);
-      let finalData = new Array(columns);
-      finalData = finalData.concat(updateData);
-      console.log(finalData);
-      this.setState({
-        currentData: finalData
-      });
+      this.modifyDataForm(data, temp);
     } catch (err){
       console.log(err);
       this.setState({
@@ -211,13 +210,6 @@ export class Upload extends Component {
     newRow[position] = inputValue;
     let copy = this.state.currentData;
     copy[newRowNum] = newRow;
-    console.log(row.id);
-  
-    console.log(inputValue);
-    console.log(newRow);
-    console.log(newRowNum);
-    console.log(position);
-    console.log(copy);
     this.setState({
         currentData: copy
     });
@@ -229,7 +221,25 @@ export class Upload extends Component {
     const {active, currentData, items} = this.state;
     console.log(currentData.slice(1));
     try {
-      await request(`/submit/${items[active]._id}`, 'POST', currentData.slice(1));
+      await request(
+        `/submit/${items[active]._id}`,
+        'PATCH',
+        JSON.stringify({
+          data: currentData.slice(1)
+        })
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  deleteSubmission = async el => {
+    const { active, items } = this.state;
+    try {
+      await request(`/submit/${items[active]._id}`, 'DELETE');
+      delete items[active].submitted;
+      items[active].date = new Date();
+      this.setState({ items, active: -1 });
     } catch (err) {
       console.log(err);
     }
@@ -246,7 +256,7 @@ export class Upload extends Component {
             <tr key={row.id}>
                 {Object.keys(row).filter(cols => cols !== 'id').map(cols => {
                     return (
-                      <td key={row.id+''+ cols}>
+                      <td key={row.id+cols}>
                         <div contentEditable="true"
                         value={cols} 
                         onInput={this.editValue.bind(this,{row},{cols})}
@@ -259,6 +269,7 @@ export class Upload extends Component {
         );
       });
     }
+
     return <Page className='upload'>
       <div className="upload__list">
         <List block="upload" onClick={this.setActive} active={active} items={items} map={this.itemMap}>
@@ -268,7 +279,10 @@ export class Upload extends Component {
               el => { this.setState({ newTemplate: true }); this.toggleModal(el) }
             }>
               <i className="upload__add-btn-icon fas fa-plus"/> Add Template
-            </button>: null
+            </button>
+            
+            : null
+
           }
         </List>
       </div>
@@ -286,11 +300,13 @@ export class Upload extends Component {
                     <tbody>{data}</tbody>
                   </table>
                 </div>
-                <button>
+                <button className="upload__page-button">
                  Edit Submission
                 </button>
               </form>
-            
+              <button className="upload__page-button" onClick={this.deleteSubmission}>
+                  Delete Submission
+              </button>
           </Fragment>:
  
           null
