@@ -7,7 +7,6 @@ import { Authentication, request } from '../util';
 import { OrganizationForm } from '../components/organization';
 import { UserForm } from '../components/user';
 
-const currentUser = Authentication.getInstance().getUser();
 export class Organization extends Component {
 
   state = {
@@ -20,13 +19,18 @@ export class Organization extends Component {
     user: undefined,
   }
 
+  constructor(props) {
+    super(props);
+    this.curr = Authentication.getInstance().getUser();
+  }
+
   async componentDidMount() {
     let items;
     try {
       items = {
         orgs: await request('/orgs'),
         temps: await request('/temp'),
-        users: await request(`/users/${currentUser._org}`)
+        users: await request(`/users/${this.curr._org}`)
       }
     } catch (err) {
       console.log(err);
@@ -139,7 +143,7 @@ export class Organization extends Component {
         <List block="orgs" onClick={this.setActive} active={active} items={items.orgs} map={this.itemMap}>
           <h3 className="orgs__list-header">Organizations</h3>
           {
-            currentUser.admin? <button className="orgs__list-btn" type="button" onClick={this.typedModal.bind(this, 'org')}>
+            this.curr.admin? <button className="orgs__list-btn" type="button" onClick={this.typedModal.bind(this, 'org')}>
               <i className="orgs__list-btn-icon fas fa-plus"/> Add Organization
             </button>: null
           }
