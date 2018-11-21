@@ -13,7 +13,7 @@ router.route('/')
 router.route('/:qid')
   .get(queriesController.getQuery)
   .post(queriesController.postQuery)
-  .move(queriesController.runQuery)
+  .put(queriesController.runQuery)
   .delete(queriesController.deleteQuery)
 ;
 

@@ -50,8 +50,6 @@ describe('queries.js - queries', () => {
 
     describe('POST', () => {
       describe('As system admin', () => {
-        const req2 = { ...req };
-        req2.name = "Banana";
         it('it should return success', done => {
           request('/queries', 'POST')
           .asSystemAdmin().send(req)
