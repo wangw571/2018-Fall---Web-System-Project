@@ -9,7 +9,15 @@
   flex-shrink: 0;
   position: relative;
   box-sizing: border-box;
+  overflow-x: hidden;
   width: 320px;
+
+  transition:
+    transform $page-speed $normal-ease,
+    width $page-speed $normal-ease,
+    padding $page-speed $normal-ease
+  ;
+
   &__loader {
     font-size: 1.2rem;
   }
@@ -35,6 +43,16 @@
       &:hover {
         background-color: transparent;
       }
+    }
+  }
+}
+
+@include desktop {
+  .list {
+    &:not(.list--show) {
+      transform: translate3d(-320px, 0, 0);
+      width: 4px;
+      padding: 0;
     }
   }
 }

@@ -6,7 +6,6 @@ import { Modal } from '../components';
 import { request, upload, reduce, Authentication } from '../util';
 import { commaListsOr } from 'common-tags';
 
-const user = Authentication.getInstance().getUser();
 export class Upload extends Component {
 
   state = {
@@ -16,6 +15,11 @@ export class Upload extends Component {
     file: null,
     newTemplate: false,
     currentData: []
+  }
+
+  constructor(props) {
+    super(props);
+    this.user = Authentication.getInstance().getUser();
   }
 
   async componentDidMount() {
@@ -275,7 +279,7 @@ export class Upload extends Component {
         <List block="upload" onClick={this.setActive} active={active} items={items} map={this.itemMap}>
           <h3 className="upload__upload-header">Templates</h3>
           {
-            user._sys? <button className="upload__add-btn" type="button" onClick={
+            this.user._sys? <button className="upload__add-btn" type="button" onClick={
               el => { this.setState({ newTemplate: true }); this.toggleModal(el) }
             }>
               <i className="upload__add-btn-icon fas fa-plus"/> Add Template
@@ -308,8 +312,9 @@ export class Upload extends Component {
                   Delete Submission
               </button>
           </Fragment>:
- 
-          null
+          <div className="green__loader-wrap">
+            <i className="green__loader fas fa-circle-notch"/>Loading...
+          </div>
         }
       </Section>
       <Modal show={show} className="upload__modal" close={this.close}>

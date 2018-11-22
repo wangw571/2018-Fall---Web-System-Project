@@ -63,7 +63,14 @@ export const templateController = {
 
     // Get templates
     let temps = null;
-    const id = getObjectId(temp);
+    let id = null;
+    try {
+      id = getObjectId(temp);
+    } catch (err) {
+      res.status(401).json({ status: 'error', err });
+      return
+    }
+
     const db = await database.connect();
     if (sudo) {
       temps = await getAllTemplates(db);
@@ -94,7 +101,7 @@ export const templateController = {
     try {
       _id = getObjectId(temp);
     } catch (err) {
-      res.status(401).json({ status: 'err', err });
+      res.status(401).json({ status: 'error', err });
       return
     }
 
@@ -128,7 +135,7 @@ export const templateController = {
     try {
       _id = getObjectId(temp);
     } catch (err) {
-      res.status(401).json({ status: 'err', err });
+      res.status(401).json({ status: 'error', err });
       return
     }
 

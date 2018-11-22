@@ -3,8 +3,12 @@ import '../styles/containers/login.scss';
 import { withRouter } from 'react-router-dom';
 import { Authentication } from '../util';
 
-const auth = Authentication.getInstance();
 class _Login extends Component {
+
+  constructor(props) {
+    super(props);
+    this.auth = Authentication.getInstance();
+  }
 
   checkEmail = text => (
     text.match(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/)
@@ -34,7 +38,7 @@ class _Login extends Component {
     el.preventDefault();
     const { username, password } = this.state; 
     if (username.valid && password.valid){
-      const { err } = await auth.login(username.text, password.text);
+      const { err } = await this.auth.login(username.text, password.text);
       if (err) {
         console.log(err);
         return

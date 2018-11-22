@@ -1,0 +1,26 @@
+@import '../mixins';
+@import '../variables';
+
+.report{
+    $self: &;
+    &__section {
+        & .section__wrapper {
+            flex-wrap: wrap;
+            @include flex(row, flex-start);
+        }
+    }
+    &__box {
+        width: 50%;
+        padding: 20px;
+        box-sizing: border-box;
+        height: auto;
+    }
+}
+
+@include large-desktop {
+    .report {
+        &__box {
+            width: 100%;
+        }
+    }
+}

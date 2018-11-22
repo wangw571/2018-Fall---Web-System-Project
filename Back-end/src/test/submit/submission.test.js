@@ -2,14 +2,13 @@ import chai from 'chai';
 import fs from 'fs';
 import { request } from '../util';
 const should = chai.should();
-let file;
 let id;
 
 describe('submit.js', () => {
 
   describe('/', () => {
     describe('GET', () => {
-      it('it should give an empty list', done => {
+      it('it should give an list with 1 item', done => {
         request('/submit').asSystemAdmin()
         .end((err, res) => {
 
@@ -17,7 +16,7 @@ describe('submit.js', () => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('status', 'success');
-          res.body.data.should.be.a('array').length(0);
+          res.body.data.should.be.a('array').length(1);
           done();
         });
       });
@@ -33,7 +32,7 @@ describe('submit.js', () => {
         request('/temp', 'POST').asSystemAdmin()
         .attach('file', fs.readFileSync('mock.xlsx'), 'mock.xlsx')
         .end((err, res) => {
-          file = res.body.data;
+          id = res.body.data;
           resolve();
         });
       })
@@ -41,7 +40,7 @@ describe('submit.js', () => {
 
     describe('POST', () => {
       it('it should give the submission', done => {
-        request(`/submit/${file}`, 'POST').asSystemAdmin()
+        request(`/submit/${id}`, 'POST').asSystemAdmin()
         .attach('file', fs.readFileSync('mock.xlsx'), 'mock.xlsx')
         .end((err, res) => {
 
@@ -53,13 +52,10 @@ describe('submit.js', () => {
           // Check submitted data
           res.body.data.should.have.property('_id');
           res.body.data.should.have.property('_org');
-          res.body.data.should.have.property('_temp');
+          res.body.data.should.have.property('_temp', id);
           res.body.data.should.have.property('date');
           res.body.data.should.have.property('submitted', false);
           res.body.data.data.should.be.a('array').length(1);
-          
-          // Store id for deletion checking
-          id = res.body.data._id;
           done();
         });
       });
@@ -67,7 +63,7 @@ describe('submit.js', () => {
 
     describe('GET', () => {
       it('it should give the submission', done => {
-        request(`/submit/${file}`).asSystemAdmin()
+        request(`/submit/${id}`).asSystemAdmin()
         .attach('file', fs.readFileSync('mock.xlsx'), 'mock.xlsx')
         .end((err, res) => {
 
@@ -79,7 +75,7 @@ describe('submit.js', () => {
           // Check submitted data
           res.body.data.should.have.property('_id');
           res.body.data.should.have.property('_org');
-          res.body.data.should.have.property('_temp');
+          res.body.data.should.have.property('_temp', id);
           res.body.data.should.have.property('date');
           res.body.data.should.have.property('submitted', false);
           res.body.data.data.should.be.a('array').length(1);
@@ -91,7 +87,7 @@ describe('submit.js', () => {
 
     describe('PATCH', () => {
       it('it should give the updated submission', done => {
-        request(`/submit/${file}`, 'PATCH').asSystemAdmin()
+        request(`/submit/${id}`, 'PATCH').asSystemAdmin()
         .send({ submitted: true })
         .end((err, res) => {
 
@@ -103,7 +99,7 @@ describe('submit.js', () => {
           // Check submitted data
           res.body.data.should.have.property('_id');
           res.body.data.should.have.property('_org');
-          res.body.data.should.have.property('_temp');
+          res.body.data.should.have.property('_temp', id);
           res.body.data.should.have.property('date');
           res.body.data.should.have.property('submitted', true);
           res.body.data.data.should.be.a('array').length(1);
@@ -114,7 +110,7 @@ describe('submit.js', () => {
 
     describe('DELETE', () => {
       it('it should remove the submission', done => {
-        request(`/submit/${file}`, 'DELETE').asSystemAdmin()
+        request(`/submit/${id}`, 'DELETE').asSystemAdmin()
         .end((err, res) => {
 
           // Check returns an success object
@@ -134,7 +130,7 @@ describe('submit.js', () => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('status', 'success');
-          res.body.data.should.be.a('array').length(0);
+          res.body.data.should.be.a('array').length(1);
           done();
         });
       });
@@ -143,7 +139,7 @@ describe('submit.js', () => {
     // Remove testing template
     after(() =>
       new Promise(resolve => {
-        request(`/temp/${file}`, 'DELETE').asSystemAdmin()
+        request(`/temp/${id}`, 'DELETE').asSystemAdmin()
         .attach('file', fs.readFileSync('mock.xlsx'), 'mock.xlsx')
         .end((err, res) => {
           resolve();

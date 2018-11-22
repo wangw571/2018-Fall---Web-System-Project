@@ -129,7 +129,7 @@ export const submitController = {
     );
 
     if (ok && value) {
-      res.json({ status: 'success', data: value._id });
+      res.json({ status: 'success', data: _temp });
     } else {
       res.status(401).json({ status: 'error', err: 'Submission does not exist' });
     }

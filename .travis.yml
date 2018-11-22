@@ -2,18 +2,22 @@ matrix:
   include:
     - language: node_js
       node_js:
-        - "stable"
+        - stable
       cache:
-        - npm
+        - ./Front-end/node_modules
       before_install:
         - cd ./Front-end
       script:
         - npm run build
     - language: node_js
+      services:
+        - mongodb
       node_js:
-        - "stable"
+        - stable
       cache:
-        - npm
+        - ./Back-end/node_modules
+      before_script:
+        - mongorestore --port 27017 -d test ./src/test/db
       before_install:
         - cd ./Back-end
       after_success:
