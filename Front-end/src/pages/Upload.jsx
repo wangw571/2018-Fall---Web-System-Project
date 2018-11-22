@@ -3,18 +3,15 @@ import { List, Section } from '../components/dashboard';
 import { Page } from '../containers';
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
-import { request, upload, reduce, Authentication } from '../util';
-import { commaListsOr } from 'common-tags';
+import { request, reduce, Authentication } from '../util';
+import { Table, File } from '../components/upload';
 
 export class Upload extends Component {
 
   state = {
     items: null,
     show: false,
-    active: -1,
-    file: null,
-    newTemplate: false,
-    currentData: []
+    active: -1
   }
 
   constructor(props) {
@@ -25,7 +22,6 @@ export class Upload extends Component {
   async componentDidMount() {
     let items;
     let submits;
-    const {active} = this.state;
     try {
       // Get templates and submissions
       items = await request('/temp');
@@ -48,38 +44,10 @@ export class Upload extends Component {
     if (!this.unmounted) {
       this.setState({ items, active: 0 });
     }
-    let data = null;
-    let temp = null;
-    try {
-      data = await request(`/submit/${items[0]._id}`);
-      temp = await request(`/temp/${items[0]._id}`);
-      this.modifyDataForm(data, temp);
-    } catch (err){
-      console.log(err);
-    }
-  }
-
-  modifyDataForm = (data, temp) => {
-    let updateData = data.data;
-    let maxCols = Math.max(...Object.keys(temp.columns));
-
-    let i=0;
-    let j=0;
-    let columns = new Array(maxCols);
-    for (i=0; i<=maxCols; i++){
-      columns[i] = temp.columns[i].name;
-    }
-    let finalData = new Array(columns);
-    finalData = finalData.concat(updateData);
-    this.setState({
-      currentData: finalData
-    });
-    console.log(finalData);
   }
 
   componentWillUnmount() {
     this.unmounted = true;
-    console.log("test");
   }
 
   getStatus = status => {
@@ -98,15 +66,7 @@ export class Upload extends Component {
     }))
   )
 
-  close = () => {
-    this.toggleModal(false);
-    this.setState({ file: null });
-  }
-
-  handleFile = ({ currentTarget }) => {
-    this.setState({ file: currentTarget.files.length === 0? null: currentTarget.files[0] })
-    currentTarget.value = '';
-  }
+  close = () => this.setState({ show: false })
 
   getDiff = date => {
     const now = new Date();
@@ -114,79 +74,27 @@ export class Upload extends Component {
     const days = Math.floor(diff / 86400000); // milliseconds -> days
 
     switch (days) {
-      case 0:
-        return 'Today'
-      case 1:
-        return 'Yesterday'
-      default:
-        return `${days} Days ago`
+      case 0: return 'Today'
+      case 1: return 'Yesterday'
+      default: return `${days} Days ago`
     }
   }
 
-  setActive = async active => {
-    const {items} = this.state;
-    let data = null;
-    let temp = null;
-    try {
-      data = await request(`/submit/${items[active]._id}`);
-      temp = await request(`/temp/${items[active]._id}`);
-      this.modifyDataForm(data, temp);
-    } catch (err){
-      console.log(err);
-      this.setState({
-        currentData: []
-      });
-    }
-    this.setState({
-      active
-    });
-  }
+  setActive = async active => this.setState({ active })
+  send = item => this.setState(({ items, active }) => {
+    items[active].submitted = item.submitted;
+    items[active].date = item.date;
+    return items;
+  });
 
-  send = async el => {
-    el.preventDefault();
-    const { file, items, active } = this.state;
-    const item = items[active];
-    const body = new FormData();
-    body.append("file", file);
-
-    try {
-      const res = await upload(
-        `/submit/${item._id}`,
-        body
-      );
-      item.submitted = res.submitted;
-      item.date = res.date;
-      this.setState({ items });
-    } catch (err) {
-      console.log(err);
-    }
-    this.close();
-  }
-
-  add = async el => {
-    el.preventDefault();
-
-    const { file } = this.state;
-    const body = new FormData();
-    body.append("file", file);
-
-    try {
-      const id = await upload(
-        '/temp',
-        body
-      );
-      
-      const item = await request(`/temp/${id}`);
-      delete item.filename;
-      this.setState(({ items }) => ({
-        items: (items.push(item), items),
-        active: (items.length - 1),
-        newTemplate: false
-      }));
-    } catch (err) {
-      console.log(err);
-    }
-    this.close();
+  add = async ({ _id }) => {
+    const item = await request(`/temp/${_id}`);
+    delete item.filename;
+    this.setState(({ items }) => ({
+      items: (items.push(item), items),
+      active: items.length - 1,
+      show: false
+    }))
   }
 
   itemMap = ({ name, date, submitted }) => {
@@ -206,37 +114,6 @@ export class Upload extends Component {
     </Fragment>
   }
 
-  editValue = (row,cols,e) => {
-    let inputValue = e.target.innerText;
-    let newRow = row.row;
-    let newRowNum = newRow.id;
-    let position = cols.cols;
-    newRow[position] = inputValue;
-    let copy = this.state.currentData;
-    copy[newRowNum] = newRow;
-    this.setState({
-        currentData: copy
-    });
-  }
-
-  editSubmission = async el => {
-    el.preventDefault();
-    console.log("hello");
-    const {active, currentData, items} = this.state;
-    console.log(currentData.slice(1));
-    try {
-      await request(
-        `/submit/${items[active]._id}`,
-        'PATCH',
-        JSON.stringify({
-          data: currentData.slice(1)
-        })
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   deleteSubmission = async el => {
     const { active, items } = this.state;
     try {
@@ -250,43 +127,20 @@ export class Upload extends Component {
   }
 
   render() {
-    const { items, active, show, file, newTemplate } = this.state;
-    console.log(items);
+    const { items, active, show } = this.state;
     const item = active > -1? items[active]: null;
-    let data = null;
-    if (this.state.currentData.length > 0){
-      data = this.state.currentData.map(row =>{
-        return (
-            <tr key={row.id}>
-                {Object.keys(row).filter(cols => cols !== 'id').map(cols => {
-                    return (
-                      <td key={row.id+cols}>
-                        <div contentEditable="true"
-                        value={cols} 
-                        onInput={this.editValue.bind(this,{row},{cols})}
-                        >
-                          {row[cols]}
-                        </div>
-                    </td>);
-                })}
-            </tr>
-        );
-      });
-    }
 
     return <Page className='upload'>
       <div className="upload__list">
         <List block="upload" onClick={this.setActive} active={active} items={items} map={this.itemMap}>
           <h3 className="upload__upload-header">Templates</h3>
           {
-            this.user._sys? <button className="upload__add-btn" type="button" onClick={
+            this.user._sys?
+            <button className="upload__add-btn" type="button" onClick={
               el => { this.setState({ newTemplate: true }); this.toggleModal(el) }
             }>
               <i className="upload__add-btn-icon fas fa-plus"/> Add Template
-            </button>
-            
-            : null
-
+            </button>:null
           }
         </List>
       </div>
@@ -295,22 +149,11 @@ export class Upload extends Component {
           item?
           <Fragment>
             <h1 className="upload__page-title">{ item.name.length > 60? item.name.slice(0, 60) + '...': item.name }</h1>
-            <button className="upload__page-button" type="button" onClick={this.toggleModal}>
-              Upload File
-            </button>
-              <form onSubmit={this.editSubmission}>
-                <div>
-                  <table cellSpacing="50" id="mytable">
-                    <tbody>{data}</tbody>
-                  </table>
-                </div>
-                <button className="upload__page-button">
-                 Edit Submission
-                </button>
-              </form>
-              <button className="upload__page-button" onClick={this.deleteSubmission}>
-                  Delete Submission
-              </button>
+            {
+              item.submitted === undefined?
+              <File submit={this.send} id={item._id}/>:
+              <Table items={items} active={active}/>
+            }
           </Fragment>:
           <div className="green__loader-wrap">
             <i className="green__loader fas fa-circle-notch"/>Loading...
@@ -318,18 +161,9 @@ export class Upload extends Component {
         }
       </Section>
       <Modal show={show} className="upload__modal" close={this.close}>
-        <form onSubmit={newTemplate? this.add: this.send} className={`upload__form${file ? " upload__form--uploaded" : ""}`}>
-          <div className="upload__file-drop">
-            <input onChange={this.handleFile} className="upload__file" type="file"/>
-            <i className="upload__file-icon fas fa-cloud-upload-alt" />
-            <p className="upload__file-header">{ file? "Uploaded": "Drag and drop or click here" }</p>
-            <p className="upload__file-subheader">{ file? file.name: "to upload your iCare" }</p>
-          </div>
-          <div className="upload__button-wrapper">
-            <button className="upload__button upload__button--submit" type="submit" disabled={!file}>Submit</button>
-            <button className="upload__button upload__button--exit" type="button" onClick={this.close}>Exit</button>
-          </div>
-        </form>
+        <File className="upload__file" submit={this.add} buttons={() => 
+          <button className="file__button file__button--exit green__button" type="button" onClick={this.close}>Exit</button>
+        }/>
       </Modal>
     </Page>
   }

@@ -1,0 +1,60 @@
+@import '../../mixins';
+@import '../../variables';
+
+// Basic table stuff
+.table {
+  &__main {
+    display: table;
+    width: 100%;
+  }
+  &__body {
+    display: table-row-group;
+  }
+  &__row {
+    display: table-row;
+    width: 100%;
+  }
+  &__col {
+    display: table-cell;
+  }
+}
+
+.table {
+  $self: &;
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  &__col {
+    min-width: 160px;
+    font-size: 0.9rem;
+    border-right: 1.5px solid rgba(0,0,0,0.12);
+    border-bottom: 1.5px solid rgba(0,0,0,0.12);
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  &__row {
+    &:last-child {
+      & #{ $self }__col {
+        border-bottom: none;
+      }
+    }
+
+    &:not(&--header) {
+      &:hover #{ $self }__col {
+        background-color: rgba(0,0,0,0.02);
+      }
+    }
+
+    &--header {
+      & #{ $self }__col {
+        background-color: rgba(0,0,0,0.1);
+        font-weight: 500;
+        padding: 10px;
+        border-bottom: none;
+      }
+    }
+  }
+}
