@@ -1,60 +1,70 @@
 import React, { Component } from 'react';
-import { request } from '../../util';
+import { request, sortByAscending, sortByDescending } from '../../util';
 import '../../styles/components/upload/table.scss';
+import { TableRow } from '.';
 
 export class Table extends Component {
 
   state = {
     temp: null,
-    data: null
+    data: null,
+    selected: -1,
+    ascending: true
   }
 
   async componentDidUpdate(prevProps) {
-    const { items, active } = this.props;
+    const { active } = this.props;
     if (prevProps.active !== active) {
       this.setState({ temp: null, data: null });
-      const { _id } = items[active];
-      try {
-        const temp = await request(`/temp/${_id}`);
-        const data = await request(`/submit/${_id}`);
-        this.setState({
-          temp: temp.columns,
-          data: data.data
-        });
-      } catch (err) {
-        console.log(err);
-      }
+      await this.getData();
     }
   }
 
   async componentDidMount() {
-    const { items, active } = this.props;
+    const { active } = this.props;
     if (active > -1) {
-      const { _id } = items[active];
-      try {
-        const temp = await request(`/temp/${_id}`);
-        const data = await request(`/submit/${_id}`);
-        console.log(data);
-        this.setState({
-          temp: temp.columns,
-          data: data.data
-        });
-      } catch (err) {
-        console.log(err);
-      }
+      await this.getData();
     }
   }
 
-  update = async ({ currentTarget }) => {
-    const { data } = this.state;
-    const row = currentTarget.getAttribute('data-row');
-    const col = currentTarget.getAttribute('data-col');
-    data[row][col] = currentTarget.value;
-    this.setState({ data });
+  getData = async () => {
+    const { items, active } = this.props;
+    const { _id } = items[active];
+    try {
+      const temp = await request(`/temp/${_id}`);
+      const data = await request(`/submit/${_id}`);
+      this.setState({ temp: temp.columns, data: data.data });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  update = async ({ target }) => {
+    if (target) {
+      const { data } = this.state;
+      const row = target.getAttribute('data-row');
+      const col = target.getAttribute('data-col');
+      data[row][col] = target.innerHTML;
+      this.setState({ data });
+    }
+  }
+
+  sort = async ({ target }) => {
+    const { selected, data, ascending } = this.state;
+    const curr = parseInt(target.getAttribute('data-key'));
+    const order = selected === curr? !ascending: true;
+
+    if (order) {
+      sortByAscending(data, curr);
+    } else {
+      sortByDescending(data, curr);
+    }
+
+    this.setState({ selected: curr, data, ascending: order });
   }
 
   render() {
-    const { temp, data } = this.state;
+    const { temp, data, ascending, selected } = this.state;
     return (
       temp && data?
       <div className="table">
@@ -62,24 +72,13 @@ export class Table extends Component {
           <div className="table__body">
             <div className="table__row table__row--header">
               {
-                temp.map(({ name }, key) =>
-                  <div key={key} className="table__col">{ name }</div>
-                )
+                temp.map(({ name }, key) => {
+                  const cName = `table__col${selected === key? ` table__col--active table__col--${ascending? "ascend": "descend"}`: ""}`;
+                  return <div key={key} data-key={key} onClick={this.sort} className={cName}>{ name }</div>
+                })
               }
             </div>
-            {
-              data.map((row, key) => 
-                <div key={key} className="table__row">
-                  {
-                    row.map((col, key2) =>
-                      <div key={key2} className="table__col">
-                        <input type="text" data-row={key} data-col={key2} onChange={this.update} value={col? col: "" } />
-                      </div>
-                    )
-                  }
-                </div>
-              )
-            }
+            { data.map((row, key) => <TableRow key={key} row={row} update={this.update} index={key} />) }
           </div>
         </div>
       </div>:
