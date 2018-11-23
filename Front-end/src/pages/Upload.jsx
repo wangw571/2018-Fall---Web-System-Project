@@ -6,11 +6,17 @@ import { Modal } from '../components';
 import { request, reduce, Authentication } from '../util';
 import { Table, File } from '../components/upload';
 
+const STATUS = {
+  undefined: 'Missing',
+  false: 'Uploaded',
+  true: 'Submitted'
+};
 export class Upload extends Component {
 
   state = {
     items: null,
     show: false,
+    data: null,
     active: -1
   }
 
@@ -50,16 +56,6 @@ export class Upload extends Component {
     this.unmounted = true;
   }
 
-  getStatus = status => {
-    if (status === undefined) {
-      return 'Missing';
-    } else if (status) {
-      return 'Submitted';
-    } else {
-      return 'Uploaded';
-    }
-  }
-
   toggleModal = state => (
     this.setState(({show}) => ({
       show: state? state: !show
@@ -80,7 +76,43 @@ export class Upload extends Component {
     }
   }
 
-  setActive = async active => this.setState({ active })
+  modify = async () => {
+
+  }
+  save = async () => {
+    const { items, active, data } = this.state;
+    const item = items[active];
+    item.date = new Date();
+    try {
+      await request(`/submit/${item._id}`, 'PATCH', {
+        submitted: item.submitted, date: item.date, data
+      });
+      this.setState({ items });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  delete = async () => {
+    const { items, active } = this.state;
+    const item = items[active];
+    try {
+      await request(`/submit/${item._id}`, 'DELETE');
+      delete item.submitted
+      item.date = new Date();
+      this.setState({ items, active: -1 });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  submit = async () => {
+    const { items, active } = this.state;
+    items[active].submitted = true;
+    this.setState({ items });
+    await this.save();
+  }
+
+  setData = async data => this.setState({ data })
+  setActive = async active => this.setState({ active, })
   send = item => this.setState(({ items, active }) => {
     items[active].submitted = item.submitted;
     items[active].date = item.date;
@@ -90,16 +122,17 @@ export class Upload extends Component {
   add = async ({ _id }) => {
     const item = await request(`/temp/${_id}`);
     delete item.filename;
-    this.setState(({ items }) => ({
-      items: (items.push(item), items),
-      active: items.length - 1,
-      show: false
-    }))
+    if (!this.unmounted) {
+      this.setState(({ items }) => ({
+        items: (items.push(item), items),
+        active: items.length - 1,
+        show: false
+      }))
+    }
   }
 
   itemMap = ({ name, date, submitted }) => {
-    const statusText = this.getStatus(submitted);
-
+    const statusText = STATUS[submitted];
     return <Fragment>
       <div className="upload__item-header">
         <p className={`upload__item-status upload__item-status--${ statusText.toLowerCase() }`}>
@@ -114,18 +147,6 @@ export class Upload extends Component {
     </Fragment>
   }
 
-  deleteSubmission = async el => {
-    const { active, items } = this.state;
-    try {
-      await request(`/submit/${items[active]._id}`, 'DELETE');
-      delete items[active].submitted;
-      items[active].date = new Date();
-      this.setState({ items, active: -1 });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   render() {
     const { items, active, show } = this.state;
     const item = active > -1? items[active]: null;
@@ -136,10 +157,8 @@ export class Upload extends Component {
           <h3 className="upload__upload-header">Templates</h3>
           {
             this.user._sys?
-            <button className="upload__add-btn" type="button" onClick={
-              el => { this.setState({ newTemplate: true }); this.toggleModal(el) }
-            }>
-              <i className="upload__add-btn-icon fas fa-plus"/> Add Template
+            <button className="upload__button" type="button" onClick={this.toggleModal}>
+              <i className="upload__button-icon fas fa-plus"/> Add Template
             </button>:null
           }
         </List>
@@ -152,7 +171,20 @@ export class Upload extends Component {
             {
               item.submitted === undefined?
               <File submit={this.send} id={item._id}/>:
-              <Table items={items} active={active}/>
+              <Fragment>
+                <h2 className="upload__page-subtitle">Submission Details</h2>
+                <div className="upload__controls">
+                  {
+                    item.submitted? null:
+                    <Fragment>
+                      <button className="upload__button upload__button--controls" onClick={this.submit} type="button">Submit</button>
+                      <button className="upload__button upload__button--controls" onClick={this.save} type="button">Save</button>
+                    </Fragment>
+                  }
+                  <button className="upload__button upload__button--controls" onClick={this.delete} type="button">Delete</button>
+                </div>
+                <Table items={items} active={active} set={this.setData} disabled={item.submitted}/>
+              </Fragment>
             }
           </Fragment>:
           <div className="green__loader-wrap">

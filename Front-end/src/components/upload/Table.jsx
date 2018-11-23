@@ -28,12 +28,13 @@ export class Table extends Component {
   }
 
   getData = async () => {
-    const { items, active } = this.props;
+    const { items, active, set } = this.props;
     const { _id } = items[active];
     try {
       const temp = await request(`/temp/${_id}`);
-      const data = await request(`/submit/${_id}`);
-      this.setState({ temp: temp.columns, data: data.data });
+      const { data } = await request(`/submit/${_id}`);
+      set(data);
+      this.setState({ temp: temp.columns, data });
     } catch (err) {
       console.log(err);
     }
@@ -46,6 +47,7 @@ export class Table extends Component {
       const col = target.getAttribute('data-col');
       data[row][col] = target.innerHTML;
       this.setState({ data });
+      this.props.set(data);
     }
   }
 
@@ -65,6 +67,7 @@ export class Table extends Component {
 
   render() {
     const { temp, data, ascending, selected } = this.state;
+    const { disabled } = this.props;
     return (
       temp && data?
       <div className="table">
@@ -78,7 +81,7 @@ export class Table extends Component {
                 })
               }
             </div>
-            { data.map((row, key) => <TableRow key={key} row={row} update={this.update} index={key} />) }
+            { data.map((row, key) => <TableRow disabled={disabled} key={key} row={row} update={this.update} index={key} />) }
           </div>
         </div>
       </div>:

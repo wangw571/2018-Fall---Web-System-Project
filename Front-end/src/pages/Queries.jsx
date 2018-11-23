@@ -23,6 +23,8 @@ export class Queries extends Component {
     }
   }
 
+  componentWillUnmount() { this.unmounted = true; }
+
   mapItems = ({ name, date }) => {
     const dateObj = new Date(date);
     return <Fragment>
@@ -33,10 +35,12 @@ export class Queries extends Component {
 
   setActive = active => this.setState({ active })
 
-  add = item => {
+  add = async item => {
     const { items } = this.state;
     items.push({ _id: item._id, name: item.name, date: item.date });
-    this.setState({ items, show: false, active: items.length - 1 });
+    if (!this.unmounted) {
+      this.setState({ items, show: false, active: items.length - 1 });
+    }
   }
 
   update = (item, active) => {
@@ -47,7 +51,9 @@ export class Queries extends Component {
       name: item.name,
       date: item.date
     };
-    this.setState({ items });
+    if (!this.unmounted) {
+      this.setState({ items });
+    }
   }
 
   toggleModal = state => (
@@ -64,7 +70,9 @@ export class Queries extends Component {
     try {
       await request(`/queries/${curr._id}`, 'DELETE');
       items.splice(active, 1);
-      this.setState({ items, active: -1 });
+      if (!this.unmounted) {
+        this.setState({ items, active: -1 });
+      }
     } catch (err) {
       console.log(err);
     }

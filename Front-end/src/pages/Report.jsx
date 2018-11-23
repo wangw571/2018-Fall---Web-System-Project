@@ -49,7 +49,7 @@ export class Report extends Component {
     reportInfo.deleteReport(this.state.reportsActive);
   }
 
-  itemMap = ({ title }) => {
+  itemsList = ({ title }) => {
     return <Fragment>
       <p className="report_title">{title}</p>
       <button onClick={this.delete}>
@@ -211,7 +211,7 @@ export class Report extends Component {
     const {reportsActive, items, showModal, chart1Data, chart2Data, chart3Data} = this.state;
     return <Page className="report">
       <div className="report__container">
-        <List block="report" onClick={this.click} active={reportsActive} items={items} map={this.itemMap}>
+        <List block="report" onClick={this.click} active={reportsActive} items={items} map={this.itemsList}>
           <h3 className="report__list-header">Reports</h3>
         </List>
       </div>
@@ -237,17 +237,17 @@ export class Report extends Component {
       </Section>
       <Modal show={showModal} className="report__modal" close={this.close}>
         <form>
-          <select itemMap={this.state.queries} onChange={this.queryOptions}>
+          <select onChange={this.queryOptions}>
             {this.state.queries.map((e, key) => {
               return <option key={key}>{e.name}</option>
             })}
           </select>
-          <select itemMap={this.state.templates} onChange={this.templateOptions}>
+          <select onChange={this.templateOptions}>
             {this.state.templates.map((e, key) => {
               return <option key={key}>{e.name}</option>
             })}
           </select>
-          <select itemMap={this.state.columns} onChange={this.columnOptions}>
+          <select onChange={this.columnOptions}>
             {this.state.columns.map((e, key) => {
               return <option key={key}>{e.name}</option>
             })}

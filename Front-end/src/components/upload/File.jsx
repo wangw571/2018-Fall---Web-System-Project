@@ -27,12 +27,14 @@ export class File extends Component {
     }
   }
 
-  componentDidUnMount() {
+  componentWillUnmount() {
     this.unmounted = true;
   }
 
   handleFile = async ({ currentTarget }) => {
-    this.setState({ file: currentTarget.files.length === 0? null: currentTarget.files[0] })
+    if (!this.unmounted) {
+      this.setState({ file: currentTarget.files.length === 0? null: currentTarget.files[0] });
+    }
     currentTarget.value = '';
   }
 

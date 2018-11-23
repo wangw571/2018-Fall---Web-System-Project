@@ -21,9 +21,23 @@
 
 .table {
   $self: &;
-  overflow-x: auto;
+  overflow: auto;
+  flex-grow: 1;
   border-radius: 6px;
   border: 1.5px solid rgba(0,0,0,0.12);
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    background-color: rgba(0,0,0,0.1);
+    &-thumb {
+      background-color: rgba(0,0,0,0.4);
+      border-radius: 99px;
+    }
+    &-corner {
+      background-color: rgba(0,0,0,0.3);
+    }
+  }
+
   &__col {
     padding: 10px;
     min-width: 160px;
