@@ -37,124 +37,60 @@
     }
   }
 
-  &__form {
-    height: 100%;
-    @include flex(column);
-  }
-
-  &__file-drop {
-    position: relative;
-    width: 100%;
-    flex-grow: 1;
-    box-sizing: border-box;
-    border-radius: 6px;
-    border: 2px dashed rgba(0,0,0,0.4);
-    @include flex(column,center);
-    transition: background-color $normal-speed $normal-ease;
-    &:hover {
-      background-color: rgba(0,0,0,0.04);
-    }
-  }
-
-  &__file {
-    @include position(absolute, 0, 0);
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    outline: none;
-    opacity: 0;
-  }
-
-  &__button-wrapper {
-    width: 100%;
-    @include flex(center);
-  }
-
   &__button {
-    margin: 10px 5px -10px;
-    width: 100px;
-    height: 40px;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    @include flex(center);
-    transition: background-color $normal-speed $normal-ease;
-    &:disabled {
-      background-color: rgba(0,0,0,0.2);
-    }
-
-    &--submit {
-      background-color: #1eca60;
-      &:hover, &:active {
-        &::not(:disabled) {
-          background-color: $logo-color;
-        }
-      }
-    }
-
-    &--exit {
-      background-color: #dc3545;
-      &:hover, &:active {
-        background-color: #d43544;
-      }
-    }
-  }
-
-  &__file {
-    &-icon {
-      font-size: 2.4rem;
-      color: rgba(0,0,0,0.6);
-      margin-bottom: 6px;
-      transition: color $normal-speed $normal-ease;
-      #{ $self }__form--uploaded & {
-        color: $logo-color;
-      }
-    }
-    &-header {
-      font-size: 1.1rem;
-      font-weight: 500;
-    }
-    &-subheader {
-      color: rgba(0,0,0,0.6);
-    }
-  }
-
-  &__add-btn {
     padding: 9px 14px;
     border: none;
     background-color: rgba(0, 0, 0, 0.04);
     margin: 20px 0 -10px -5px;
     border-radius: 99px;
+    cursor: pointer;
     transition: background-color $normal-speed $normal-ease;
+
     &-icon {
       margin-right: 6px;
       transition: transform $normal-speed $normal-ease;
     }
 
-    &:hover {
+    &:hover, &:active {
       background-color: rgba(0, 0, 0, 0.08);
       & #{ $self }__add-btn-icon {
         transform: transition3d(0, 0, 0) rotate(90deg);
       }
     }
+
+    &--controls {
+      margin: 0 5px;
+      font-weight: 500;
+      width: 110px;
+      background-color: rgba(0,0,0,0.08);
+      &:hover, &:active {
+        background-color: rgba(0,0,0,0.12);
+      }
+    }
+  }
+
+  &__controls {
+    margin: 6px -5px 10px;
+  }
+
+  &__file.file {
+    max-width: none;
+    height: 100%;
   }
 
   &__page {
+    & .section__wrapper {
+      max-height: 100vh;
+      box-sizing: border-box;
+      overflow: hidden;
+      @include flex(column);
+    }
     &-title {
       max-width: 500px;
+      margin-bottom: 20px;
     }
-    &-button {
-      padding: 9px 16px;
-      border-radius: 999px;
-      border: 0;
-      font-weight: 500;
-      margin: 4px 0 0;
-      background-color :rgba(0,0,0,0.04);
-      cursor: pointer;
-      transition: background-color $normal-speed $normal-ease;
-      &:hover, &:active {
-        background-color: rgba(0,0,0,0.08);
-      }
+    &-subtitle {
+      font-size: 1.15rem;
     }
   }
 }

@@ -49,22 +49,28 @@ export class Organization extends Component {
   );
   userModal = ({ currentTarget }) => {
     const user = currentTarget.getAttribute('data-key');
-    this.setState(
-      ({show}) => ({
-        show: !show,
-        modal: 'user',
-        user: user === null? undefined: user
-      })
-    );
+    if (!this.unmounted) {
+      this.setState(
+        ({show}) => ({
+          show: !show,
+          modal: 'user',
+          user: user === null? undefined: user
+        })
+      );
+    }
   }
   
   setActive = async active => {
     const { items } = this.state;
     items.users = null;
-    this.setState({ active, items });
+    if (!this.unmounted) {
+      this.setState({ active, items });
+    }
     try {
       items.users = await request(`/users/${items.orgs[active]._id}`);
-      this.setState({ items });
+      if (!this.unmounted) {
+        this.setState({ items });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -76,7 +82,9 @@ export class Organization extends Component {
       const org = items.orgs[active];
       await request(`/orgs/${org._id}`, 'DELETE');
       items.orgs.splice(active, 1);
-      this.setState({ show: false, items, active: -1 });
+      if (!this.unmounted) {
+        this.setState({ show: false, items, active: -1 });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -91,19 +99,25 @@ export class Organization extends Component {
     } catch (err) {
       console.log(err);
     }
-    this.setState({ show: false, items, user: undefined });
+    if (!this.unmounted) {
+      this.setState({ show: false, items, user: undefined });
+    }
   }
 
   post = async item => {
     const { items, active } = this.state;
     items.orgs[active] = item;
-    this.setState({ items });
+    if (!this.unmounted) {
+      this.setState({ items });
+    }
   }
 
   addOrg = async item => {
     const { items } = this.state;
     items.orgs.push(item);
-    this.setState({ show: false, items, active: items.length - 1 });
+    if (!this.unmounted) {
+      this.setState({ show: false, items, active: items.length - 1 });
+    }
   }
 
   updateUser = async item => {
@@ -113,7 +127,9 @@ export class Organization extends Component {
     } else {
       items.users[user] = item;
     }
-    this.setState({ show: false, items, user: undefined });
+    if (!this.unmounted) {
+      this.setState({ show: false, items, user: undefined });
+    }
   }
 
   toggleModal = state => (

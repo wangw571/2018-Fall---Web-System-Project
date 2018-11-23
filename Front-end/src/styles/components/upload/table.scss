@@ -1,0 +1,111 @@
+@import '../../mixins';
+@import '../../variables';
+
+// Basic table stuff
+.table {
+  &__main {
+    display: table;
+    width: 100%;
+  }
+  &__body {
+    display: table-row-group;
+  }
+  &__row {
+    display: table-row;
+    width: 100%;
+  }
+  &__col {
+    display: table-cell;
+  }
+}
+
+.table {
+  $self: &;
+  overflow: auto;
+  flex-grow: 1;
+  border-radius: 6px;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    background-color: rgba(0,0,0,0.1);
+    &-thumb {
+      background-color: rgba(0,0,0,0.4);
+      border-radius: 99px;
+    }
+    &-corner {
+      background-color: rgba(0,0,0,0.3);
+    }
+  }
+
+  &__col {
+    padding: 10px;
+    min-width: 160px;
+    font-size: 0.9rem;
+    border-right: 1.5px solid rgba(0,0,0,0.06);
+    border-bottom: 1.5px solid rgba(0,0,0,0.06);
+    transition: background-color $normal-speed $normal-ease;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  &__row {
+    &:last-child {
+      & #{ $self }__col {
+        border-bottom: none;
+      }
+    }
+
+    &:not(&--header) {
+      &:hover #{ $self }__col {
+        background-color: rgba(0,0,0,0.02);
+      }
+    }
+
+    &--header {
+      & #{ $self }__col {
+        cursor: pointer;
+        position: relative;
+        background-color: rgba(0,0,0,0.1);
+        font-weight: 500;
+        border-bottom: none;
+        &:hover {
+          background-color: rgba(0,0,0,0.15);
+        }
+        &::after {
+          content: "";
+          height: 4px;
+          width: 100%;
+          transition: background-color $slow-speed $normal-ease;
+          @include position(absolute, auto auto 0);
+        }
+        &::before {
+          content: "";
+          display: none;
+          padding: 6px;
+          font-size: 1rem;
+          font-family: "Font Awesome 5 Free";
+          font-weight: 900;
+          @include position(absolute, 0, auto, 0, 0, auto);
+        }
+        &--active {
+          &::after {
+            background-color: rgba(0,0,0,0.2);
+          }
+          &::before {
+            display: inline-block;
+          }
+        }
+
+        &--ascend::before {
+          content: "\f0d8";
+        }
+        &--descend::before {
+          content: "\f0d7";
+        }
+      }
+    }
+  }
+}
