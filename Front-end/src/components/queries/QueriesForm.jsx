@@ -65,7 +65,7 @@ export class QueriesForm extends Component {
       const data = await request(
         `/queries/${active? items[active]._id: ""}`,
         'POST',
-        JSON.stringify({ name, query: clean })
+        { name, query: clean }
       );
       update(data, active);
       this.setState({ dirty: false });

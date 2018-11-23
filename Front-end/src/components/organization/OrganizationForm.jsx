@@ -87,14 +87,10 @@ export class OrganizationForm extends Component {
     const { name, type, perms } = this.state;
     try {
       const org = active !== undefined ? items.orgs[active]._id: '';
-      const res = await request(
-        `/orgs/${org}`,
-        'POST',
-        JSON.stringify({
-          name, _sys: type,
-          permissions: perms.map(i => items.temps[i]._id)   
-        })
-      );
+      const res = await request(`/orgs/${org}`, 'POST', {
+        name, _sys: type,
+        permissions: perms.map(i => items.temps[i]._id)   
+      });
       update(res, active);
       this.setState({ dirty: false });
     } catch (err) {

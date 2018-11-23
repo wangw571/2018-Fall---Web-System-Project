@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { Page } from '../containers';
 import '../styles/containers/profile.scss';
-import { OrganizationInfo } from '../util/OrganizationInfo';
 import { List } from '../components/dashboard';
 import { Modal } from '../components';
 
-const org = OrganizationInfo.getInstance();
+const org = null;
 
 export class Profile extends Component {
   constructor(props) {

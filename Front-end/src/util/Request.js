@@ -12,7 +12,7 @@ export const request = (path, method, body, headers = {}) => new Promise((resolv
     {
       method: method? method: 'GET',
       headers: { ...head, ...headers },
-      body
+      body: JSON.stringify(body)
     }
   ).then(
     dat => dat.json()
