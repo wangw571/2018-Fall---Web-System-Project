@@ -75,7 +75,7 @@ export class UserForm extends Component {
     try {
       const res = await request(
         item? `/users/${item._org}/${item._id}`: `/users/${user._org}`,
-        'POST', JSON.stringify(body)
+        'POST', body
       );
       update(res, active);
       this.setState({ dirty: false });

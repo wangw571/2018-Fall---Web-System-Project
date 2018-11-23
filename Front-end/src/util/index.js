@@ -1,2 +1,3 @@
 export * from './Authentication';
-export * from './request';
+export * from './Request';
+export * from './Sort';
