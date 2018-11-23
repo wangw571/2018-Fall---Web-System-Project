@@ -1,5 +1,11 @@
 import { database, getObjectId } from "../util";
 
+const ERROR = 'error';
+const SUCCESS = 'success';
+const PmDenied = 'permission denied';
+const ORG = 'organizations';
+const USER = 'users';
+
 const clean = ({ name, _sys, permissions }, noDefault) => {
   const def = noDefault? {}: {
     name: `org-${Math.random()}`,
@@ -31,16 +37,17 @@ const clean = ({ name, _sys, permissions }, noDefault) => {
   return def;
 }
 
+
 export const orgsController = {
 
   getOrganizations: async ({ user: { sudo } }, res) => {
     if (sudo) {
       const db = await database.connect();
-      const data = await db.collection('organizations').find({}).toArray();
-      res.json({ status: 'success', data });
+      const data = await db.collection(ORG).find({}).toArray();
+      res.json({ status: SUCCESS, data });
       db.close();
     } else {
-      res.status(403).json({ status: 'error', err: 'Permission Denied' });
+      res.status(403).json({ status: ERROR, err: PmDenied });
     }
   },
 
@@ -50,19 +57,19 @@ export const orgsController = {
       const insert = await clean(body);
       
       if (!insert.name) {
-        res.status(401).json({ status: 'error', err: 'Please provide a name' });
+        res.status(401).json({ status: ERROR, err: 'Please provide a name' });
         return
       }
 
-      const { insertedId } = await db.collection('organizations').insertOne(insert);
+      const { insertedId } = await db.collection(ORG).insertOne(insert);
       if (insertedId) {
-        res.json({ status: 'success', data: { _id: insertedId, ...insert } });
+        res.json({ status: SUCCESS, data: { _id: insertedId, ...insert } });
       } else {
-        res.status(401).json({ status: 'error', err: 'Unexpected error for organization creation' });
+        res.status(401).json({ status: ERROR, err: 'Unexpected error for organization creation' });
       }
       db.close();
     } else {
-      res.status(403).json({ status: 'error', err: 'Permission Denied' });
+      res.status(403).json({ status: ERROR, err: PmDenied });
     }
   },
 
@@ -73,17 +80,17 @@ export const orgsController = {
     try {
       _id = getObjectId(org);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
     }
 
     if ((_org.equals(_id) && admin) || sudo) {
       const db = await database.connect();
-      const data = await db.collection('organizations').findOne({ _id });
-      res.json({ status: 'success', data });
+      const data = await db.collection(ORG).findOne({ _id });
+      res.json({ status: SUCCESS, data });
       db.close();
 
     } else {
-      res.status(403).json({ status: 'error', err: 'Permission Denied' });
+      res.status(403).json({ status: ERROR, err: PmDenied });
     }
 
   },
@@ -95,27 +102,27 @@ export const orgsController = {
     try {
       _id = getObjectId(org);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
     }
 
     if ((_org.equals(_id) && admin) || sudo) {
       const db = await database.connect();
       const set = await clean(body, true);
-      const { value, ok } = await db.collection('organizations').findOneAndReplace(
+      const { value, ok } = await db.collection(ORG).findOneAndReplace(
         { _id },
         { $set: set },
         { returnOriginal: false }
       );
 
       if (value && ok) {
-        res.json({ status: 'success', data: value });
+        res.json({ status: SUCCESS, data: value });
       } else {
-        res.status(401).json({ status: 'error', err: 'Unable to update this organization' });
+        res.status(401).json({ status: ERROR, err: 'Unable to update this organization' });
       }
       db.close();
 
     } else {
-      res.status(403).json({ status: 'error', err: 'Permission Denied' });
+      res.status(403).json({ status: ERROR, err: PmDenied });
     }
   },
 
@@ -126,28 +133,28 @@ export const orgsController = {
     try {
       _id = getObjectId(org);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
     }
 
     if (sudo) {
       const db = await database.connect();
-      const { value, ok } = await db.collection('organizations')
+      const { value, ok } = await db.collection(ORG)
         .findOneAndDelete({ _id })
       ;
 
       if (value && ok) {
-        const { deletedCount } = await db.collection('users').deleteMany(
+        const { deletedCount } = await db.collection(USER).deleteMany(
           {  _org: _id }
         );
 
-        res.json({ status: 'success', data: { _org: value._id, usersDeleted: deletedCount } });
+        res.json({ status: SUCCESS, data: { _org: value._id, usersDeleted: deletedCount } });
       } else {
-        res.status(401).json({ status: 'error', err: 'Unable to remove this organization' });
+        res.status(401).json({ status: ERROR, err: 'Unable to remove this organization' });
       }
       db.close();
 
     } else {
-      res.status(403).json({ status: 'error', err: 'Permission Denied' });
+      res.status(403).json({ status: ERROR, err: PmDenied });
     }
   }
 
