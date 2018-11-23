@@ -153,9 +153,25 @@ export class Upload extends Component {
           <i className="upload__item-icon far fa-clock" />
           { this.getDiff(date) }
         </p>
+
       </div>
       <h4 className="upload__item-title">{ name }</h4>
     </Fragment>
+  }
+
+  deleteTemplate = async el => {
+    const {active, items} = this.state;
+    let itemsCopy = items;
+    try {
+      await request(`/temp/${items[active]._id}`, 'DELETE');
+      itemsCopy.splice(active, 1);
+      this.setState({
+        items: itemsCopy,
+        active: 0
+      });
+    } catch(err){
+      console.log(err);
+    }
   }
 
   render() {
@@ -181,6 +197,9 @@ export class Upload extends Component {
             <h1 className="upload__page-title">{ item.name.length > 60? item.name.slice(0, 60) + '...': item.name }</h1>
             <button className="upload__page-button" type="button" onClick={this.toggleModal}>
               Upload File
+            </button>
+            <button className="upload__page-button" type="button" onClick={this.deleteTemplate}>
+              Delete Template
             </button>
           </Fragment>:
           <div className="green__loader-wrap">
