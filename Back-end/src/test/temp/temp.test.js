@@ -34,7 +34,7 @@ describe('temp.js', () => {
         .end((err, res) => {
 
           // Check returns an error object
-          res.should.have.status(401);
+          res.should.have.status(406);
           res.body.should.be.a('object');
           res.body.should.have.property('status', 'error');
           res.body.should.have.property('err');

@@ -65,7 +65,7 @@ export const orgsController = {
       if (insertedId) {
         res.json({ status: SUCCESS, data: { _id: insertedId, ...insert } });
       } else {
-        res.status(401).json({ status: ERROR, err: 'Unexpected error for organization creation' });
+        res.status(409).json({ status: ERROR, err: 'Unexpected error for organization creation' });
       }
       db.close();
     } else {
@@ -117,7 +117,7 @@ export const orgsController = {
       if (value && ok) {
         res.json({ status: SUCCESS, data: value });
       } else {
-        res.status(401).json({ status: ERROR, err: 'Unable to update this organization' });
+        res.status(409).json({ status: ERROR, err: 'Unable to update this organization' });
       }
       db.close();
 
@@ -149,7 +149,7 @@ export const orgsController = {
 
         res.json({ status: SUCCESS, data: { _org: value._id, usersDeleted: deletedCount } });
       } else {
-        res.status(401).json({ status: ERROR, err: 'Unable to remove this organization' });
+        res.status(409).json({ status: ERROR, err: 'Unable to remove this organization' });
       }
       db.close();
 
