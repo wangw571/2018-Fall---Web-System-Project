@@ -5,6 +5,8 @@ import '../styles/pages/report.scss';
 import { Line, Pie, HorizontalBar } from 'react-chartjs-2';
 import { Modal } from '../components';
 import { ReportsInfo } from '../util/ReportsInfo';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const reportInfo = ReportsInfo.getInstance();
 
@@ -43,18 +45,19 @@ export class Report extends Component {
   click = key => this.setState({ reportsActive: key })
 
   delete = el => {
-    console.log("Hello");
     let { items, reportsActive } = this.state;
-    items.splice(reportsActive, 1);
+    let itemsCopy = items;
+    itemsCopy.splice(reportsActive, 1);
+    this.setState({
+      items: itemsCopy,
+      active: -1
+    });
     reportInfo.deleteReport(this.state.reportsActive);
   }
 
   itemsList = ({ title }) => {
     return <Fragment>
       <p className="report_title">{title}</p>
-      <button onClick={this.delete}>
-        Delete
-      </button>
     </Fragment>
   }
 
@@ -207,6 +210,57 @@ export class Report extends Component {
     });
   }
 
+  print = el => {
+    const HorizontalBar = document.getElementById('HorizontalBar');
+    const LineBar = document.getElementById('LineBar');
+    const PieChart = document.getElementById('PieChart');
+    const HorizontalBar2 = document.getElementById('HorizontalBar2');
+    const LineBar2 = document.getElementById('LineBar2');
+    const PieChart2 = document.getElementById('PieChart2');
+    let pdf = new jsPDF();
+    pdf.text(95, 10, "Report");
+    let imgData = null;
+    html2canvas(HorizontalBar)
+      .then((canvas) => {
+        imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'JPEG', 30, 30, 150, 100);
+    }); 
+    
+    html2canvas(LineBar)
+    .then((canvas) => {
+      imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'JPEG', 30, 160, 150, 100);
+      pdf.addPage();
+    }); 
+
+    html2canvas(PieChart)
+    .then((canvas) => {
+      imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'JPEG', 30, 30, 160, 100);
+    }); 
+
+    html2canvas(HorizontalBar2)
+    .then((canvas) => {
+      imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'JPEG', 30, 160, 150, 100);
+      pdf.addPage();
+    }); 
+
+    html2canvas(LineBar2)
+    .then((canvas) => {
+      imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'JPEG', 30, 30, 150, 100);
+    }); 
+
+    html2canvas(PieChart2)
+    .then((canvas) => {
+      imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'JPEG', 30, 160, 160, 100);
+      pdf.save("report.pdf");
+    });
+
+  }
+
   render() {
     const {reportsActive, items, showModal, chart1Data, chart2Data, chart3Data} = this.state;
     return <Page className="report">
@@ -217,23 +271,29 @@ export class Report extends Component {
       </div>
       <Section className="report__section">
         <div className="report__box" onClick={this.toggleModal.bind(this, 0)}>
-          <HorizontalBar data={chart1Data} />
+          <HorizontalBar id='HorizontalBar' data={chart1Data} />
         </div>
         <div className="report__box" onClick={this.toggleModal.bind(this, 1)}>
-          <Line data={chart2Data} />
+          <Line id='LineBar' data={chart2Data} />
         </div>
         <div className="report__box" onClick={this.toggleModal.bind(this, 2)}>
-          <Pie data={chart3Data} />
+          <Pie id='PieChart' data={chart3Data} />
         </div>
         <div className="report__box" onClick={this.toggleModal.bind(this, 0)}>
-          <HorizontalBar data={chart1Data} />
+          <HorizontalBar id='HorizontalBar2' data={chart1Data} />
         </div>
         <div className="report__box" onClick={this.toggleModal.bind(this, 1)}>
-          <Line data={chart2Data} />
+          <Line id='LineBar2' data={chart2Data} />
         </div>
         <div className="report__box" onClick={this.toggleModal.bind(this, 2)}>
-          <Pie data={chart3Data} />
+          <Pie id='PieChart2' data={chart3Data} />
         </div>
+        <button onClick={this.print}>
+          Download PDF
+        </button>
+        <button onClick={this.delete}>
+          Delete Report
+        </button>
       </Section>
       <Modal show={showModal} className="report__modal" close={this.close}>
         <form>
