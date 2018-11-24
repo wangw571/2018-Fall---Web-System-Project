@@ -7,13 +7,15 @@ const getMetadata = async ({ columns }, sheet) => {
   metadata[1].forEach((col, index) => {
     const value = col.slice(10,-1);
     columns[index].required = (value === 'true');
+    columns[index].options = [];
+    columns[index].type = "text";
   });
   
   metadata.slice(2).forEach(row => {
     row.forEach((col, index) => {
 
-      if (!columns[index].options) {
-        columns[index].options = [];
+      if (!columns[index].type !== "select") {
+        columns[index].type = "select";
       }
       columns[index].options.push(col);
     })
