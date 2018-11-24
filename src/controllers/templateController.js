@@ -114,7 +114,7 @@ export const templateController = {
     const db = await database.connect();
     const { value, ok } = await db.collection(TEMP).findOneAndReplace(
       { _id },
-      { $set: body },
+      { $set: { ...body, date: new Date() } },
       { returnOriginal: false }
     );
 
@@ -149,6 +149,10 @@ export const templateController = {
     const { ok, value } = await db.collection(TEMP)
       .findOneAndDelete({ _id })
     ;
+    await db.collection('organizations').update(
+      {}, { $pull: { permissions: _id } }, { multi: true }
+    );
+    await db.collection('submissions').deleteMany({ _temp: _id });
 
     // Return result of deletion
     if (ok && value) {
