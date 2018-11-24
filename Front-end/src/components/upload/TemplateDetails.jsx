@@ -23,11 +23,21 @@ export class TemplateDetails extends Component {
       }
     }
   }
+
+  delete = async () => {
+    const { items, active, set } = this.props;
+    try {
+      await request(`/temp/${items[active]._id}`, 'DELETE');
+      items.splice(active, 1);
+      set({ items, active: -1, show: false });
+    } catch (err) {
+      console.log(err);
+    }
+  }
   
   submit = async el => {
     el.preventDefault();
     const { items, active, set } = this.props;
-    console.log(this.state);
     try {
       const res = await request(`/temp/${items[active]._id}`, 'POST', this.state);
       items[active] = res;

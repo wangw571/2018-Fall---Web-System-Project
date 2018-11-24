@@ -215,6 +215,7 @@ export class Upload extends Component {
               </Fragment>
             }
           </Fragment>:
+          items? null:
           <div className="green__loader-wrap">
             <i className="green__loader fas fa-circle-notch"/>Loading...
           </div>
