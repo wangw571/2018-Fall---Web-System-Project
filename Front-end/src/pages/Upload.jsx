@@ -4,7 +4,7 @@ import { Page } from '../containers';
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
 import { request, reduce, Authentication } from '../util';
-import { Table, File } from '../components/upload';
+import { Table, File, TemplateDetails } from '../components/upload';
 
 const STATUS = {
   undefined: 'Missing',
@@ -17,6 +17,7 @@ export class Upload extends Component {
     items: null,
     show: false,
     data: null,
+    details: false,
     active: -1
   }
 
@@ -58,7 +59,8 @@ export class Upload extends Component {
 
   toggleModal = state => (
     this.setState(({show}) => ({
-      show: state? state: !show
+      show: state? state: !show,
+      details: false
     }))
   )
 
@@ -77,7 +79,8 @@ export class Upload extends Component {
   }
 
   modify = async () => {
-
+    this.toggleModal();
+    this.setState({ details: true });
   }
   save = async () => {
     const { items, active, data } = this.state;
@@ -99,7 +102,7 @@ export class Upload extends Component {
       await request(`/submit/${item._id}`, 'DELETE');
       delete item.submitted
       item.date = new Date();
-      this.setState({ items, active: -1 });
+      this.setState({ items });
     } catch (err) {
       console.log(err);
     }
@@ -111,15 +114,15 @@ export class Upload extends Component {
     await this.save();
   }
 
-  setData = async data => this.setState({ data })
-  setActive = async active => this.setState({ active, })
+  setData = async data => this.setState(data)
+  setActive = async active => this.setState({ active })
   send = item => this.setState(({ items, active }) => {
     items[active].submitted = item.submitted;
     items[active].date = item.date;
     return items;
   });
 
-  add = async ({ _id }) => {
+  add = async _id => {
     const item = await request(`/temp/${_id}`);
     delete item.filename;
     if (!this.unmounted) {
@@ -164,7 +167,7 @@ export class Upload extends Component {
   }
 
   render() {
-    const { items, active, show } = this.state;
+    const { items, active, show, details } = this.state;
     const item = active > -1? items[active]: null;
 
     return <Page className='upload'>
@@ -183,10 +186,18 @@ export class Upload extends Component {
         {
           item?
           <Fragment>
-            <h1 className="upload__page-title">{ item.name.length > 60? item.name.slice(0, 60) + '...': item.name }</h1>
+            <h1 className="upload__page-title">{ item.name }</h1>
             {
               item.submitted === undefined?
-              <File submit={this.send} id={item._id}/>:
+              <Fragment>
+                {
+                  !this.user._sys? null:
+                  <div className="upload__controls">
+                    <button className="upload__button upload__button--controls" onClick={this.modify} type="button">Modify</button>
+                  </div>
+                }
+                <File submit={this.send} id={item._id}/>
+              </Fragment>:
               <Fragment>
                 <h2 className="upload__page-subtitle">Submission Details</h2>
                 <div className="upload__controls">
@@ -197,21 +208,26 @@ export class Upload extends Component {
                       <button className="upload__button upload__button--controls" onClick={this.save} type="button">Save</button>
                     </Fragment>
                   }
+                  { this.user._sys? <button className="upload__button upload__button--controls" onClick={this.modify} type="button">Modify</button>: null }
                   <button className="upload__button upload__button--controls" onClick={this.delete} type="button">Delete</button>
                 </div>
                 <Table items={items} active={active} set={this.setData} disabled={item.submitted}/>
               </Fragment>
             }
           </Fragment>:
+          items? null:
           <div className="green__loader-wrap">
             <i className="green__loader fas fa-circle-notch"/>Loading...
           </div>
         }
       </Section>
       <Modal show={show} className="upload__modal" close={this.close}>
-        <File className="upload__file" submit={this.add} buttons={() => 
-          <button className="file__button file__button--exit green__button" type="button" onClick={this.close}>Exit</button>
-        }/>
+        {
+          details? <TemplateDetails close={this.close} items={items} active={active} set={this.setData}/>:
+          <File className="upload__file" submit={this.add} buttons={() => 
+            <button className="file__button file__button--exit green__button" type="button" onClick={this.close}>Exit</button>
+          }/>
+        }
       </Modal>
     </Page>
   }

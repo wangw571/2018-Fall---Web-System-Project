@@ -5,3 +5,5 @@ export const DASHBOARD_NAV = [
   { path: "/app/orgs", text: "Organizations", icon: "sitemap", Component: "Organization" },
   { path: "/app/users", text: "Users", icon: "users", Component: "User" }
 ];
+
+export const COLUMN_TYPES = [ "text", "number", "select", "check" ];

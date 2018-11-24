@@ -33,7 +33,7 @@ export class Table extends Component {
     try {
       const temp = await request(`/temp/${_id}`);
       const { data } = await request(`/submit/${_id}`);
-      set(data);
+      set({ data });
       this.setState({ temp: temp.columns, data });
     } catch (err) {
       console.log(err);
