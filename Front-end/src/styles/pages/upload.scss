@@ -59,7 +59,7 @@
     }
 
     &--controls {
-      margin: 0 5px;
+      margin: 0 5px 5px;
       font-weight: 500;
       width: 110px;
       background-color: rgba(0,0,0,0.08);
@@ -70,7 +70,7 @@
   }
 
   &__controls {
-    margin: 6px -5px 10px;
+    margin: 6px -5px 5px;
   }
 
   &__file.file {
@@ -86,11 +86,21 @@
       @include flex(column);
     }
     &-title {
-      max-width: 500px;
+      max-width: 90%;
       margin-bottom: 20px;
     }
     &-subtitle {
       font-size: 1.15rem;
+    }
+  }
+}
+
+@include tablet {
+  .upload {
+    &__page {
+      &-title {
+        max-width: none;
+      }
     }
   }
 }

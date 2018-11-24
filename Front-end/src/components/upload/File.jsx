@@ -15,10 +15,10 @@ export class File extends Component {
 
     try {
       const res = await upload(
-        id? `/submit/${id}`: '/temp',
+        id !== undefined? `/submit/${id}`: '/temp',
         body
       );
-      submit(res);
+      await submit(res);
     } catch (err) {
       console.log(err);
     }

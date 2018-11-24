@@ -27,9 +27,8 @@ class _Authentication {
     let res;
     try {
       res = await request(
-        '/login',
-        'POST',
-        JSON.stringify({ email, password })
+        '/login', 'POST',
+        { email, password }
       );
     } catch (err) {
       return err;

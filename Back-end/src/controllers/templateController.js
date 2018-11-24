@@ -46,7 +46,7 @@ export const templateController = {
 
     // Check if template exist or not
     const db = await database.connect();
-    const look = await db.collection('templates').findOne({ $or: [{ file: file.name }, { filename: file.filename }] });
+    const look = await db.collection('templates').findOne({ $or: [{ name: file.name }, { filename: file.filename }] });
     if (look) {
       res.status(401).json({ status: 'error', err: `Template already exist, use /temp/${look._id} to update` });
       return
@@ -109,7 +109,7 @@ export const templateController = {
     const db = await database.connect();
     const { value, ok } = await db.collection('templates').findOneAndReplace(
       { _id },
-      { $set: body },
+      { $set: { ...body, date: new Date() } },
       { returnOriginal: false }
     );
 
@@ -144,6 +144,10 @@ export const templateController = {
     const { ok, value } = await db.collection('templates')
       .findOneAndDelete({ _id })
     ;
+    await db.collection('organizations').update(
+      {}, { $pull: { permissions: _id } }, { multi: true }
+    );
+    await db.collection('submissions').deleteMany({ _temp: _id });
 
     // Return result of deletion
     if (ok && value) {
