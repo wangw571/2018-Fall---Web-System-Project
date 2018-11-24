@@ -32,6 +32,8 @@ const validate = ({ name, query }) => {
   return data;
 }
 
+const NO_SUCH_Q = { status: ERROR, err: 'No such query' };
+const INVALID_Q = { status: ERROR, err: 'Invalid query id' };
 export const queriesController = {
   getQueries: async (req, res) => {
     const { user: { sudo } } = req;
@@ -60,7 +62,7 @@ export const queriesController = {
       try {
           body.query = JSON.parse(body.query);
       } catch (err) {
-        res.status(401).json({ status: ERROR, err });
+        res.status(406).json({ status: ERROR, err });
         return
       }
     }
@@ -91,7 +93,7 @@ export const queriesController = {
     try {
       _id = getObjectId(params.qid);
     } catch (err) {
-      res.status(401).json({ status: ERROR, err });
+      res.status(404).json({ status: ERROR, err });
     }
 
     // Get query
@@ -100,7 +102,7 @@ export const queriesController = {
     if (data) {
       res.json({ status: SUCCESS, data });
     } else {
-      res.status(401).json({ status: ERROR, err: 'No such query' });
+      res.status(404).json(NO_SUCH_Q);
     }
     db.close();
   },
@@ -144,7 +146,7 @@ export const queriesController = {
       if (ok && value) {
         res.json({ status: SUCCESS, data: { ...value } });
       } else {
-        res.status(401).json({ status: ERROR, err: 'Invalid query id' });
+        res.status(406).json(INVALID_Q);
       }
       db.close();
 
@@ -177,7 +179,7 @@ export const queriesController = {
     if (ok && value) {
       res.json({ status: SUCCESS, data: value._id });
     } else {
-      res.status(401).json({ status: ERROR, err: 'Invalid query id' });
+      res.status(403).json(INVALID_Q);
     }
     db.close();
   },
@@ -194,7 +196,7 @@ export const queriesController = {
     try {
       _id = getObjectId(params.qid);
     } catch (err) {
-      res.status(401).json({ status: ERROR, err });
+      res.status(403).json({ status: ERROR, err });
       return
     }
 
@@ -206,10 +208,10 @@ export const queriesController = {
       if (result) {
         res.json({ status: SUCCESS, data: result });
       } else {
-        res.status(401).json({ status: ERROR, err: 'Query operation failed' });
+        res.status(406).json({ status: ERROR, err: 'Query operation failed' });
       }
     } else {
-      res.status(401).json({ status: ERROR, err: 'No such query' });
+      res.status(404).json(NO_SUCH_Q);
     }
   }
 }

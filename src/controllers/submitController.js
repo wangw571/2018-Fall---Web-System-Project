@@ -51,7 +51,7 @@ export const submitController = {
     if (data) {
       res.json({ status: SUCCESS, data });
     } else {
-      res.status(403).json({ status: ERROR, err: 'Unable to get requested submission' });
+      res.status(404).json({ status: ERROR, err: 'Unable to get requested submission' });
     }
     db.close();
   },
@@ -63,7 +63,7 @@ export const submitController = {
     try {
       _temp = getObjectId(params.tid);
     } catch {
-      res.status(401).json(INV_TEMP_ID);
+      res.status(404).json(INV_TEMP_ID);
       return
     }
 
@@ -73,7 +73,7 @@ export const submitController = {
     if (check) {
       const hasSubmission = await db.collection(SUBM).findOne({ _org, _temp });
       if (hasSubmission) {
-        res.status(401).json({ status: ERROR, err: 'A submission already exist' });
+        res.status(409).json({ status: ERROR, err: 'A submission already exist' });
       } else {
         const data = {
           _org, _temp, date: new Date(), submitted: false, data: upload
@@ -83,7 +83,7 @@ export const submitController = {
         if (insertedId) {
           res.json({ status: SUCCESS, data: { _id: insertedId, ...data } });
         } else {
-          res.status(401).json({ status: ERROR, err: 'Unexpected error from insertion' });
+          res.status(406).json({ status: ERROR, err: 'Unexpected error from insertion' });
         }
       }
     } else {

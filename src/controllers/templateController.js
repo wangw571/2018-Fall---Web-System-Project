@@ -53,7 +53,7 @@ export const templateController = {
     const db = await database.connect();
     const look = await db.collection(TEMP).findOne({ $or: [{ file: file.name }, { filename: file.filename }] });
     if (look) {
-      res.status(401).json({ status: ERROR, err: `Template already exist, use /temp/${look._id} to update` });
+      res.status(406).json({ status: ERROR, err: `Template already exist, use /temp/${look._id} to update` });
       return
     }
 
@@ -88,7 +88,7 @@ export const templateController = {
     if (data.length > 0) {
       res.json({ status: SUCCESS, data: data[0] });
     } else {
-      res.status(403).json(TEMP_DNE);
+      res.status(404).json(TEMP_DNE);
     }
     db.close();
   },
@@ -122,7 +122,7 @@ export const templateController = {
     if (ok && value) {
       res.json({ status: SUCCESS, data: { ...value } });
     } else {
-      res.status(401).json({ status: ERROR, err: 'Invalid template id' });
+      res.status(409).json({ status: ERROR, err: 'Invalid template id' });
     }
     db.close();
   },
@@ -158,7 +158,7 @@ export const templateController = {
     if (ok && value) {
       res.json({ status: SUCCESS, data: value._id });
     } else {
-      res.status(403).json(TEMP_DNE);
+      res.status(404).json(TEMP_DNE);
     }
     db.close();
   }

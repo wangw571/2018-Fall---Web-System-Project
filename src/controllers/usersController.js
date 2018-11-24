@@ -129,7 +129,7 @@ export const UsersController = {
     try {
       _org = getObjectId(params.org);
     } catch (err) {
-      res.status(403).json({ status: ERROR, err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
@@ -164,7 +164,7 @@ export const UsersController = {
 
       } else {
         // If user is in database
-        res.status(403).json({ status: ERROR, err: `User ${body.email} already exist!` });
+        res.status(409).json({ status: ERROR, err: `User ${body.email} already exist!` });
       }
     } else {
 
@@ -281,7 +281,7 @@ export const UsersController = {
     if (ok && value) {
       res.json({ status: SUCCESS, data: value._id });
     } else {
-      res.status(403).json({ status: ERROR, err: 'User does not exist' });
+      res.status(404).json({ status: ERROR, err: 'User does not exist' });
     }
     db.close();
   }
