@@ -48,7 +48,7 @@ export const AuthController = {
       res.json({ status: "success", data: _id });
       dbo.close();
     } else {
-      res.status(403).json({ status: "err", err: "Unable to sign user out" });
+      res.status(409).json({ status: "err", err: "Unable to sign user out" });
     }
   }
 }

@@ -1,10 +1,16 @@
 import React, { Component, Fragment } from 'react';
 import '../../styles/pages/queries.scss';
 import { request } from '../../util';
+import { Alert, queriesAlert } from '../../util/Alert';
 
 const SPACE = "\t";
 export class QueriesForm extends Component {
 
+  constructor(props) {
+    super(props);
+    this.alert = Alert.getInstance();
+  }
+  
   state = {
     name: "",
     query: null,
@@ -22,7 +28,7 @@ export class QueriesForm extends Component {
         const { name, query } = await request(`/queries/${_id}`);
         this.setState({ name, query });
       } catch (err) {
-        console.log(err);
+        this.alert.errProcess(err);
       }
     }
   }
@@ -38,7 +44,7 @@ export class QueriesForm extends Component {
           const { name, query } = await request(`/queries/${_id}`);
           this.setState({ name, query });
         } catch (err) {
-          console.log(err);
+          this.alert.errProcess(err);
         }
       }
     }
@@ -57,7 +63,7 @@ export class QueriesForm extends Component {
     try {
       JSON.parse(clean);
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(queriesAlert);
       return
     }
 
@@ -70,7 +76,7 @@ export class QueriesForm extends Component {
       update(data, active);
       this.setState({ dirty: false });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 
@@ -82,10 +88,11 @@ export class QueriesForm extends Component {
       const result = await request(`/queries/${id}`, 'PUT');
       this.setState({ running: false, result: JSON.stringify(result) });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
       this.setState({ running: false, result: JSON.stringify(err) });
     }
   }
+  
 
   process(result, tab = 0, indent = true) {
     let res = "";

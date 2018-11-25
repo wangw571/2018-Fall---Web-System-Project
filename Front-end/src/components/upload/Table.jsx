@@ -2,8 +2,15 @@ import React, { Component } from 'react';
 import { request, sortByAscending, sortByDescending } from '../../util';
 import '../../styles/components/upload/table.scss';
 import { TableRow } from '.';
+import { Alert } from '../../util/Alert';
+
 
 export class Table extends Component {
+
+  constructor(props) {
+    super(props);
+    this.alert = Alert.getInstance();
+  }
 
   state = {
     temp: null,
@@ -36,7 +43,7 @@ export class Table extends Component {
       set({ data });
       this.setState({ temp: temp.columns, data });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 

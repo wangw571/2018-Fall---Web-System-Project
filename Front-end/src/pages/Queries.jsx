@@ -5,9 +5,15 @@ import { Page } from '../containers';
 import '../styles/pages/queries.scss';
 import { request } from '../util';
 import { QueriesForm } from '../components/queries';
+import { Alert } from '../util/Alert';
 
 export class Queries extends Component {
 
+  constructor(props) {
+    super(props);
+    this.alert = Alert.getInstance();
+  }
+  
   state = {
     items: null,
     active: -1,
@@ -19,7 +25,7 @@ export class Queries extends Component {
       const items = await request('/queries');
       this.setState({ items, active: 0 });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 
@@ -74,7 +80,7 @@ export class Queries extends Component {
         this.setState({ items, active: -1 });
       }
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 

@@ -87,7 +87,7 @@ export class Profile extends Component {
       err = await org.removeUser(value.first_name, value.last_name, value.email, value.id);
     }
     if (err) {
-      console.log(err);
+      this.alert.errProcess(err);
       return
     }
     this.close();
@@ -114,7 +114,7 @@ export class Profile extends Component {
       newItems.push({first_name: first_name.text, last_name: last_name.text, email: email.text, id:id.text, password: password.text});
       this.setState({ newItems });
       if (err) {
-        console.log(err);
+        this.alert.errProcess(err);
         return
       }
     }
