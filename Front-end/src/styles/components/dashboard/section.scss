@@ -7,11 +7,12 @@
   overflow: auto;
   flex-grow: 1;
   &::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-    background-color: rgba(0,0,0,0.1);
+    width: 5px;
+    height: 5px;
+    background-color: rgba(0,0,0,0.2);
     &-thumb {
-      background-color: rgba(0,0,0,0.1);
+      background-color: rgba(0,0,0,0.4);
+      border-radius: 99px;
     }
   }
   &__wrapper {

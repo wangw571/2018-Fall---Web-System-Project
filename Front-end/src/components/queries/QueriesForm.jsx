@@ -69,7 +69,7 @@ export class QueriesForm extends Component {
 
     try {
       const data = await request(
-        `/queries/${active? items[active]._id: ""}`,
+        `/queries/${active !== undefined? items[active]._id: ""}`,
         'POST',
         { name, query: clean }
       );
@@ -132,21 +132,26 @@ export class QueriesForm extends Component {
             { buttons? buttons(): null }
           </div>
         </form>
-        <h2 className="query__header query__header--mid">Test Query</h2>
-        <div className="green__input-group orgs__buttons">
-          <button className="orgs__submit green__button" type="button" onClick={this.run} disabled={dirty || running}>
-            Run Query
-          </button>
-        </div>
         {
-          result !== null?
+          active !== undefined?
           <Fragment>
-            { result !== ""? <textarea className="green__input query__result" value={ this.process(JSON.parse(result)) } disabled/>: null }
-            { result !== ""? <h5>{ JSON.parse(result).length + " results" }</h5>: null }
-          </Fragment>:
-          <div className="green__input query__result green__loader-wrap">
-            <i className="green__loader fas fa-circle-notch"/>Loading...
-          </div>
+            <h2 className="query__header query__header--mid">Test Query</h2>
+            <div className="green__input-group orgs__buttons">
+              <button className="orgs__submit green__button" type="button" onClick={this.run} disabled={dirty || running}>
+                Run Query
+              </button>
+            </div>
+            {
+              result !== null?
+              <Fragment>
+                { result !== ""? <textarea className="green__input query__result" value={ this.process(JSON.parse(result)) } disabled/>: null }
+                { result !== ""? <h5>{ JSON.parse(result).length + " results" }</h5>: null }
+              </Fragment>:
+              <div className="green__input query__result green__loader-wrap">
+                <i className="green__loader fas fa-circle-notch"/>Loading...
+              </div>
+            }
+          </Fragment>: null
         }
       </Fragment>:
       <div className="green__loader-wrap">
