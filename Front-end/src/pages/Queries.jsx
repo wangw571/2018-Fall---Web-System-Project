@@ -5,14 +5,9 @@ import { Page } from '../containers';
 import '../styles/pages/queries.scss';
 import { request } from '../util';
 import { QueriesForm } from '../components/queries';
-import { Alert } from '../util/Alert';
+import { toast } from 'react-toastify';
 
 export class Queries extends Component {
-
-  constructor(props) {
-    super(props);
-    this.alert = Alert.getInstance();
-  }
   
   state = {
     items: null,
@@ -25,7 +20,8 @@ export class Queries extends Component {
       const items = await request('/queries');
       this.setState({ items, active: 0 });
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error getting queries");
     }
   }
 
@@ -44,6 +40,7 @@ export class Queries extends Component {
   add = async item => {
     const { items } = this.state;
     items.push({ _id: item._id, name: item.name, date: item.date });
+    toast("Query successfully added");
     if (!this.unmounted) {
       this.setState({ items, show: false, active: items.length - 1 });
     }

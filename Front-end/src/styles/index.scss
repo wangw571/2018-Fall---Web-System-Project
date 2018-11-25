@@ -22,6 +22,15 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 100vh;
 }
 
+.Toastify__toast {
+  padding-left: 20px;
+  border-radius: 6px;
+  color: rgba(0,0,0,0.8);
+  &--error {
+    color: white;
+  }
+}
+
 .green {
   $self: &;
   &__loader {

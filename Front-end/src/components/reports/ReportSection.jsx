@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Line, Pie, HorizontalBar } from 'react-chartjs-2';
 import { request, chartify } from '../../util';
 import { DEFAULT_CHART_OPTIONS } from '../../values';
+import { toast } from 'react-toastify';
 
 export class ReportSection extends Component {
 
@@ -17,6 +18,7 @@ export class ReportSection extends Component {
       this.setState({ data: await chartify(data) });
     } catch (err) {
       console.log(err);
+      toast.error("Error getting getting section info");
     }
   }
 
@@ -29,6 +31,7 @@ export class ReportSection extends Component {
         this.setState({ data: await chartify(data) });
       } catch (err) {
         console.log(err);
+        toast.error("Error getting getting section info");
       }    
     }
   }

@@ -5,6 +5,7 @@ import { request } from '../util';
 import { Modal } from '../components';
 import { Page } from '../containers';
 import '../styles/pages/report.scss';
+import { toast } from 'react-toastify';
 
 export class Report extends Component {
 
@@ -22,6 +23,7 @@ export class Report extends Component {
       this.setState({ items, queries, active: items.length - 1 });
     } catch (err) {
       console.log(err);
+      toast.error("Error getting reports");
     }
   }
 

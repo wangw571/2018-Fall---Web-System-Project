@@ -2,15 +2,10 @@ import React, { Component } from 'react';
 import { request, sortByAscending, sortByDescending } from '../../util';
 import '../../styles/components/upload/table.scss';
 import { TableRow } from '.';
-import { Alert } from '../../util/Alert';
+import { toast } from 'react-toastify';
 
 
 export class Table extends Component {
-
-  constructor(props) {
-    super(props);
-    this.alert = Alert.getInstance();
-  }
 
   state = {
     temp: null,
@@ -43,7 +38,8 @@ export class Table extends Component {
       set({ data });
       this.setState({ temp: temp.columns, data });
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error getting submission data");
     }
   }
 
@@ -55,6 +51,7 @@ export class Table extends Component {
       data[row][col] = target.innerHTML;
       this.setState({ data });
       this.props.set(data);
+      toast("Submission successfully updated");
     }
   }
 

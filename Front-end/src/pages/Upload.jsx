@@ -5,6 +5,7 @@ import '../styles/pages/upload.scss';
 import { Modal } from '../components';
 import { request, reduce, Authentication } from '../util';
 import { Table, File, TemplateDetails } from '../components/upload';
+import { toast } from 'react-toastify';
 
 const STATUS = {
   undefined: 'Missing',
@@ -34,7 +35,8 @@ export class Upload extends Component {
       items = await request('/temp');
       submits = await request('/submit');
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error getting templates/submissions");
       return
     }
 
@@ -91,8 +93,10 @@ export class Upload extends Component {
         submitted: item.submitted, date: item.date, data
       });
       this.setState({ items });
+      toast("Submission successfully updated");
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error updating submissions");
     }
   }
   delete = async () => {
@@ -103,8 +107,10 @@ export class Upload extends Component {
       delete item.submitted
       item.date = new Date();
       this.setState({ items });
+      toast("Submission successfully deleted");
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error removing submissions");
     }
   }
   submit = async () => {
@@ -132,6 +138,7 @@ export class Upload extends Component {
         show: false
       }))
     }
+    toast("Template successfully added");
   }
 
   itemMap = ({ name, date, submitted }) => {
@@ -161,8 +168,10 @@ export class Upload extends Component {
         items: itemsCopy,
         active: 0
       });
+      toast("Template successfully deleted");
     } catch(err){
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error removing tempalte");
     }
   }
 

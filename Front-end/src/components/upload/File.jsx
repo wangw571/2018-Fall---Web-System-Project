@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
 import { upload } from '../../util';
 import '../../styles/components/upload/file.scss';
-import { Alert } from '../../util/Alert';
+import { toast } from 'react-toastify';
 
 
 export class File extends Component {
-
-  constructor(props) {
-    super(props);
-    this.alert = Alert.getInstance();
-  }
 
   state = { file: null }
 
@@ -26,8 +21,10 @@ export class File extends Component {
         body
       );
       await submit(res);
+      toast("File successfully uploaded");
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error uploading file");
     }
     if (!this.unmounted) {
       this.setState({ file: null });
