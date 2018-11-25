@@ -1,5 +1,10 @@
 import { database, getHash, getObjectId } from '../util';
 
+const ERROR = 'error';
+const INSUF_PERMISSION = { status: ERROR, err: 'Insufficient permission' };
+const QUER = 'queries';
+const SUCCESS = 'success';
+
 const validate = ({ name, query }) => {
   const data = {};
 
@@ -27,18 +32,20 @@ const validate = ({ name, query }) => {
   return data;
 }
 
+const NO_SUCH_Q = { status: ERROR, err: 'No such query' };
+const INVALID_Q = { status: ERROR, err: 'Invalid query id' };
 export const queriesController = {
   getQueries: async (req, res) => {
     const { user: { sudo } } = req;
 
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(INSUF_PERMISSION);
       return
     }
 
     const db = await database.connect();
-    const data = await db.collection('queries').find({}, { _id: 1, name: 1, date: 1 }).toArray();
-    res.json({ status: 'success', data });
+    const data = await db.collection(QUER).find({}, { _id: 1, name: 1, date: 1 }).toArray();
+    res.json({ status: SUCCESS, data });
     db.close();
   },
 
@@ -47,7 +54,7 @@ export const queriesController = {
 
     // Check if super admin
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(INSUF_PERMISSION);
       return
     }
 
@@ -55,7 +62,7 @@ export const queriesController = {
       try {
           body.query = JSON.parse(body.query);
       } catch (err) {
-        res.status(401).json({ status: 'error', err });
+        res.status(406).json({ status: ERROR, err });
         return
       }
     }
@@ -64,13 +71,13 @@ export const queriesController = {
     if (!data.err) {
       const db = await database.connect();
       data = { ...data, created_by: _id, date: new Date() }
-      const { insertedId } = await db.collection('queries').insertOne(data);
+      const { insertedId } = await db.collection(QUER).insertOne(data);
 
-      res.json({ status: "success", data: { _id: insertedId, ...data } });
+      res.json({ status: SUCCESS, data: { _id: insertedId, ...data } });
       db.close();
 
     } else {
-      res.status(403).json({ status: "error", err: data.err });
+      res.status(403).json({ status: ERROR, err: data.err });
     }
   },
 
@@ -78,7 +85,7 @@ export const queriesController = {
     const { user: { sudo }, params } = req;
 
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(INSUF_PERMISSION);
       return
     }
 
@@ -86,16 +93,16 @@ export const queriesController = {
     try {
       _id = getObjectId(params.qid);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(404).json({ status: ERROR, err });
     }
 
     // Get query
     const db = await database.connect();
-    const data = await db.collection('queries').findOne({ _id });
+    const data = await db.collection(QUER).findOne({ _id });
     if (data) {
-      res.json({ status: 'success', data });
+      res.json({ status: SUCCESS, data });
     } else {
-      res.status(401).json({ status: 'error', err: 'No such query' });
+      res.status(404).json(NO_SUCH_Q);
     }
     db.close();
   },
@@ -104,7 +111,7 @@ export const queriesController = {
     const { user: { sudo }, params, body } = req;
 
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(INSUF_PERMISSION);
       return
     }
 
@@ -112,7 +119,7 @@ export const queriesController = {
     try {
       _id = getObjectId(params.qid);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
@@ -120,7 +127,7 @@ export const queriesController = {
       try {
           body.query = JSON.parse(body.query);
       } catch (err) {
-        res.status(401).json({ status: 'error', err });
+        res.status(401).json({ status: ERROR, err });
         return
       }
     }
@@ -129,7 +136,7 @@ export const queriesController = {
     if (!data.err) {
       const db = await database.connect();
       data = { ...data, created_by: _id, date: new Date() };
-      const { value, ok } = await db.collection('queries').findOneAndReplace(
+      const { value, ok } = await db.collection(QUER).findOneAndReplace(
         { _id },
         { $set: data },
         { returnOriginal: false }
@@ -137,14 +144,14 @@ export const queriesController = {
 
       // Return result
       if (ok && value) {
-        res.json({ status: 'success', data: { ...value } });
+        res.json({ status: SUCCESS, data: { ...value } });
       } else {
-        res.status(401).json({ status: 'error', err: 'Invalid query id' });
+        res.status(406).json(INVALID_Q);
       }
       db.close();
 
     } else {
-      res.status(403).json({ status: "error", err: data.err });
+      res.status(403).json({ status: ERROR, err: data.err });
     }
   },
 
@@ -152,7 +159,7 @@ export const queriesController = {
     const { user: { sudo }, params } = req;
 
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(INSUF_PERMISSION);
       return
     }
 
@@ -160,19 +167,19 @@ export const queriesController = {
     try {
       _id = getObjectId(params.qid);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
     // Modify query
     const db = await database.connect();
-    const { value, ok } = await db.collection('queries').findOneAndDelete({ _id });
+    const { value, ok } = await db.collection(QUER).findOneAndDelete({ _id });
 
     // Return result
     if (ok && value) {
-      res.json({ status: 'success', data: value._id });
+      res.json({ status: SUCCESS, data: value._id });
     } else {
-      res.status(401).json({ status: 'error', err: 'Invalid query id' });
+      res.status(403).json(INVALID_Q);
     }
     db.close();
   },
@@ -181,7 +188,7 @@ export const queriesController = {
     const { user: { sudo }, params } = req;
 
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(INSUF_PERMISSION);
       return
     }
 
@@ -189,22 +196,22 @@ export const queriesController = {
     try {
       _id = getObjectId(params.qid);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(403).json({ status: ERROR, err });
       return
     }
 
     const db = await database.connect();
-    const data = await db.collection('queries').findOne({ _id }, { query: 1 });
+    const data = await db.collection(QUER).findOne({ _id }, { query: 1 });
 
     if (data) {
       const result = await db.collection('submissions').aggregate(JSON.parse(data.query)).toArray();
       if (result) {
-        res.json({ status: 'success', data: result });
+        res.json({ status: SUCCESS, data: result });
       } else {
-        res.status(401).json({ status: 'error', err: 'Query operation failed' });
+        res.status(406).json({ status: ERROR, err: 'Query operation failed' });
       }
     } else {
-      res.status(401).json({ status: 'error', err: 'No such query' });
+      res.status(404).json(NO_SUCH_Q);
     }
   }
 }
