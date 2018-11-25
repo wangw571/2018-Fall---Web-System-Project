@@ -140,7 +140,7 @@ export class Organization extends Component {
 
   itemMap = ({ name, _sys }) => (
     <Fragment>
-      <h4 className="orgs__item-title">{ name }</h4>
+      <h3 className="orgs__item-title">{ name }</h3>
       <p>{ `${_sys? 'System': 'Regular'} Organization` }</p>
     </Fragment>
   )

@@ -1,4 +1,4 @@
-import { database, getHash, getObjectId } from '../util';
+import { database, getObjectId } from '../util';
 
 const validate = ({ name, query }) => {
   const data = {};
@@ -87,6 +87,7 @@ export const queriesController = {
       _id = getObjectId(params.qid);
     } catch (err) {
       res.status(401).json({ status: 'error', err });
+      return
     }
 
     // Get query
@@ -118,7 +119,7 @@ export const queriesController = {
 
     if (typeof(body.query) === 'string') {
       try {
-          body.query = JSON.parse(body.query);
+        body.query = JSON.parse(body.query);
       } catch (err) {
         res.status(401).json({ status: 'error', err });
         return
@@ -126,26 +127,26 @@ export const queriesController = {
     }
 
     let data = validate(body);
-    if (!data.err) {
-      const db = await database.connect();
-      data = { ...data, created_by: _id, date: new Date() };
-      const { value, ok } = await db.collection('queries').findOneAndReplace(
-        { _id },
-        { $set: data },
-        { returnOriginal: false }
-      );
-
-      // Return result
-      if (ok && value) {
-        res.json({ status: 'success', data: { ...value } });
-      } else {
-        res.status(401).json({ status: 'error', err: 'Invalid query id' });
-      }
-      db.close();
-
-    } else {
+    if (data.err) {
       res.status(403).json({ status: "error", err: data.err });
+      return
     }
+    
+    const db = await database.connect();
+    data = { ...data, created_by: _id, date: new Date() };
+    const { value, ok } = await db.collection('queries').findOneAndReplace(
+      { _id },
+      { $set: data },
+      { returnOriginal: false }
+    );
+
+    // Return result
+    if (ok && value) {
+      res.json({ status: 'success', data: { ...value } });
+    } else {
+      res.status(401).json({ status: 'error', err: 'Invalid query id' });
+    }
+    db.close();
   },
 
   deleteQuery: async (req, res) => {
@@ -196,15 +197,18 @@ export const queriesController = {
     const db = await database.connect();
     const data = await db.collection('queries').findOne({ _id }, { query: 1 });
 
-    if (data) {
+    if (!data) {
+      res.status(401).json({ status: 'error', err: 'No such query' });
+      return
+    }
+
+    try {
       const result = await db.collection('submissions').aggregate(JSON.parse(data.query)).toArray();
       if (result) {
         res.json({ status: 'success', data: result });
-      } else {
-        res.status(401).json({ status: 'error', err: 'Query operation failed' });
       }
-    } else {
-      res.status(401).json({ status: 'error', err: 'No such query' });
+    } catch(err) {
+      res.status(401).json({ status: 'error', err });
     }
   }
 }
