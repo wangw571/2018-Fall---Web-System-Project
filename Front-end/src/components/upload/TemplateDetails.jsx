@@ -3,8 +3,15 @@ import '../../styles/components/upload/template.scss';
 import { TemplateItem, TemplateItemNumber, TemplateItemSelect, TemplateItemText } from './templateItem';
 import { request } from '../../util';
 import { COLUMN_TYPES } from '../../values';
+import { Alert } from '../../util/Alert';
+
 
 export class TemplateDetails extends Component {
+
+  constructor(props) {
+    super(props);
+    this.alert = Alert.getInstance();
+  }
 
   state = {
     name: "",
@@ -19,7 +26,7 @@ export class TemplateDetails extends Component {
         const { name, columns } = await request(`/temp/${item._id}`);
         this.setState({ name, columns });
       } catch (err) {
-        console.log(err);
+        this.alert.errProcess(err);
       }
     }
   }
@@ -31,7 +38,7 @@ export class TemplateDetails extends Component {
       items.splice(active, 1);
       set({ items, active: -1, show: false });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
   
@@ -43,7 +50,7 @@ export class TemplateDetails extends Component {
       items[active] = res;
       set({ items, show: false });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 

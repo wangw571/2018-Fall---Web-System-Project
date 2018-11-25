@@ -5,6 +5,7 @@ import { UserForm } from '../components/user';
 import { Modal } from '../components';
 import { Page } from '../containers';
 import '../styles/pages/users.scss';
+import { Alert } from '../util/Alert';
 
 export class User extends Component {
 
@@ -17,6 +18,7 @@ export class User extends Component {
   constructor(props) {
     super(props);
     this.user = Authentication.getInstance().getUser();
+    this.alert = Alert.getInstance();
   }
 
   async componentDidMount() {
@@ -26,7 +28,7 @@ export class User extends Component {
         this.setState({ users, active: 0 });
       }
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 
