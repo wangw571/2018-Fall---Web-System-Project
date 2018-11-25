@@ -34,7 +34,7 @@ export class Upload extends Component {
       items = await request('/temp');
       submits = await request('/submit');
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
       return
     }
 
@@ -92,7 +92,7 @@ export class Upload extends Component {
       });
       this.setState({ items });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
   delete = async () => {
@@ -104,7 +104,7 @@ export class Upload extends Component {
       item.date = new Date();
       this.setState({ items });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
   submit = async () => {
@@ -162,7 +162,7 @@ export class Upload extends Component {
         active: 0
       });
     } catch(err){
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 

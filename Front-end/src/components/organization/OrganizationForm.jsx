@@ -2,8 +2,14 @@ import React, { Component, Fragment } from 'react';
 import '../../styles/pages/organization.scss';
 import { Switch, Collection } from '../.';
 import { request } from '../../util';
+import { Alert } from '../../util/Alert';
 
 export class OrganizationForm extends Component {
+
+  constructor(props) {
+    super(props);
+    this.alert = Alert.getInstance();
+  }
 
   state = {
     name: '',
@@ -94,7 +100,7 @@ export class OrganizationForm extends Component {
       update(res, active);
       this.setState({ dirty: false });
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 

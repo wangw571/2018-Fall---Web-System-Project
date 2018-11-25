@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import { upload } from '../../util';
 import '../../styles/components/upload/file.scss';
+import { Alert } from '../../util/Alert';
+
 
 export class File extends Component {
+
+  constructor(props) {
+    super(props);
+    this.alert = Alert.getInstance();
+  }
 
   state = { file: null }
 
@@ -20,7 +27,7 @@ export class File extends Component {
       );
       await submit(res);
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
     if (!this.unmounted) {
       this.setState({ file: null });
