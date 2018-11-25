@@ -4,7 +4,7 @@ const getFilterTemplates = async (db, org, project) => {
   const { permissions } = await db.collection('organizations')
     .findOne({ _id: org }, { permissions: 1 })
   ;
-  const data = await db.collection('templates')
+  const data = await db.collection(TEMP)
     .find(
       { _id: { $in: permissions } },
       project
@@ -13,11 +13,16 @@ const getFilterTemplates = async (db, org, project) => {
   return data;
 }
 
+const TEMP = 'templates';
 // Gets all templates
 const getAllTemplates = async (db, project) => (
-  db.collection('templates').find({}, project).toArray()
+  db.collection(TEMP).find({}, project).toArray()
 )
 
+const ERROR = 'error';
+const SUCCESS = 'success';
+const NO_PERMISSION = { status: ERROR, err: 'Insufficient permission' };
+const TEMP_DNE = { status: ERROR, err: 'Template does not exist' };
 export const templateController = {
   getTemplates: async (req, res) => {
     const { user: { sudo, _org } } = req;
@@ -31,7 +36,7 @@ export const templateController = {
       data = await getFilterTemplates(db, _org, { 'data._id': 1, 'data.name': 1, 'data.date': 1 });
     }
 
-    res.json({ status: 'success', data });
+    res.json({ status: SUCCESS, data });
     db.close();
   },
 
@@ -40,21 +45,21 @@ export const templateController = {
 
     // Check if super admin
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(NO_PERMISSION);
       return
     }
 
     // Check if template exist or not
     const db = await database.connect();
-    const look = await db.collection('templates').findOne({ $or: [{ name: file.name }, { filename: file.filename }] });
+    const look = await db.collection(TEMP).findOne({ $or: [{ file: file.name }, { filename: file.filename }] });
     if (look) {
-      res.status(401).json({ status: 'error', err: `Template already exist, use /temp/${look._id} to update` });
+      res.status(406).json({ status: ERROR, err: `Template already exist, use /temp/${look._id} to update` });
       return
     }
 
     // Insert new template
-    const { insertedId } = await db.collection('templates').insertOne({ ...file, date: new Date() });
-    res.json({ status: 'success', data: insertedId });
+    const { insertedId } = await db.collection(TEMP).insertOne({ ...file, date: new Date() });
+    res.json({ status: SUCCESS, data: insertedId });
     db.close();
   },
 
@@ -67,7 +72,7 @@ export const templateController = {
     try {
       id = getObjectId(temp);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
@@ -81,9 +86,9 @@ export const templateController = {
     // Find template and return it
     const data = temps.filter(({ _id }) => _id.equals(id) );
     if (data.length > 0) {
-      res.json({ status: 'success', data: data[0] });
+      res.json({ status: SUCCESS, data: data[0] });
     } else {
-      res.status(403).json({ status: 'error', err: "Template does not exist" });
+      res.status(404).json(TEMP_DNE);
     }
     db.close();
   },
@@ -94,20 +99,20 @@ export const templateController = {
 
     // Check if super admin
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(NO_PERMISSION);
       return
     }
 
     try {
       _id = getObjectId(temp);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
     // Modify template
     const db = await database.connect();
-    const { value, ok } = await db.collection('templates').findOneAndReplace(
+    const { value, ok } = await db.collection(TEMP).findOneAndReplace(
       { _id },
       { $set: { ...body, date: new Date() } },
       { returnOriginal: false }
@@ -115,9 +120,9 @@ export const templateController = {
 
     // Return result
     if (ok && value) {
-      res.json({ status: 'success', data: { ...value } });
+      res.json({ status: SUCCESS, data: { ...value } });
     } else {
-      res.status(401).json({ status: 'error', err: 'Invalid template id' });
+      res.status(409).json({ status: ERROR, err: 'Invalid template id' });
     }
     db.close();
   },
@@ -128,20 +133,20 @@ export const templateController = {
     
     // Check if super admin
     if (!sudo) {
-      res.status(403).json({ status: 'error', err: 'Insufficient permission' });
+      res.status(403).json(NO_PERMISSION);
       return
     }
 
     try {
       _id = getObjectId(temp);
     } catch (err) {
-      res.status(401).json({ status: 'error', err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
     // Find and remove the template
     const db = await database.connect();
-    const { ok, value } = await db.collection('templates')
+    const { ok, value } = await db.collection(TEMP)
       .findOneAndDelete({ _id })
     ;
     await db.collection('organizations').update(
@@ -151,9 +156,9 @@ export const templateController = {
 
     // Return result of deletion
     if (ok && value) {
-      res.json({ status: 'success', data: value._id });
+      res.json({ status: SUCCESS, data: value._id });
     } else {
-      res.status(403).json({ status: 'error', err: 'Template does not exist' });
+      res.status(404).json(TEMP_DNE);
     }
     db.close();
   }

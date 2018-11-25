@@ -1,7 +1,14 @@
 import { database, getHash, getObjectId } from '../util';
 
+
+const SUCCESS = "success";
+const ERROR = 'error';
+const ACCESS_DN = { status: ERROR, err: "Access Denied" };
+const USERS = 'users';
+
+
 const getUsers = async (db, match) => (
-  db.collection('users').find(
+  db.collection(USERS).find(
     match,
     { password: 0, token: 0 }
   ).toArray()
@@ -39,6 +46,7 @@ const validUser = ({ firstname, lastname, email, admin, password }) => {
   return res
 }
 
+
 export const UsersController = {
   
   getAllUsers: async (req, res) => {
@@ -49,7 +57,7 @@ export const UsersController = {
     const users = await getUsers(db, sudo? {} : { _org });
 
     // Return all the users
-    res.json({ status: "success", data: users });
+    res.json({ status: SUCCESS, data: users });
     db.close();
   },
 
@@ -61,7 +69,7 @@ export const UsersController = {
     delete user.password;
     delete user.token;
     user._sys = sudo;
-    res.json({ status: "success", data: user });
+    res.json({ status: SUCCESS, data: user });
   },
 
   postMe: async (req, res) => {
@@ -73,7 +81,7 @@ export const UsersController = {
 
     // Find user and update token
     const db = await database.connect();
-    const { value, ok } = await db.collection('users').findOneAndReplace(
+    const { value, ok } = await db.collection(USERS).findOneAndReplace(
       { _id, _org },
       { $set: body },
       { projection: { password: 0, token: 0 }, returnOriginal: false }
@@ -81,9 +89,9 @@ export const UsersController = {
 
     // Return OK and has value
     if (ok && value) {
-      res.json({ status: 'success', data: { ...value } });
+      res.json({ status: SUCCESS, data: { ...value } });
     } else {
-      res.json({ status: 'error', data: "No such user exist in database" });
+      res.json({ status: ERROR, data: "No such user exist in database" });
     }
     db.close();
   },
@@ -96,20 +104,20 @@ export const UsersController = {
     try {
       _org = getObjectId(org);
     } catch (err) {
-      res.status(401).json({ status: "error", err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
     // Check if user is allowed to access users of this organization
     if (!user._org.equals(_org) && !user.sudo) {
-      res.status(403).json({ status: "error", err: "Access Denied" });
+      res.status(403).json(ACCESS_DN);
       return
     }
 
     // Get users of this organization
     const db = await database.connect();
     const users = await getUsers(db, { _org });
-    res.json({ status: "success", data: users });
+    res.json({ status: SUCCESS, data: users });
     db.close();
   },
 
@@ -121,13 +129,13 @@ export const UsersController = {
     try {
       _org = getObjectId(params.org);
     } catch (err) {
-      res.status(403).json({ status: "error", err });
+      res.status(401).json({ status: ERROR, err });
       return
     }
 
     // Check if user is allowed to insert user of this organization
     if ((!user._org.equals(_org) || !user.admin) && !user.sudo) {
-      res.status(403).json({ status: "error", err: "Access Denied" });
+      res.status(403).json(ACCESS_DN);
       return
     }
 
@@ -137,11 +145,11 @@ export const UsersController = {
 
       // Check if user is in database
       const db = await database.connect();
-      const findUser = await db.collection('user').findOne({ email: body.email });
+      const findUser = await db.collection(USERS).findOne({ email: body.email });
 
       // If not insert user
       if (!findUser) {
-        const { ops } = await db.collection('users').insertOne({
+        const { ops } = await db.collection(USERS).insertOne({
           _org,
           ...body,
           password: getHash(body.password),
@@ -151,17 +159,17 @@ export const UsersController = {
         // Hide password & token and return inserted user
         delete ops[0].password;
         delete ops[0].token;
-        res.json({ status: "success", data: ops[0] });
+        res.json({ status: SUCCESS, data: ops[0] });
         db.close();
 
       } else {
         // If user is in database
-        res.status(403).json({ status: "error", err: `User ${body.email} already exist!` });
+        res.status(409).json({ status: ERROR, err: `User ${body.email} already exist!` });
       }
     } else {
 
       // If data is invalid
-      res.status(403).json({ status: "error", err });
+      res.status(403).json({ status: ERROR, err });
     }
   },
 
@@ -175,19 +183,19 @@ export const UsersController = {
       _org = getObjectId(params.org);
       _id = getObjectId(params.user);
     } catch (err) {
-      res.status(403).json({ status: "error", err });
+      res.status(403).json({ status: ERROR, err });
       return
     }
 
     // Check if user is allowed to access user of this organization
     if (!user._org.equals(_org) && !user.sudo) {
-      res.status(403).json({ status: "error", err: "Access Denied" });
+      res.status(403).json(ACCESS_DN);
       return
     }
 
     // Get users of this organization
     const db = await database.connect();
-    const data = await db.collection('users').findOne(
+    const data = await db.collection(USERS).findOne(
       { _org, _id },
       { password: 0, token: 0 }
     );
@@ -198,7 +206,7 @@ export const UsersController = {
     );
     
     data._sys = _sys;
-    res.json({ status: "success", data });
+    res.json({ status: SUCCESS, data });
     db.close();
   },
 
@@ -212,14 +220,14 @@ export const UsersController = {
       _org = getObjectId(params.org);
       _id = getObjectId(params.user);
     } catch (err) {
-      res.status(403).json({ status: "error", err });
+      res.status(403).json({ status: ERROR, err });
       return
     }
 
     // Check if user is allowed to update user of this organization
     // Or if user is themselves
     if ((!user._org.equals(_org) || !user.admin) && !user.sudo && !user._id.equals(_id)) {
-      res.status(403).json({ status: "error", err: "Access Denied" });
+      res.status(403).json(ACCESS_DN);
       return
     }
 
@@ -228,7 +236,7 @@ export const UsersController = {
     }
     // Find user and update token
     const db = await database.connect();
-    const { value, ok } = await db.collection('users').findOneAndReplace(
+    const { value, ok } = await db.collection(USERS).findOneAndReplace(
       { _id, _org },
       { $set: body },
       { projection: { password: 0, token: 0 }, returnOriginal: false }
@@ -236,9 +244,9 @@ export const UsersController = {
 
     // Return OK and has value
     if (ok && value) {
-      res.json({ status: 'success', data: value });
+      res.json({ status: SUCCESS, data: value });
     } else {
-      res.json({ status: 'error', data: "No such user exist in database" });
+      res.json({ status: ERROR, data: "No such user exist in database" });
     }
     db.close();
   },
@@ -253,27 +261,27 @@ export const UsersController = {
       _org = getObjectId(params.org);
       _id = getObjectId(params.user);
     } catch (err) {
-      res.status(403).json({ status: "error", err });
+      res.status(403).json({ status: ERROR, err });
       return
     }
 
     // Check if user is allowed to update user of this organization
     // Or not themselves (Can't have them getting rid of them self....)
     if ((!user._org.equals(_org) || !user.admin) && !user.sudo) {
-      res.status(403).json({ status: "error", err: "Access Denied" });
+      res.status(403).json(ACCESS_DN);
       return
     }
 
     // Find user and update token
     const db = await database.connect();
-    const { ok, value } = await db.collection('users')
+    const { ok, value } = await db.collection(USERS)
       .findOneAndDelete({ _id, _org })
     ;
 
     if (ok && value) {
-      res.json({ status: 'success', data: value._id });
+      res.json({ status: SUCCESS, data: value._id });
     } else {
-      res.status(403).json({ status: 'error', err: 'User does not exist' });
+      res.status(404).json({ status: ERROR, err: 'User does not exist' });
     }
     db.close();
   }
