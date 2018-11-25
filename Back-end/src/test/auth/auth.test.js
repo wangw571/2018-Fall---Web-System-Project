@@ -69,7 +69,7 @@ describe('auth.js', () => {
         request('/logout', 'POST')
         .asNoOne()
         .end((err, res) => {
-          res.should.have.status(409);
+          res.should.have.status(403);
           res.body.should.be.a('object');
           res.body.should.have.property('status', 'error');
           res.body.should.have.property('err');
