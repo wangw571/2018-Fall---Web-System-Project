@@ -4,7 +4,6 @@
 We are team newline, a team of 5 students working together to create a scalable and efficient system for Scarborough Local Immigration Partnership (LIP). Using NodeJS/Express and React, we are hoping to work together with the client to create a web application that would suit the needs of our clients - In hopes not only getting a good grade, but creating something meaningful for society.
 
 ### Team Members
- - Jialiang Lin
  - Vishawaa Patel
  - Frederic Pun
  - Qingtian Wang
