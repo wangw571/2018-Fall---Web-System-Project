@@ -30,9 +30,9 @@ export class QueriesForm extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    const { items, active } = this.props;
+    const { items, active, clear } = this.props;
     if (prevProps.active !== active) {
-      this.setState({ query: null, result: "", dirty: false });
+      this.setState({ name: "", query: null, result: "", dirty: false });
 
       if (items && active > -1) {
         const { _id } = items[active];
@@ -44,6 +44,8 @@ export class QueriesForm extends Component {
           toast.error("Error loading query");
         }
       }
+    } else if (prevProps.clear !== clear && !prevProps.clear) {
+      this.setState({ name: "", query: null, result: "", dirty: false });
     }
   }
 
