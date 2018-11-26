@@ -8,8 +8,11 @@
  - cd ./Back-end
  - npm install
  - mongorestore --port 27017 -d greencare ./src/test/db (Althought it's only the test database, its a good start)
-###### You would need an .env file for this to work, refer to deliverable 5 for details
+###### You would need an .env file for this to work, refer to deliverable 5 for details (We keep it off the readme to keep our application secure)
 ###### Too much effort? Say no more! Our project can also be found live [here](https://cscc01backend.herokuapp.com). Running the newest version from our CI/CD scripts.
+
+## Testing
+For the proper testing configuration for .env, reference deliverable 5. To test, it's just a simple "npm test" and you're off to the races!
 
 # End points: 
 ######  Note: all end points(except log in) require 'Authorization' to be existing in header with token inside. Token format: Bearer ${token}
