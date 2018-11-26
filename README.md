@@ -1,6 +1,32 @@
-######  Note: all end points(except log in) require 'Authorization' to be existing in header with token inside. Token format: Bearer ${token}
+# Get Started
+## Required Tools
+ - [Mongodb](https://www.mongodb.com/download-center/community)
+ - [Nodejs](https://nodejs.org/en/download/)
+ 
+## Installation
+ - git clone https://github.com/CSCC01/Team19.git
+ - cd ./Back-end
+ - npm install
+ - mongorestore --port 27017 -d greencare ./src/test/db (Althought it's only the test database, its a good start)
+###### You would need an .env file for this to work, refer to deliverable 5 for details (We keep it off the readme to keep our application secure)
+###### Too much effort? Say no more! Our project can also be found live [here](https://cscc01backend.herokuapp.com). Running the newest version from our CI/CD scripts.
 
-## End points: 
+## File Structure (after src)
+ - ./controllers
+   - This holds all our controllers for our endpoints. A single route has one controller object, where every method of access under it has it's own handler within the object
+ - ./routes
+   - This holds all the methods and routes under than umbrella route. For example, under /users, we have different methods for getting or adding users.
+ - ./test
+   - This holds our testing files for our application. We use a healthy dose of Mocha and Chai for this (For the less tech savy, they are the names of the testing frameworks we use)
+   - This folder is emitted from the build package on build
+ - ./util
+   - This holds our reusable functions such as the database object, and middleware for handling authentication and file parsing
+
+## Testing
+For the proper testing configuration for .env, reference deliverable 5. To test, it's just a simple "npm test" and you're off to the races!
+
+# End points: 
+######  Note: all end points(except log in) require 'Authorization' to be existing in header with token inside. Token format: Bearer ${token}
 ## Authorization:
 ### /login
 ->{email, password}
