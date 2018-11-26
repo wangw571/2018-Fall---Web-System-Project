@@ -6,6 +6,7 @@ import { Modal, Collection } from '../components';
 import { Authentication, request } from '../util';
 import { OrganizationForm } from '../components/organization';
 import { UserForm } from '../components/user';
+import { toast } from 'react-toastify';
 
 export class Organization extends Component {
 
@@ -16,7 +17,7 @@ export class Organization extends Component {
     modal: null,
     show: false,
     active: -1,
-    user: undefined,
+    user: undefined
   }
 
   constructor(props) {
@@ -34,6 +35,7 @@ export class Organization extends Component {
       }
     } catch (err) {
       console.log(err);
+      toast.error("Error getting organization information");
       return
     }
 
@@ -73,6 +75,7 @@ export class Organization extends Component {
       }
     } catch (err) {
       console.log(err);
+      toast.error("Error getting users of organization");
     }
   }
 
@@ -81,12 +84,14 @@ export class Organization extends Component {
     try {
       const org = items.orgs[active];
       await request(`/orgs/${org._id}`, 'DELETE');
+      toast("Organization successfully removed");
       items.orgs.splice(active, 1);
       if (!this.unmounted) {
         this.setState({ show: false, items, active: -1 });
       }
     } catch (err) {
       console.log(err);
+      toast.error("Error removing organization");
     }
   }
 
@@ -95,9 +100,11 @@ export class Organization extends Component {
     const victim = items.users[user];
     try {
       await request(`/users/${victim._org}/${victim._id}`, 'DELETE');
+      toast("User successfully removed");
       items.users.splice(user, 1);
     } catch (err) {
       console.log(err);
+      toast.error("Error removing user");
     }
     if (!this.unmounted) {
       this.setState({ show: false, items, user: undefined });
@@ -140,7 +147,7 @@ export class Organization extends Component {
 
   itemMap = ({ name, _sys }) => (
     <Fragment>
-      <h4 className="orgs__item-title">{ name }</h4>
+      <h3 className="orgs__item-title">{ name }</h3>
       <p>{ `${_sys? 'System': 'Regular'} Organization` }</p>
     </Fragment>
   )

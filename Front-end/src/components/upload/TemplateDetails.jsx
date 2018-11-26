@@ -3,6 +3,8 @@ import '../../styles/components/upload/template.scss';
 import { TemplateItem, TemplateItemNumber, TemplateItemSelect, TemplateItemText } from './templateItem';
 import { request } from '../../util';
 import { COLUMN_TYPES } from '../../values';
+import { toast } from 'react-toastify';
+
 
 export class TemplateDetails extends Component {
 
@@ -20,6 +22,7 @@ export class TemplateDetails extends Component {
         this.setState({ name, columns });
       } catch (err) {
         console.log(err);
+        toast.error("Error getting template details");
       }
     }
   }
@@ -30,8 +33,10 @@ export class TemplateDetails extends Component {
       await request(`/temp/${items[active]._id}`, 'DELETE');
       items.splice(active, 1);
       set({ items, active: -1, show: false });
+      toast("Template successfully removed");
     } catch (err) {
       console.log(err);
+      toast.error("Error deleting template");
     }
   }
   
@@ -40,10 +45,12 @@ export class TemplateDetails extends Component {
     const { items, active, set } = this.props;
     try {
       const res = await request(`/temp/${items[active]._id}`, 'POST', this.state);
-      items[active] = res;
+      items[active] = { ...items[active], ...res };
       set({ items, show: false });
+      toast('Template successfully updated');
     } catch (err) {
       console.log(err);
+      toast.error("Error creating template");
     }
   }
 

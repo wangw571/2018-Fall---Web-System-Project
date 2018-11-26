@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { NotFound, Login } from '../pages';
 import { Dashboard } from '.';
 import { Authentication } from '../util';
 import '../styles/containers/app.scss';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 const auth = Authentication.getInstance();
 class _App extends Component {
@@ -22,11 +24,14 @@ class _App extends Component {
   }
 
   render() {
-    return <Switch>
-      <Route exact path="/" component={Login}/>
-      <Route path="/app" component={Dashboard}/>
-      <Route path="/" component={NotFound}/>
-    </Switch>
+    return <Fragment>
+      <Switch>
+        <Route exact path="/" component={Login}/>
+        <Route path="/app" component={Dashboard}/>
+        <Route path="/" component={NotFound}/>
+      </Switch>
+      <ToastContainer closeButton={false} position="bottom-right" autoClose={4000} closeOnClick hideProgressBar/>
+    </Fragment>
   }
 };
 

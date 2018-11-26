@@ -5,9 +5,10 @@ import { Page } from '../containers';
 import '../styles/pages/queries.scss';
 import { request } from '../util';
 import { QueriesForm } from '../components/queries';
+import { toast } from 'react-toastify';
 
 export class Queries extends Component {
-
+  
   state = {
     items: null,
     active: -1,
@@ -20,6 +21,7 @@ export class Queries extends Component {
       this.setState({ items, active: 0 });
     } catch (err) {
       console.log(err);
+      toast.error("Error getting queries");
     }
   }
 
@@ -38,6 +40,7 @@ export class Queries extends Component {
   add = async item => {
     const { items } = this.state;
     items.push({ _id: item._id, name: item.name, date: item.date });
+    toast("Query successfully added");
     if (!this.unmounted) {
       this.setState({ items, show: false, active: items.length - 1 });
     }
@@ -74,7 +77,7 @@ export class Queries extends Component {
         this.setState({ items, active: -1 });
       }
     } catch (err) {
-      console.log(err);
+      this.alert.errProcess(err);
     }
   }
 
@@ -109,7 +112,7 @@ export class Queries extends Component {
       <Modal show={show} close={this.close}>
         <div className="query__modal">
           <h2>Create a new query</h2>
-          <QueriesForm update={this.add} buttons={() =>
+          <QueriesForm clear={!show} update={this.add} buttons={() =>
             <button className="orgs__exit green__button" type="button" onClick={this.close}>Exit</button>
           }/>
         </div>

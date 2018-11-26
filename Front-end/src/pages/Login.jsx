@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../styles/containers/login.scss';
 import { withRouter } from 'react-router-dom';
 import { Authentication } from '../util';
+import { toast } from 'react-toastify';
 
 class _Login extends Component {
 
@@ -40,10 +41,10 @@ class _Login extends Component {
     if (username.valid && password.valid){
       const { err } = await this.auth.login(username.text, password.text);
       if (err) {
-        console.log(err);
+        console.log("Invalid email/password");
+        toast.error("Invalid email/password");
         return
       }
-
       const { redirect } = this.getQuery(window.location.search);
       this.props.history.push(redirect? redirect: '/app/upload');
     } 

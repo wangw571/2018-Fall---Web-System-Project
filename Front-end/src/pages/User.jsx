@@ -5,6 +5,7 @@ import { UserForm } from '../components/user';
 import { Modal } from '../components';
 import { Page } from '../containers';
 import '../styles/pages/users.scss';
+import { toast } from 'react-toastify';
 
 export class User extends Component {
 
@@ -27,6 +28,7 @@ export class User extends Component {
       }
     } catch (err) {
       console.log(err);
+      toast.error("Error getting users");
     }
   }
 
@@ -51,9 +53,10 @@ export class User extends Component {
     return { users, active };
   })
 
-  addUser = item => {
+  addUser = async item => {
     const { users } = this.state;
     users.push(item);
+    toast("User successfully added");
     this.setState({ users, show: false, active: users.length - 1 });
   }
 
@@ -67,8 +70,10 @@ export class User extends Component {
       );
       users.splice(active, 1);
       this.setState({ users, active: -1 });
+      toast("User successfully removed");
     } catch (err) {
-      console.log(err)
+      console.log(err);
+      toast.error("Error removing user");
     }
   }
 

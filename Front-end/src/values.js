@@ -7,3 +7,12 @@ export const DASHBOARD_NAV = [
 ];
 
 export const COLUMN_TYPES = [ "text", "number", "select", "check" ];
+export const CHARTS = [ "bar", "line", "pie" ];
+export const COLORS = [ "#4357ad", "#48a9a6", "#e4dfda", "#d4b483", "#c1666b", "#52489c", "#4062bb", "#59c3c3", "#ebebeb", "#f45b69" ];
+export const DEFAULT_CHART_OPTIONS = {
+  scales: {
+    xAxes: [{
+      ticks: { beginAtZero: true }
+    }]
+  }
+}

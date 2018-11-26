@@ -2,25 +2,95 @@
 @import '../variables';
 
 .report{
-    $self: &;
-    &__section {
-        & .section__wrapper {
-            flex-wrap: wrap;
-            @include flex(row, flex-start);
+  $self: &;
+  &__create {
+    padding: 20px;
+    &-btn {
+      width: 120px;
+      margin: 0 5px;
+      &--submit:not(:disabled) {
+        background-color: $logo-color;
+      }
+      &--remove {
+        background-color: #e6c110;
+      }
+      &--exit {
+        background-color: #e20e0e;
+      }
+    }
+    &-btns.green__input-group {
+      flex-direction: row;
+      margin: -5px -5px;
+    }
+  }
+  &__controls {
+    margin: 8px -5px 0;
+  }
+  &__page {
+    width: 100%;
+    &-head {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    &-content {
+      list-style-type: none;
+      padding-top: 8px;
+      margin: 0 -6px;
+      flex-wrap: wrap;
+      @include flex;
+    }
+    &-section {
+      width: calc(50% - 12px);
+      border-radius: 6px;
+      box-sizing: border-box;
+      padding: 14px;
+      cursor: pointer;
+      margin: 6px;
+      transition: background-color $normal-speed $normal-ease;
+      &:hover {
+        background-color: rgba(0,0,0,0.03);
+      }
+
+      &--empty {
+        @include flex(center);
+        font-size: 1.6rem;
+        color: rgba(0,0,0,0.3);
+        background-color: rgba(0,0,0,0.03);
+        min-height: 200px;
+        &:hover {
+          background-color: rgba(0,0,0,0.06);
         }
+      }
     }
-    &__box {
-        width: 50%;
-        padding: 20px;
-        box-sizing: border-box;
-        height: auto;
-    }
+  }
 }
 
 @include large-desktop {
-    .report {
-        &__box {
-            width: 100%;
-        }
+  .report {
+    &__page-section {
+      width: 100%;
     }
+  }
+}
+
+@media print {
+  .report {
+    &__controls {
+      display: none;
+    }
+    &__page-section {
+      width: 100%;
+      margin: 0 0 80px;
+      @include flex(column);
+      &--empty {
+        display: none;
+      }
+    }
+  }
+  .section__wrapper {
+    padding-bottom: 0
+  }
+  .chartjs-render-monitor {
+    max-width: 100%;
+  }
 }

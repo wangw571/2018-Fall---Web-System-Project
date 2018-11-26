@@ -1,3 +1,4 @@
 export * from './Authentication';
 export * from './Request';
-export * from './Sort';
+export * from './Print';
+export * from './Data';

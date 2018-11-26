@@ -3,8 +3,9 @@ import { List, Section } from '../components/dashboard';
 import { Page } from '../containers';
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
-import { request, reduce, Authentication } from '../util';
+import { request, reduce, Authentication, validate } from '../util';
 import { Table, File, TemplateDetails } from '../components/upload';
+import { toast } from 'react-toastify';
 
 const STATUS = {
   undefined: 'Missing',
@@ -17,6 +18,7 @@ export class Upload extends Component {
     items: null,
     show: false,
     data: null,
+    temp: null,
     details: false,
     active: -1
   }
@@ -35,6 +37,7 @@ export class Upload extends Component {
       submits = await request('/submit');
     } catch (err) {
       console.log(err);
+      toast.error("Error getting templates/submissions");
       return
     }
 
@@ -91,10 +94,13 @@ export class Upload extends Component {
         submitted: item.submitted, date: item.date, data
       });
       this.setState({ items });
+      toast("Submission successfully updated");
     } catch (err) {
       console.log(err);
+      toast.error("Error updating submissions");
     }
   }
+
   delete = async () => {
     const { items, active } = this.state;
     const item = items[active];
@@ -103,15 +109,37 @@ export class Upload extends Component {
       delete item.submitted
       item.date = new Date();
       this.setState({ items });
+      toast("Submission successfully deleted");
     } catch (err) {
       console.log(err);
+      toast.error("Error removing submissions");
     }
   }
+
   submit = async () => {
-    const { items, active } = this.state;
-    items[active].submitted = true;
-    this.setState({ items });
-    await this.save();
+    const { items, active, data, temp } = this.state;
+    const errors = {};
+
+    data.forEach((row, key) =>
+      row.forEach((col, key2) => {
+        const check = temp.columns[key2];
+        if (!validate(col, check)) {
+          if (!errors[key]) errors[key] = 0;
+          errors[key] += 1;
+        }
+      })
+    );
+
+    if (Object.keys(errors).length === 0) {
+      items[active].submitted = true;
+      this.setState({ items });
+      await this.save();
+    } else {
+      const keys = Object.keys(errors);
+      keys.forEach(key => 
+        toast.error(`${errors[key]} errors at row ${parseInt(key) + 1}`, { autoClose: 10000 })
+      );
+    }
   }
 
   setData = async data => this.setState(data)
@@ -132,6 +160,7 @@ export class Upload extends Component {
         show: false
       }))
     }
+    toast("Template successfully added");
   }
 
   itemMap = ({ name, date, submitted }) => {
@@ -161,8 +190,10 @@ export class Upload extends Component {
         items: itemsCopy,
         active: 0
       });
+      toast("Template successfully deleted");
     } catch(err){
       console.log(err);
+      toast.error("Error removing tempalte");
     }
   }
 

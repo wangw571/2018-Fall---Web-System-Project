@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { upload } from '../../util';
 import '../../styles/components/upload/file.scss';
+import { toast } from 'react-toastify';
+
 
 export class File extends Component {
 
@@ -19,8 +21,10 @@ export class File extends Component {
         body
       );
       await submit(res);
+      toast("File successfully uploaded");
     } catch (err) {
       console.log(err);
+      toast.error("Error uploading file");
     }
     if (!this.unmounted) {
       this.setState({ file: null });

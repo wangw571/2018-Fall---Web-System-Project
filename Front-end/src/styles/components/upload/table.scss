@@ -46,6 +46,10 @@
     border-bottom: 1.5px solid rgba(0,0,0,0.06);
     transition: background-color $normal-speed $normal-ease;
 
+    &--error {
+      background-color: rgba(255, 0, 0, 0.15);
+    }
+
     &:last-child {
       border-right: none;
     }
@@ -59,7 +63,7 @@
     }
 
     &:not(&--header) {
-      &:hover #{ $self }__col {
+      &:hover #{ $self }__col:not(#{ $self }__col--error) {
         background-color: rgba(0,0,0,0.02);
       }
     }

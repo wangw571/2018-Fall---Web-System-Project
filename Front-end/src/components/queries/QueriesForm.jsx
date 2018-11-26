@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import '../../styles/pages/queries.scss';
 import { request } from '../../util';
+import { toast } from 'react-toastify';
 
 const SPACE = "\t";
 export class QueriesForm extends Component {
-
+  
   state = {
     name: "",
     query: null,
@@ -23,14 +24,15 @@ export class QueriesForm extends Component {
         this.setState({ name, query });
       } catch (err) {
         console.log(err);
+        toast.error("Error loading query");
       }
     }
   }
 
   async componentDidUpdate(prevProps) {
-    const { items, active } = this.props;
+    const { items, active, clear } = this.props;
     if (prevProps.active !== active) {
-      this.setState({ query: null, result: "", dirty: false });
+      this.setState({ name: "", query: null, result: "", dirty: false });
 
       if (items && active > -1) {
         const { _id } = items[active];
@@ -39,8 +41,11 @@ export class QueriesForm extends Component {
           this.setState({ name, query });
         } catch (err) {
           console.log(err);
+          toast.error("Error loading query");
         }
       }
+    } else if (prevProps.clear !== clear && !prevProps.clear) {
+      this.setState({ name: "", query: null, result: "", dirty: false });
     }
   }
 
@@ -58,19 +63,22 @@ export class QueriesForm extends Component {
       JSON.parse(clean);
     } catch (err) {
       console.log(err);
+      toast.error("Invalid query");
       return
     }
 
     try {
       const data = await request(
-        `/queries/${active? items[active]._id: ""}`,
+        `/queries/${active !== undefined? items[active]._id: ""}`,
         'POST',
         { name, query: clean }
       );
+      toast("Query saved");
       update(data, active);
       this.setState({ dirty: false });
     } catch (err) {
       console.log(err);
+      toast.error("Error saving query");
     }
   }
 
@@ -80,12 +88,15 @@ export class QueriesForm extends Component {
     try {
       const id = items[active]._id;
       const result = await request(`/queries/${id}`, 'PUT');
+      toast("Query successful");
       this.setState({ running: false, result: JSON.stringify(result) });
     } catch (err) {
       console.log(err);
+      toast.error("Error running query");
       this.setState({ running: false, result: JSON.stringify(err) });
     }
   }
+  
 
   process(result, tab = 0, indent = true) {
     let res = "";
@@ -125,21 +136,26 @@ export class QueriesForm extends Component {
             { buttons? buttons(): null }
           </div>
         </form>
-        <h2 className="query__header query__header--mid">Test Query</h2>
-        <div className="green__input-group orgs__buttons">
-          <button className="orgs__submit green__button" type="button" onClick={this.run} disabled={dirty || running}>
-            Run Query
-          </button>
-        </div>
         {
-          result !== null?
+          active !== undefined?
           <Fragment>
-            { result !== ""? <textarea className="green__input query__result" value={ this.process(JSON.parse(result)) } disabled/>: null }
-            { result !== ""? <h5>{ JSON.parse(result).length + " results" }</h5>: null }
-          </Fragment>:
-          <div className="green__input query__result green__loader-wrap">
-            <i className="green__loader fas fa-circle-notch"/>Loading...
-          </div>
+            <h2 className="query__header query__header--mid">Test Query</h2>
+            <div className="green__input-group orgs__buttons">
+              <button className="orgs__submit green__button" type="button" onClick={this.run} disabled={dirty || running}>
+                Run Query
+              </button>
+            </div>
+            {
+              result !== null?
+              <Fragment>
+                { result !== ""? <textarea className="green__input query__result" value={ this.process(JSON.parse(result)) } disabled/>: null }
+                { result !== ""? <h5>{ JSON.parse(result).length + " results" }</h5>: null }
+              </Fragment>:
+              <div className="green__input query__result green__loader-wrap">
+                <i className="green__loader fas fa-circle-notch"/>Loading...
+              </div>
+            }
+          </Fragment>: null
         }
       </Fragment>:
       <div className="green__loader-wrap">

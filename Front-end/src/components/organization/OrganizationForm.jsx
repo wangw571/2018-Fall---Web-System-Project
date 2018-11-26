@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import '../../styles/pages/organization.scss';
 import { Switch, Collection } from '../.';
 import { request } from '../../util';
+import { toast } from 'react-toastify';
 
 export class OrganizationForm extends Component {
 
@@ -93,8 +94,10 @@ export class OrganizationForm extends Component {
       });
       update(res, active);
       this.setState({ dirty: false });
+      toast("Successfully submited!");
     } catch (err) {
       console.log(err);
+      toast.error("Error submitting data!");
     }
   }
 
