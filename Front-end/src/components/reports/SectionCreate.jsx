@@ -6,7 +6,6 @@ export class SectionCreate extends Component {
   state = {
     name: "",
     query: 0,
-    meta: null,
     type: 0
   }
 
@@ -16,6 +15,7 @@ export class SectionCreate extends Component {
     el.preventDefault();
     const { name, query, type } = this.state;
     this.props.update({ name, query, type: parseInt(type) });
+    this.setState({ name: "", query: 0, type: 0 })
   }
 
   delete = async () => this.props.update(null)

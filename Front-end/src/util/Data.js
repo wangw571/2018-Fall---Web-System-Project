@@ -22,7 +22,7 @@ export const validate = (data, { type, options, required }) => {
   if (!required && (data === '' || data === null)) return true;
   switch(type) {
     case COLUMN_TYPES[0]:
-      return data.match(options)
+      return data.match(new RegExp(options))
     case COLUMN_TYPES[1]:
       return !isNaN(data) && data <= options[0] && data >= options[1]
     case COLUMN_TYPES[2]:

@@ -27,6 +27,22 @@ export class TemplateDetails extends Component {
     }
   }
 
+  async componentDidUpdate(prevProps) {
+    const { items, active } = this.props;
+    if (prevProps.active !== active) {
+      if (items && active != null) {
+        const item = items[active];
+        try {
+          const { name, columns } = await request(`/temp/${item._id}`);
+          this.setState({ name, columns });
+        } catch (err) {
+          console.log(err);
+          toast.error("Error getting template details");
+        }
+      }
+    }
+  }
+
   delete = async () => {
     const { items, active, set } = this.props;
     try {

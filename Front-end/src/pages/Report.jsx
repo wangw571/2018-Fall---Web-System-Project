@@ -34,6 +34,7 @@ export class Report extends Component {
   )
 
   close = () => this.setState({ show: false });
+  setActive = active => this.setState({ active });
   set = async data => this.setState(data);
 
   itemMap = ({ name, date }) => {
@@ -48,7 +49,7 @@ export class Report extends Component {
     const { active, queries, items, show } = this.state;
     return <Page className="report">
       <div className="report__container">
-        <List block="report" onClick={this.click} active={active} items={items} map={this.itemMap}>
+        <List block="report" onClick={this.setActive} active={active} items={items} map={this.itemMap}>
           <h3 className="report__list-header">Reports</h3>
           <button className="orgs__list-btn" type="button" onClick={this.toggleModal}>
             <i className="orgs__list-btn-icon fas fa-plus"/> Add Report
