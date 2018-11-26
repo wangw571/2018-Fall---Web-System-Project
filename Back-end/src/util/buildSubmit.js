@@ -18,6 +18,11 @@ export const buildSubmit = async (req, res, next) => {
     return
   }
 
+  if(!/.xlsx$/.exec(file.originalname)){
+    res.status(415).json({ status: 'error', err: 'Template extension format not supported, please use xlsx format files' });
+    return
+  }
+
   const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
   const sheet = workbook.SheetNames[0];
 

@@ -3,17 +3,16 @@
 
 .login {
     @include flex(column, center);
-    // background-color: $login-background-color;
     background-image: $login-background-image;
+    background-size: cover;
     width: 100%;
     &__form {
         @include flex(column, center, stretch);
+        @include depth(2);
         box-sizing: border-box;
-        box-shadow: 10px 10px 5px rgb(136, 155, 120);
         border-radius: 20px;
         background-color: rgb(214, 238, 192);
         max-width: 440px;
-        margin-right: 38.3%;
         height: 550px;
         padding: 20px 60px;
         width: 100%;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import '../styles/containers/login.scss';
+import '../styles/pages/login.scss';
 import { withRouter } from 'react-router-dom';
 import { Authentication } from '../util';
 import { toast } from 'react-toastify';
@@ -47,7 +47,8 @@ class _Login extends Component {
       }
       const { redirect } = this.getQuery(window.location.search);
       this.props.history.push(redirect? redirect: '/app/upload');
-    } 
+    }
+    toast.error("Invalid email/password");
   }
 
   update = async ({ currentTarget: { name, value } }) => {
