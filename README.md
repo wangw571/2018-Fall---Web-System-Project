@@ -31,3 +31,5 @@ We are team newline, a team of 5 students working together to create a scalable 
   - [Third Deliverable](https://github.com/CSCC01/Team19/blob/Deliverable3/deliverables/Deliverable3.pdf) submitted. For Google docs version, please click [here](https://docs.google.com/document/d/1WPr1R9UMBfo-UJYLyxxwtn1QvSqb8PV7Wed1dC05bIc/edit#)
 - ### November 12, 2018
   - [Fourth Deliverable](https://github.com/CSCC01/Team19/blob/Deliverable4/deliverables/Deliverable4.pdf) submitted. For Google docs version, please click [here](https://docs.google.com/document/d/1dAsrpfoaGt0bT7GDHlxUQHn4kV4g-Zy_hsOKmO-EcSk/edit#)
+- ### November 26, 2018
+  - [Fifth Deliverable](https://github.com/CSCC01/Team19/blob/Deliverable5/deliverables/Deliverable5.pdf) submitted. For Google docs version, please click [here](https://docs.google.com/document/d/1vnqFIDVmKtXwCq0GvLApZ7pQcvllHhhp1yXdMLPxsMI/edit#)
