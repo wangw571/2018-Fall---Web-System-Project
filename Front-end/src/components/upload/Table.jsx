@@ -2,15 +2,10 @@ import React, { Component } from 'react';
 import { request, sortByAscending, sortByDescending } from '../../util';
 import '../../styles/components/upload/table.scss';
 import { TableRow } from '.';
-import { Alert } from '../../util/Alert';
+import { toast } from 'react-toastify';
 
 
 export class Table extends Component {
-
-  constructor(props) {
-    super(props);
-    this.alert = Alert.getInstance();
-  }
 
   state = {
     temp: null,
@@ -40,21 +35,22 @@ export class Table extends Component {
     try {
       const temp = await request(`/temp/${_id}`);
       const { data } = await request(`/submit/${_id}`);
-      set({ data });
+      set({ data, temp });
       this.setState({ temp: temp.columns, data });
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error getting submission data");
     }
   }
 
   update = async ({ target }) => {
     if (target) {
-      const { data } = this.state;
+      const { data, temp } = this.state;
       const row = target.getAttribute('data-row');
       const col = target.getAttribute('data-col');
       data[row][col] = target.innerHTML;
       this.setState({ data });
-      this.props.set(data);
+      this.props.set(data, temp);
     }
   }
 
@@ -88,7 +84,7 @@ export class Table extends Component {
                 })
               }
             </div>
-            { data.map((row, key) => <TableRow disabled={disabled} key={key} row={row} update={this.update} index={key} />) }
+            { data.map((row, key) => <TableRow temp={temp} disabled={disabled} key={key} row={row} update={this.update} index={key} />) }
           </div>
         </div>
       </div>:

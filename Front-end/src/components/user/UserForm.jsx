@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { request, Authentication } from '../../util';
 import { Switch } from '..';
+import { toast } from 'react-toastify';
 
 const user = Authentication.getInstance().getUser();
 export class UserForm extends Component {
@@ -79,8 +80,10 @@ export class UserForm extends Component {
       );
       update(res, active);
       this.setState({ dirty: false });
+      toast('User successfully updated');
     } catch (err) {
-      console.log(err)
+      console.log(err);
+      toast.error('Error updating user');
     }
   }
 

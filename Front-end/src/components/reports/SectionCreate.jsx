@@ -30,9 +30,13 @@ export class SectionCreate extends Component {
 
   async componentDidUpdate(prevProps) {
     const { active, items } = this.props;
-    if (prevProps.active !== active && active > -1) {
-      const { name, query, type } = items[active];
-      this.setState({ name, query, type });
+    if (prevProps.active !== active) {
+      if (active > -1) {
+        const { name, query, type } = items[active];
+        this.setState({ name, query, type });
+      } else {
+        this.setState({ name: "", query: 0, type: 0 });
+      }
     }
   }
 

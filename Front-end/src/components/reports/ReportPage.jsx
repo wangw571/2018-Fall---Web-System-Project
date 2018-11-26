@@ -3,6 +3,7 @@ import { SectionCreate } from '.';
 import { Modal } from '../';
 import { request } from '../../util';
 import { ReportSection } from './ReportSection';
+import { toast } from 'react-toastify';
 
 export class ReportPage extends Component {
 
@@ -23,6 +24,7 @@ export class ReportPage extends Component {
         this.setState({ name, content });
       } catch (err) {
         console.log(err);
+        toast.error("Error getting report information");
       }
     }
   }
@@ -54,12 +56,14 @@ export class ReportPage extends Component {
       const res = await request(`/report/${items[active]._id}`, 'POST', {
         name, content
       });
+      toast("Report successfully updated");
       items[active] = res;
       await update({ items });
       this.setState({ dirty: false });
 
     } catch (err) {
       console.log(err);
+      toast.error("Error updating report");
     }
   }
 
@@ -67,19 +71,21 @@ export class ReportPage extends Component {
     const { items, active, update } = this.props;
     try {
       await request(`/report/${items[active]._id}`, 'DELETE');
+      toast("Report successfully deleted");
       items.splice(active, 1);
       await update({ items, active: -1 });
     } catch (err) {
       console.log(err);
+      toast.error("Error deleting report");
     }
   }
 
   modify = async ({ currentTarget }) => {
     const curr = currentTarget.getAttribute('data-key');
-    this.setState({ curr, show: 1 });
+    this.setState({ curr: parseInt(curr), show: 1 });
   }
 
-  create = async () => this.setState({ active: -1, show: true })
+  create = async () => this.setState({ curr: -1, show: true })
 
   updateName = async ({ target }) => {
     if (target) {
@@ -95,6 +101,7 @@ export class ReportPage extends Component {
         <h1 onBlur={this.updateName} contentEditable suppressContentEditableWarning>{ name }</h1>
         <div className="report__controls">
           <button className="upload__button upload__button--controls" onClick={this.save} type="button" disabled={!dirty}>Save</button>
+          <button className="upload__button upload__button--controls" onClick={window.print} type="button">Download</button>
           <button className="upload__button upload__button--controls" onClick={this.delete} type="button">Delete</button>
         </div>
         <ul className="report__page-content">
@@ -107,7 +114,7 @@ export class ReportPage extends Component {
         </ul>
       </div>
       <Modal show={show} className="report__modal" close={this.close}>
-        <SectionCreate queries={queries} items={content} active={curr} close={this.close} clear={show} update={this.set}/>
+        <SectionCreate queries={queries} items={content} active={curr} close={this.close} update={this.set}/>
       </Modal>
     </Fragment>:
     <div className="green__loader-wrap">

@@ -2,14 +2,9 @@ import React, { Component, Fragment } from 'react';
 import '../../styles/pages/organization.scss';
 import { Switch, Collection } from '../.';
 import { request } from '../../util';
-import { Alert } from '../../util/Alert';
+import { toast } from 'react-toastify';
 
 export class OrganizationForm extends Component {
-
-  constructor(props) {
-    super(props);
-    this.alert = Alert.getInstance();
-  }
 
   state = {
     name: '',
@@ -99,8 +94,10 @@ export class OrganizationForm extends Component {
       });
       update(res, active);
       this.setState({ dirty: false });
+      toast("Successfully submited!");
     } catch (err) {
-      this.alert.errProcess(err);
+      console.log(err);
+      toast.error("Error submitting data!");
     }
   }
 

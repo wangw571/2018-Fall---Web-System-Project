@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { request } from '../../util';
+import { toast } from 'react-toastify';
 
 export class ReportCreate extends Component {
 
@@ -18,10 +19,12 @@ export class ReportCreate extends Component {
         name: this.state.name,
         content: []
       });
+      toast("Report successfully updated");
       items.push({ _id, name, date });
       await update({ items, show: false, active: items.length - 1 });
     } catch (err) {
       console.log(err);
+      toast.error("Error updating report");
     }
   }
 
