@@ -112,7 +112,7 @@ export class Queries extends Component {
       <Modal show={show} close={this.close}>
         <div className="query__modal">
           <h2>Create a new query</h2>
-          <QueriesForm update={this.add} buttons={() =>
+          <QueriesForm clear={!show} update={this.add} buttons={() =>
             <button className="orgs__exit green__button" type="button" onClick={this.close}>Exit</button>
           }/>
         </div>
