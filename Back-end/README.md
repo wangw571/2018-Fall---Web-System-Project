@@ -1,266 +1,266 @@
-###### Note: all end points(except log in) require 'Authorization' to be existing in header with token inside. Token format: Bearer ${token}
+######  Note: all end points(except log in) require 'Authorization' to be existing in header with token inside. Token format: Bearer ${token}
 
-##End points: 
-##Authorization:
-###/login
+## End points: 
+## Authorization:
+### /login
 ->{email, password}
-#####Success:
+##### Success:
 200
 with json {data: {token: token for further operations, _sys: 1}}<-
-#####Failure:
+##### Failure:
 * 403
 
-###/logout
-#####Success:
+### /logout
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 409
 
-##Orgnization: 
-###/orgs
-####GET
-#####Success:
+## Orgnization: 
+### /orgs
+#### GET
+##### Success:
 200
 with json {data: all Orgnizations' data}<-
-#####Failure:
+##### Failure:
 * 403
 
-####POST
+#### POST
 ->{name, _sys, permissions}
-#####Success:
+##### Success:
 200          
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 409
 
-###/orgs/${org_id}
-####GET
-#####Success:
+### /orgs/${org_id}
+#### GET
+##### Success:
 200
 with json {data: desinated Orgnization}<-
-#####Failure:
+##### Failure:
 * 401
 * 403
 
-####POST
+#### POST
 ->{name, _sys, permissions}
-#####Success:
+##### Success:
 200
 with json {data: desinated Orgnization}<-
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 409
 
-####DELETE
-#####Success:
+#### DELETE
+##### Success:
 200
-with json {data: { _org: organization id, usersDeleted: deleted # of users }}<-
-#####Failure:
+with json {data: { _org: organization id, usersDeleted: deleted #  of users }}<-
+##### Failure:
 * 401
 * 403
 * 409
 
-##User:
-###/users
-####GET
-#####Success:
+## User:
+### /users
+#### GET
+##### Success:
 200
 with json {data: desinated Orgnization}<-
-###/users/me
-####GET
-#####Success:
+### /users/me
+#### GET
+##### Success:
 200
 with json {data: { firstname, lastname, admin}}<-
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 409
 
-####POST
+#### POST
 ->{password, firstname, lastname, email}
-#####Success:
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 409
 
-###/users/${org_id}
-####GET
-#####Success:
+### /users/${org_id}
+#### GET
+##### Success:
 200
 with json {data: users under this org }<-
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 409
 
-####POST
+#### POST
 ->{password, firstname, lastname, email, admin}
-#####Success:
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 409
 
-###/users/${org_id}/${user_id}
-####GET
-#####Success:
+### /users/${org_id}/${user_id}
+#### GET
+##### Success:
 200
 with json {data: { id, firstname, lastname, admin, email}}<-
-#####Failure:
+##### Failure:
 * 403
 
-####POST
+#### POST
 ->{password, firstname, lastname, email, admin}
-#####Success:
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 403
 
-####DELETE
-#####Success:
+#### DELETE
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 403
 * 404
 
-##Tempelate:
-###/temp
-####GET
-#####Success:
+## Tempelate:
+### /temp
+#### GET
+##### Success:
 200
 with json {templates' data corresponding to org}<-
-####POST
+#### POST
 ->Template xlsx file
-#####Success:
+##### Success:
 200
 with json {data:insert id}<-
-#####Failure:
+##### Failure:
 * 403
 * 406
 * 415
 
-###/temp/${temp_id}
-####GET
-#####Success:
+### /temp/${temp_id}
+#### GET
+##### Success:
 200
 with json {template's data}<-
-#####Failure:
+##### Failure:
 * 401
 * 404
 
-####POST
-#####File: {any data that want to be updated}
-#####Success:
+#### POST
+##### File: {any data that want to be updated}
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 409
 
-####DELETE
-#####Success:
+#### DELETE
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 404
 
-##Submit:
-###/submit
-####GET
-#####Success:
+## Submit:
+### /submit
+#### GET
+##### Success:
 200
 with json {Submission data correspond to org}<-
-###/submit/${tid}
-####GET
-#####Success:
+### /submit/${tid}
+#### GET
+##### Success:
 200
 with json {data: requested data}<-
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 404
 
-####POST
+#### POST
 upload: {data}
-#####Success:
+##### Success:
 200
 with json {_id: inserted ID, data}<-
-#####Failure:
+##### Failure:
 * 403
 * 404
 * 406
 * 409
 
-####PATCH
+#### PATCH
 ->{data to be set}
-#####Success:
+##### Success:
 200
 with json {_id: inserted ID, data}<-
-#####Failure:
+##### Failure:
 * 401
 
-####DELETE
-#####Success:
+#### DELETE
+##### Success:
 200
 with json {_id: inserted ID, data}<-
-#####Failure:
+##### Failure:
 * 401
 
-##Query:
-###/queries
-####GET
-#####Success:
+## Query:
+### /queries
+#### GET
+##### Success:
 200
 with json {data of queries}<-
-#####Failure:
+##### Failure:
 * 403
 
-####POST
+#### POST
 with json {query, name} // Query will be in the format of a json of a mongodb aggregate
-#####Success:
+##### Success:
 200
 with json {_id: query ID, data of query}<-
-#####Failure:
+##### Failure:
 * 403
 * 406
 
-###/queries/${query_id}
-####GET
-#####Success:
+### /queries/${query_id}
+#### GET
+##### Success:
 200
 with json {data of query}<-
-#####Failure:
+##### Failure:
 * 403
 * 404
 
-####POST
+#### POST
 ->{query to be updated}
-#####Success:
+##### Success:
 200
 with json {data: query data}<-
-#####Failure:
+##### Failure:
 * 401
 * 403
 * 406
 
-####PUT
-#####Success:
+#### PUT
+##### Success:
 200
 with json {data: query result}<-
-#####Failure:
+##### Failure:
 * 403
 * 404
 * 406
 
-####DELETE
-#####Success:
+#### DELETE
+##### Success:
 200
-#####Failure:
+##### Failure:
 * 401
 * 403
