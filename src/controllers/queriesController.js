@@ -1,4 +1,4 @@
-import { database, getHash, getObjectId } from '../util';
+import { database, getObjectId } from '../util';
 
 const ERROR = 'error';
 const INSUF_PERMISSION = { status: ERROR, err: 'Insufficient permission' };
@@ -125,7 +125,7 @@ export const queriesController = {
 
     if (typeof(body.query) === 'string') {
       try {
-          body.query = JSON.parse(body.query);
+        body.query = JSON.parse(body.query);
       } catch (err) {
         res.status(401).json({ status: ERROR, err });
         return
@@ -133,26 +133,26 @@ export const queriesController = {
     }
 
     let data = validate(body);
-    if (!data.err) {
-      const db = await database.connect();
-      data = { ...data, created_by: _id, date: new Date() };
-      const { value, ok } = await db.collection(QUER).findOneAndReplace(
-        { _id },
-        { $set: data },
-        { returnOriginal: false }
-      );
+    if (data.err) {
+      res.status(406).json(INVALID_Q);
+      return
+    }
+    
+    const db = await database.connect();
+    data = { ...data, created_by: _id, date: new Date() };
+    const { value, ok } = await db.collection(QUER).findOneAndReplace(
+      { _id },
+      { $set: data },
+      { returnOriginal: false }
+    );
 
-      // Return result
-      if (ok && value) {
-        res.json({ status: SUCCESS, data: { ...value } });
-      } else {
-        res.status(406).json(INVALID_Q);
-      }
-      db.close();
-
+    // Return result
+    if (ok && value) {
+      res.json({ status: 'success', data: { ...value } });
     } else {
       res.status(403).json({ status: ERROR, err: data.err });
     }
+    db.close();
   },
 
   deleteQuery: async (req, res) => {
@@ -203,15 +203,16 @@ export const queriesController = {
     const db = await database.connect();
     const data = await db.collection(QUER).findOne({ _id }, { query: 1 });
 
-    if (data) {
+    if (!data) {
+      res.status(401).json({ status: 'error', err: 'No such query' });
+      return
+    }
+
+    try {
       const result = await db.collection('submissions').aggregate(JSON.parse(data.query)).toArray();
-      if (result) {
-        res.json({ status: SUCCESS, data: result });
-      } else {
-        res.status(406).json({ status: ERROR, err: 'Query operation failed' });
-      }
-    } else {
-      res.status(404).json(NO_SUCH_Q);
+      res.json({ status: SUCCESS, data: result });
+    } catch(err) {
+      res.status(406).json({ status: ERROR, err: 'Query operation failed' });
     }
   }
 }

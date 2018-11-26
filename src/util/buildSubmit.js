@@ -6,7 +6,7 @@ const extractRows = async sheet => {
 
   return src.slice(3).map(row => {
     const res = new Array(len - row.length);
-    res.fill(null);
+    res.fill('');
     return row.concat(res);
   });
 }
