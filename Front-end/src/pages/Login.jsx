@@ -47,8 +47,9 @@ class _Login extends Component {
       }
       const { redirect } = this.getQuery(window.location.search);
       this.props.history.push(redirect? redirect: '/app/upload');
+    } else {
+      toast.error("Invalid email/password");
     }
-    toast.error("Invalid email/password");
   }
 
   update = async ({ currentTarget: { name, value } }) => {

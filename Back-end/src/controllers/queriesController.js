@@ -174,7 +174,7 @@ export const queriesController = {
     // Modify query
     const db = await database.connect();
     const { value, ok } = await db.collection(QUER).findOneAndDelete({ _id });
-
+    
     // Return result
     if (ok && value) {
       res.json({ status: SUCCESS, data: value._id });

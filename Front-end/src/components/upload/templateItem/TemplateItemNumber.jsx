@@ -13,16 +13,16 @@ export class TemplateItemNumber extends PureComponent {
     const { item } = this.props;
     if (item) {
       const { options } = item;
-      this.setState({ options });
+      this.setState({ max: options[0], min: options[1] });
     }
   }
 
   update = async ({ currentTarget }) => {
     const name = currentTarget.name;
     const { item, active, set } = this.props;
-    const data = { ...this.state, [name]: currentTarget.value };
+    const data = { ...this.state, [name]: parseInt(currentTarget.value) };
     this.setState(data);
-    set(active, (item.options = data, item));
+    set(active, (item.options = [data.max, data.min], item));
   }
 
   render() {
