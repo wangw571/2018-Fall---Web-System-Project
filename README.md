@@ -33,3 +33,4 @@ We are team newline, a team of 5 students working together to create a scalable 
   - [Fourth Deliverable](/deliverables/Deliverable4.pdf) submitted. For Google docs version, please click [here](https://docs.google.com/document/d/1dAsrpfoaGt0bT7GDHlxUQHn4kV4g-Zy_hsOKmO-EcSk/edit#)
 - ### November 26, 2018
   - [Fifth Deliverable](/deliverables/Deliverable5.pdf) submitted. For Google docs version, please click [here](https://docs.google.com/document/d/1vnqFIDVmKtXwCq0GvLApZ7pQcvllHhhp1yXdMLPxsMI/edit#)
+  - Link to the [video](https://youtu.be/E1gcb9TbbUI)
