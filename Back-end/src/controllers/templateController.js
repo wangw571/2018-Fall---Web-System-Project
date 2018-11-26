@@ -1,4 +1,8 @@
 import { database, getObjectId } from '../util';
+const ERROR = 'error';
+const SUCCESS = 'success';
+const NO_PERMISSION = { status: ERROR, err: 'Insufficient permission' };
+const TEMP_DNE = { status: ERROR, err: 'Template does not exist' };
 
 const getFilterTemplates = async (db, org, project) => {
   const { permissions } = await db.collection('organizations')
@@ -19,10 +23,6 @@ const getAllTemplates = async (db, project) => (
   db.collection(TEMP).find({}, project).toArray()
 )
 
-const ERROR = 'error';
-const SUCCESS = 'success';
-const NO_PERMISSION = { status: ERROR, err: 'Insufficient permission' };
-const TEMP_DNE = { status: ERROR, err: 'Template does not exist' };
 export const templateController = {
   getTemplates: async (req, res) => {
     const { user: { sudo, _org } } = req;
