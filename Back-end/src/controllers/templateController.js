@@ -52,7 +52,7 @@ export const templateController = {
     // Check if template exist or not
     const db = await database.connect();
     const look = await db.collection(TEMP).findOne({ $or: [{ file: file.name }, { filename: file.filename }] });
-    if(/[^.]+$/.exec(filename) != 'xlsx'){
+    if(/[^.]+$/.exec(file.name) != 'xlsx'){
       res.status(415).json({ status: ERROR, err: `Template extension format not supported, please use xlsx format files` });
       return
     }
