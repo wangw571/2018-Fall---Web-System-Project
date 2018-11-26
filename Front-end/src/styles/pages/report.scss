@@ -72,3 +72,22 @@
     }
   }
 }
+
+@media print {
+  .report {
+    &__controls {
+      display: none;
+    }
+    &__page-section {
+      width: 100%;
+      height: 50vh;
+      margin: 6px;
+      &--empty {
+        display: none;
+      }
+    }
+  }
+  .chartjs-render-monitor {
+    max-width: 100%;
+  }
+}

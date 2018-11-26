@@ -3,7 +3,7 @@ import { List, Section } from '../components/dashboard';
 import { Page } from '../containers';
 import '../styles/pages/upload.scss';
 import { Modal } from '../components';
-import { request, reduce, Authentication } from '../util';
+import { request, reduce, Authentication, validate } from '../util';
 import { Table, File, TemplateDetails } from '../components/upload';
 import { toast } from 'react-toastify';
 
@@ -18,6 +18,7 @@ export class Upload extends Component {
     items: null,
     show: false,
     data: null,
+    temp: null,
     details: false,
     active: -1
   }
@@ -99,6 +100,7 @@ export class Upload extends Component {
       toast.error("Error updating submissions");
     }
   }
+
   delete = async () => {
     const { items, active } = this.state;
     const item = items[active];
@@ -113,11 +115,31 @@ export class Upload extends Component {
       toast.error("Error removing submissions");
     }
   }
+
   submit = async () => {
-    const { items, active } = this.state;
-    items[active].submitted = true;
-    this.setState({ items });
-    await this.save();
+    const { items, active, data, temp } = this.state;
+    const errors = {};
+
+    data.forEach((row, key) =>
+      row.forEach((col, key2) => {
+        const check = temp.columns[key2];
+        if (!validate(col, check)) {
+          if (!errors[key]) errors[key] = 0;
+          errors[key] += 1;
+        }
+      })
+    );
+
+    if (Object.keys(errors).length === 0) {
+      items[active].submitted = true;
+      this.setState({ items });
+      await this.save();
+    } else {
+      const keys = Object.keys(errors);
+      keys.forEach(key => 
+        toast.error(`${errors[key]} errors at row ${parseInt(key) + 1}`, { autoClose: 10000 })
+      );
+    }
   }
 
   setData = async data => this.setState(data)

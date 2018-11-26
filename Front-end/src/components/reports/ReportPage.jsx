@@ -101,6 +101,7 @@ export class ReportPage extends Component {
         <h1 onBlur={this.updateName} contentEditable suppressContentEditableWarning>{ name }</h1>
         <div className="report__controls">
           <button className="upload__button upload__button--controls" onClick={this.save} type="button" disabled={!dirty}>Save</button>
+          <button className="upload__button upload__button--controls" onClick={window.print} type="button">Download</button>
           <button className="upload__button upload__button--controls" onClick={this.delete} type="button">Delete</button>
         </div>
         <ul className="report__page-content">

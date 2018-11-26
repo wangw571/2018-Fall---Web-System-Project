@@ -35,7 +35,7 @@ export class Table extends Component {
     try {
       const temp = await request(`/temp/${_id}`);
       const { data } = await request(`/submit/${_id}`);
-      set({ data });
+      set({ data, temp });
       this.setState({ temp: temp.columns, data });
     } catch (err) {
       console.log(err);
@@ -45,13 +45,12 @@ export class Table extends Component {
 
   update = async ({ target }) => {
     if (target) {
-      const { data } = this.state;
+      const { data, temp } = this.state;
       const row = target.getAttribute('data-row');
       const col = target.getAttribute('data-col');
       data[row][col] = target.innerHTML;
       this.setState({ data });
-      this.props.set(data);
-      toast("Submission successfully updated");
+      this.props.set(data, temp);
     }
   }
 
@@ -85,7 +84,7 @@ export class Table extends Component {
                 })
               }
             </div>
-            { data.map((row, key) => <TableRow disabled={disabled} key={key} row={row} update={this.update} index={key} />) }
+            { data.map((row, key) => <TableRow temp={temp} disabled={disabled} key={key} row={row} update={this.update} index={key} />) }
           </div>
         </div>
       </div>:
